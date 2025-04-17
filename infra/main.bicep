@@ -97,7 +97,8 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2023-05-01'
 
 @description('Azure Container App for the MCP Hub service.')
 resource mcpHubContainerApp 'Microsoft.App/containerApps@2023-05-01' = {
-  name: '${baseName}-${environmentName}-ca-mcphub-${uniqueSuffix}' // Construct name directly
+  // Constructing a shorter name (max 32 chars)
+  name: toLower('${baseName}-${environmentName}-mcphub-${substring(uniqueSuffix, 0, 6)}')
   location: location
   tags: { // Define tags inline
     environment: environmentName
