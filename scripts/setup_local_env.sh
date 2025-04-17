@@ -14,15 +14,17 @@ export AZURE_CLIENT_ID="1accea65-7cb7-452c-b439-3f581442ef89"
 # !! IMPORTANT: Set your client secret securely.
 # Option 1: Set it manually in your shell BEFORE running this script:
 #   export AZURE_CLIENT_SECRET='<Your_Actual_Client_Secret>'
-# Option 2: Uncomment and set it here (NOT RECOMMENDED FOR COMMITING)
-# export AZURE_CLIENT_SECRET='<Your_Actual_Client_Secret_Value_Here>'
+# Option 2: Uncomment and set it here (NOT RECOMMENDED FOR COMMITING - SECRET REMOVED FOR SECURITY)
+# WARNING: Storing secrets directly in scripts is a security risk.
+# Ensure AZURE_CLIENT_SECRET is set in your environment before sourcing this script.
+# export AZURE_CLIENT_SECRET='<Your_Actual_Client_Secret_Here>'
 
-# Key Vault URI (Retrieve from Azure deployment output if needed)
-# Example: export KEYVAULT_URI="https://d365agentdevkv........vault.azure.net/"
+# Key Vault URI (Retrieved from Azure deployment output)
+export KEYVAULT_URI="https://d365agentdevkvvwfurblzst.vault.azure.net/"
 if [ -z "$KEYVAULT_URI" ]; then
-    echo "WARNING: KEYVAULT_URI is not set. Please set it manually."
-    # Replace with your actual Key Vault URI:
-    # export KEYVAULT_URI='<Your_Key_Vault_URI>'
+    echo "ERROR: KEYVAULT_URI could not be set automatically. Please set it manually."
+    # If the above line didn't work, manually set it here:
+    # export KEYVAULT_URI='https://d365agentdevkvvwfurblzst.vault.azure.net/'
 fi
 
 # D365 Metadata URL (From your previous input)
@@ -48,11 +50,10 @@ for VAR_NAME in "${REQUIRED_VARS[@]}"; do
     fi
 done
 
-# Check client secret specifically, as it might be set manually outside this script
+# Check client secret specifically
 if [ -z "$AZURE_CLIENT_SECRET" ]; then
-    echo "WARNING: AZURE_CLIENT_SECRET is not set. Ensure it is set manually if needed for local auth."
-    # You might not need AZURE_CLIENT_SECRET locally if you use `az login`
-    # ManagedIdentityCredential and ClientSecretCredential might pick up CLI context.
+    echo "ERROR: AZURE_CLIENT_SECRET is not set in the script or environment."
+    MISSING_VARS=1
 fi
 
 if [ $MISSING_VARS -ne 0 ]; then

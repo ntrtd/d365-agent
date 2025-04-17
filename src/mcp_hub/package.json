@@ -7,7 +7,7 @@
     "build": "npm run generate:odata && tsc",
     "start": "node build/index.js",
     "dev": "tsc -w & node --watch build/index.js",
-    "generate:odata": "ts-node ./scripts/generate_odata_client.ts",
+    "generate:odata": "node --loader ts-node/esm ./scripts/generate_odata_client.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

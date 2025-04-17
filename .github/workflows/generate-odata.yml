@@ -1,0 +1,51 @@
+# .github/workflows/generate-odata.yml
+name: Generate D365 OData Client
+
+# Allows manual triggering from the Actions tab
+on: workflow_dispatch
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          # Use the Node.js version specified in the Dockerfile or project requirements
+          node-version: '18'
+          # Cache npm dependencies
+          cache: 'npm'
+          # Explicitly point to the package-lock.json within the mcp_hub directory
+          cache-dependency-path: src/mcp_hub/package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci # Use 'ci' for clean installs in workflows
+        working-directory: ./src/mcp_hub
+
+      - name: Generate OData Client
+        # Pass required secrets as environment variables to the script
+        env:
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          D365_METADATA_URL: ${{ secrets.D365_METADATA_URL }}
+        # Run the generate script using npm run
+        run: npm run generate:odata
+        working-directory: ./src/mcp_hub
+
+      - name: Commit generated files
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: Regenerate D365 OData client [skip ci]" # [skip ci] prevents triggering other workflows
+          # Specify the directory containing the generated files
+          file_pattern: "src/mcp_hub/src/core/generated/odata/**/*.ts"
+          # Optional: Configure commit author
+          commit_user_name: "GitHub Actions Bot"
+          commit_user_email: "github-actions[bot]@users.noreply.github.com"
+          # Specify the repository to push to (needed if running on forks or with custom tokens)
+          # repository: ${{ github.repository }} # Usually inferred correctly
+          # Optional: Add tag annotation if needed
+          # tag_options: "--force"
