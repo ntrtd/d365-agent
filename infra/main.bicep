@@ -48,7 +48,8 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
 
 @description('Azure Key Vault for storing secrets.')
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
-  name: '${baseName}-${environmentName}-kv-${uniqueSuffix}' // Construct name directly, ensure uniqueness if needed outside suffix
+  // Constructing a shorter name (max 24 chars), alphanumeric only, ensuring lowercase.
+  name: toLower('${baseName}${environmentName}kv${substring(uniqueSuffix, 0, 10)}')
   location: location
   tags: { // Define tags inline
     environment: environmentName
