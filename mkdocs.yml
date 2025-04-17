@@ -62,3 +62,4 @@ nav:
     - Phase 2 - Initial Use Case: implementation/phase_2.md
     - Phase 3 - Expansion: implementation/phase_3.md
     - Phase 4 - Optimization & Rollout: implementation/phase_4.md
+  - Evaluation Strategy: evaluation_strategy.md # Added this line

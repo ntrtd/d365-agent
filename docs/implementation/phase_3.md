@@ -23,10 +23,11 @@
 -   [ ] **User Interface / Channel**
     -   [ ] (Optional) Implement integration with an additional channel (e.g., basic Teams bot integration).
     -   [ ] Ensure UI can handle context switching or specification for different companies if necessary.
--   [ ] **Testing & Validation**
-    -   [ ] Test original use case (Phase 2) across multiple configured D365 instances/companies.
-    -   [ ] Test the new business process end-to-end.
-    -   [ ] Test multi-instance routing logic.
-    -   [ ] Test optional new channel integration.
-    -   [ ] Perform regression testing on Phase 1 & 2 functionality.
-    -   [ ] Review logs for multi-instance and multi-process flows.
+-   [ ] **Testing & Validation (Phase 3)**
+    *   [ ] Expand test datasets to cover multi-instance and new process scenarios.
+    *   [ ] Implement Unit/Integration tests for new/refactored MCP Hub tools.
+    *   [ ] Configure & Run Agent Flow evaluations for the new process and multi-instance variations.
+    *   [ ] Perform E2E testing for all supported scenarios across relevant instances.
+    *   [ ] Conduct basic performance testing for key flows.
+    *   [ ] Perform regression testing on Phase 1 & 2 functionality.
+    *   [ ] Analyze results and logs, iterate on fixes.

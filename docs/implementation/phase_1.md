@@ -29,8 +29,11 @@
     *   [ ] Configure basic system prompts.
 -   [ ] **User Interface**
     *   [ ] Set up a basic Web Chat interface connected to the AI Agent Service.
--   [ ] **Testing & Validation**
-    *   [ ] Test MCP handshake and tool discovery.
-    *   [ ] Test D365 authentication from MCP Hub.
-    *   [ ] Test end-to-end flow via Web Chat for the read-only tools.
-    *   [ ] Verify basic logs are captured in Application Insights.
+-   [ ] **Testing & Validation (Phase 1)**
+    *   [ ] Define initial Evaluation Strategy details (see `docs/evaluation_strategy.md`).
+    *   [ ] Create initial test cases for Phase 1 MVP (simple read queries).
+    *   [ ] Implement Unit Tests for MCP Hub read-only tools (mocking D365 calls).
+    *   [ ] Add Unit Tests to CI pipeline.
+    *   [ ] Perform Integration Test: Verify MCP Hub connection & authentication to D365 sandbox.
+    *   [ ] Perform manual E2E testing via Web Chat for the read-only tools against MVP criteria.
+    *   [ ] Verify basic logs and traces are captured in Application Insights.

@@ -30,11 +30,12 @@
 -   [ ] **User Interface / Channel**
     -   [ ] Ensure the chosen channel (e.g., email, Web Chat) supports initiating the flow (e.g., receiving emails, allowing file uploads or text input representing PO).
     -   [ ] Refine response handling for confirmations or error messages.
--   [ ] **Testing & Validation**
-    -   [ ] Test the document parsing function with sample PDFs/emails.
-    -   [ ] Test the end-to-end ingestion flow.
-    -   [ ] Test the individual MCP tools for the scenario.
-    -   [ ] Test the complete Agent Flow/DAG execution for the "happy path".
-    -   [ ] Test basic error handling path (e.g., credit limit exceeded).
-    -   [ ] Verify Sales Order creation in D365 sandbox.
-    -   [ ] Review logs in Application Insights for the complete flow.
+-   [ ] **Testing & Validation (Phase 2)**
+    *   [ ] Refine Evaluation Strategy (add Flow evaluation metrics, E2E test scope, prompt eval - see `docs/evaluation_strategy.md`).
+    *   [ ] Create test datasets for the E2E scenario (diverse inputs, edge cases).
+    *   [ ] Implement Unit Tests for new MCP Hub tools.
+    *   [ ] Implement Integration Tests for MCP Hub tools against D365 sandbox (verify SO creation).
+    *   [ ] Configure & Run Agent Flow evaluations in AI Studio (using test datasets, check metrics like groundedness, relevance).
+    *   [ ] Perform E2E scenario testing (manual or automated) for "happy path" and basic error conditions.
+    *   [ ] Conduct initial prompt evaluation / red-teaming for the scenario.
+    *   [ ] Analyze results and logs, iterate on fixes.
