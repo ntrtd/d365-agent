@@ -1,0 +1,37 @@
+{
+  "name": "mcp_hub",
+  "version": "1.0.0",
+  "description": "MCP Hub Service for Dynamics 365 Integration",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "npm run generate:odata && tsc",
+    "start": "node build/index.js",
+    "dev": "tsc -w & node --watch build/index.js",
+    "generate:odata": "ts-node ./scripts/generate_odata_client.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "mcp",
+    "dynamics365",
+    "d365",
+    "agent"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.14.1",
+    "@types/node-fetch": "^2.6.12",
+    "odata-ts": "^0.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@azure/identity": "^4.9.0",
+    "@azure/keyvault-secrets": "^4.9.0",
+    "@modelcontextprotocol/sdk": "^1.9.0",
+    "node-fetch": "^2.7.0",
+    "zod": "^3.24.3"
+  }
+}
