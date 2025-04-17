@@ -6,8 +6,12 @@ This document outlines the architectural vision for an AI-powered agent designed
 
 **The core integration strategy leverages the Model Context Protocol (MCP)**. MCP acts as a standardized interface ("USB-C for AI") allowing AI models (like those in Azure AI Agent Service) to discover and interact with external tools and data sources (like D365 via an MCP Hub) in a consistent way. This approach is chosen over traditional bespoke APIs or platform-specific connectors (like Power Platform Custom Connectors alone) because MCP offers:
 *   **Standardization & Discoverability:** Any MCP-compliant host (Azure AI Studio, Copilot Studio, Claude Desktop, VS Code extensions, etc.) can automatically discover and understand the capabilities (tools, data resources) exposed by an MCP server.
-*   **Composability:** Capabilities from multiple MCP servers (e.g., first-party D365 actions, third-party services like Stripe, custom internal logic) can be seamlessly combined within a single agent session without complex integration code.
+*   **Composability:** Capabilities from multiple MCP servers (e.g., first-party D365 actions provided by Microsoft for Finance/SCM, third-party services like Stripe, custom internal logic) can be seamlessly combined within a single agent session without complex integration code.
 *   **Reduced Boilerplate:** Common needs like capability negotiation, function schemas (using JSON Schema for type safety), progress updates, streaming results (via JSON-RPC over HTTP+SSE), and cancellation are built into the protocol, reducing implementation effort.
+*   **Core MCP Concepts:** Servers expose capabilities primarily as:
+    *   **Tools:** Typed functions the agent can invoke (e.g., `create_sales_order`).
+    *   **Resources:** Contextual data the agent can read (e.g., product catalogs, parsed documents).
+    *   **Prompts:** Reusable prompt templates hosted by the server, often containing business logic.
 
 The architecture prioritizes using Microsoft Azure's PaaS and AI services for a scalable, secure, and maintainable solution, with MCP providing the crucial link between the AI orchestration layer and the business logic/data layer.
 
@@ -15,8 +19,8 @@ The architecture prioritizes using Microsoft Azure's PaaS and AI services for a 
 
 *   **Microsoft Native:** Leverage Azure PaaS and AI services (Agent Service, Container Apps, Logic Apps, Functions, Entra ID, D365 OData) wherever possible.
 *   **Modularity:** Decompose complex processes into smaller, reusable, and independently deployable components (Agent Flows/DAGs, MCP tools).
-*   **Standardization:** Utilize MCP as the primary interface standard between the AI orchestration layer (Azure AI Agent Service) and backend business logic/data sources (MCP Hub). This involves the hub implementing the MCP specification (JSON-RPC 2.0 methods like `initialize`, `tools/call`, `resources/read` over HTTP/SSE).
-*   **Security:** Employ robust security practices, including Managed Identities, Entra ID authentication, Key Vault for secrets, and network isolation (VNet injection, Private Endpoints). No credentials in prompts or agent logic.
+*   **Standardization:** Utilize MCP as the primary interface standard between the AI orchestration layer (Azure AI Agent Service) and backend business logic/data sources (MCP Hub). This involves the hub implementing the MCP specification (JSON-RPC 2.0 methods like `initialize`, `tools/call`, `resources/read` over HTTP/SSE). The interaction typically uses OAuth 2.0 client credentials flow via Azure AD for headless server authentication.
+*   **Security:** Employ robust security practices, including Managed Identities, Entra ID authentication, Key Vault for secrets, and network isolation (VNet injection, Private Endpoints). No credentials in prompts or agent logic. Explicit user consent, granular permissions (via RBAC on Azure resources and potentially within D365), and sandboxing (where applicable) are crucial to mitigate risks like prompt injection or data exfiltration inherent in exposing capabilities to AI models.
 *   **Scalability & Resilience:** Utilize scalable Azure services (Container Apps with KEDA, Service Bus, Functions) and incorporate patterns for handling load spikes and failures (queues, retries, DLQs).
 *   **Observability:** Implement end-to-end tracing and monitoring using Application Insights and Azure Monitor.
 *   **Maintainability:** Support CI/CD processes for automated testing and deployment of both agent logic (DAGs) and backend services (MCP Hub).
@@ -129,6 +133,7 @@ graph TD
 *   **Parameterized & Routed Tools:** Tools within the MCP Hub are designed to accept context parameters (e.g., `company`, `instance_url`) allowing a single tool implementation to interact with multiple D365 instances or legal entities via internal routing logic.
 *   **Event-Driven Ingestion:** Using Event Grid and Service Bus ensures asynchronous, reliable handling of incoming requests from various channels, smoothing load and enabling retries.
 *   **Dual User Context:** The agent and underlying tools adapt behavior and apply appropriate permissions based on whether the interacting user is internal or external, using mechanisms like Entra ID authentication and context passed through the interaction.
+*   **Structured Agent Execution:** Leverage Azure AI Agent Service's capabilities (Agent Flows/DAGs) to enforce predictable, traceable execution sequences, rather than relying solely on less deterministic prompt chaining. This aligns with patterns like Planner-Executor or graph-based execution, providing better governance for complex business processes compared to simple ReAct loops alone, especially when multiple tools or conditional logic are involved.
 
 ## 5. Technology Stack Summary
 

@@ -23,7 +23,7 @@ These requirements outline the general capabilities for an AI agent designed to 
 
 6.  **Business Rule Application and Validation:**
     *   The system must enforce configurable business rules and perform validations before committing transactions (e.g., credit limit checks, inventory availability, pricing rules, unit conversions).
-    *   Allow for flexibility where rules might be adaptable, potentially through configuration or prompt engineering by business users.
+    *   Allow for flexibility where rules might be adaptable, potentially through configuration data or potentially via **prompt engineering** by authorized business users for certain types of rules (e.g., setting validation thresholds, defining simple conversion logic within defined guardrails).
 
 7.  **External System Integration:**
     *   The agent should be capable of interacting with third-party systems or data sources (e.g., external vendor catalogues via CSV/API, payment gateways like Stripe, shipping providers like ShipStation) through MCP tools.
