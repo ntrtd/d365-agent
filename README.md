@@ -30,8 +30,10 @@ d365-mcp/
 ├── scripts/                    # Utility and deployment scripts
 │   └── deploy_infra.sh         # Script to deploy Azure infrastructure
 ├── src/                        # Source code for application components
+│   ├── agent/                  # Agent configurations (e.g., flows, prompts)
+│   │   └── flows/              # Agent Flow / Prompt Flow definitions (YAML)
 │   ├── functions/              # Azure Functions code (e.g., Document Parser)
-│   └── mcp_hub/                # MCP Hub Service code (e.g., Python/FastAPI)
+│   └── mcp_hub/                # MCP Hub Service code (TypeScript)
 └── tests/                      # Automated tests
     ├── unit/
     └── integration/
@@ -42,7 +44,7 @@ d365-mcp/
 *   **`docs/`:** Contains all documentation source files (Markdown). See below for building locally.
 *   **`infra/`:** Infrastructure as Code (IaC) templates (e.g., Bicep) for provisioning Azure resources.
 *   **`scripts/`:** Utility and deployment scripts (e.g., infrastructure deployment).
-*   **`src/`:** Application source code, separated by component (e.g., `mcp_hub`, `functions`).
+*   **`src/`:** Application source code and configurations, separated by component (`agent`, `mcp_hub`, `functions`).
 *   **`tests/`:** Automated tests for the application code.
 *   **`.github/`:** CI/CD workflow definitions for automating builds, tests, and deployments.
 

@@ -319,43 +319,54 @@ resource documentParserFunctionApp 'Microsoft.Web/sites@2022-09-01' = {
   }
 }
 
-// --- Azure AI Resources (Placeholder/Reference) ---
-// Direct Bicep deployment for Azure AI Hub/Project/Agent Service can be complex
-// and might involve specific ML CLI commands or SDK usage post-deployment.
-// Consider creating these via Portal/CLI/SDK initially and referencing them,
-// or using dedicated Bicep modules if available.
+// --- Azure AI Resources ---
+// Note: Deployment might require specific role assignments (e.g., Contributor) and provider registrations.
+// API versions are previews and might change.
 
-// resource aiHub 'Microsoft.MachineLearningServices/workspaces@2023-08-01-preview' = {
-//   name: resourceName('aihub')
-//   location: location
-//   tags: tags
-//   kind: 'Hub' // Specify Hub kind
-//   identity: { type: 'SystemAssigned' }
-//   sku: { name: 'Basic' } // Or 'Enterprise'
-//   properties: {
-//     // Link storage, keyvault, app insights, container registry etc.
-//     storageAccount: storageAccount.id
-//     keyVault: keyVault.id
-//     applicationInsights: applicationInsights.id
-//     // hbiWorkspace: false
-//   }
-// }
+@description('Azure AI Hub workspace.')
+resource aiHub 'Microsoft.MachineLearningServices/workspaces@2023-08-01-preview' = {
+  name: '${baseName}-${environmentName}-aihub-${uniqueSuffix}' // Construct name directly
+  location: location
+  tags: { // Define tags inline
+    environment: environmentName
+    project: baseName
+  }
+  kind: 'Hub' // Specify Hub kind
+  identity: { type: 'SystemAssigned' }
+  sku: { name: 'Basic' } // Use 'Basic' or 'Enterprise' based on needs
+  properties: {
+    // Link shared resources
+    storageAccount: storageAccount.id
+    keyVault: keyVault.id
+    applicationInsights: applicationInsights.id
+    // description: 'AI Hub for D365 Agent project'
+    friendlyName: '${baseName}-${environmentName}-aihub'
+    // hbiWorkspace: false // Set true if dealing with High Business Impact data
+  }
+}
 
-// resource aiProject 'Microsoft.MachineLearningServices/workspaces@2023-08-01-preview' = {
-//   name: resourceName('aiproj')
-//   location: location
-//   tags: tags
-//   kind: 'Project' // Specify Project kind
-//   identity: { type: 'SystemAssigned' }
-//   properties: {
-//     // Link to the AI Hub
-//     hubResourceId: aiHub.id
-//     // Link associated resources if not inheriting from Hub
-//     storageAccount: storageAccount.id
-//     keyVault: keyVault.id
-//     applicationInsights: applicationInsights.id
-//   }
-// }
+@description('Azure AI Project workspace linked to the Hub.')
+resource aiProject 'Microsoft.MachineLearningServices/workspaces@2023-08-01-preview' = {
+  name: '${baseName}-${environmentName}-aiproj-${uniqueSuffix}' // Construct name directly
+  location: location
+  tags: { // Define tags inline
+    environment: environmentName
+    project: baseName
+  }
+  kind: 'Project' // Specify Project kind
+  identity: { type: 'SystemAssigned' }
+  // Project SKU is inherited from the Hub
+  properties: {
+    // Link to the AI Hub
+    hubResourceId: aiHub.id
+    // description: 'AI Project for D365 Agent'
+    friendlyName: '${baseName}-${environmentName}-aiproj'
+    // If not inheriting all associated resources from Hub, specify them:
+    // storageAccount: storageAccount.id
+    // keyVault: keyVault.id
+    // applicationInsights: applicationInsights.id
+  }
+}
 
 // --- RBAC Assignments (Examples) ---
 // Grant MCP Hub's Managed Identity access to Key Vault secrets
@@ -392,6 +403,9 @@ resource documentParserFunctionApp 'Microsoft.Web/sites@2022-09-01' = {
 // }
 
 // --- Outputs ---
+
+output aiHubName string = aiHub.name
+output aiProjectName string = aiProject.name
 
 output mcpHubContainerAppName string = mcpHubContainerApp.name
 output mcpHubContainerAppHostname string = mcpHubContainerApp.properties.configuration.ingress.fqdn
