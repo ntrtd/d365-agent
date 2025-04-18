@@ -4,3 +4,18 @@
 [submodule "submodules/typescript-sdk"]
 	path = submodules/typescript-sdk
 	url = https://github.com/modelcontextprotocol/typescript-sdk.git
+[submodule "submodules/odata2ts"]
+	path = submodules/odata2ts
+	url = https://github.com/odata2ts/odata2ts
+[submodule "submodules/sap-cloud-sdk-js"]
+	path = submodules/sap-cloud-sdk-js
+	url = https://github.com/SAP/cloud-sdk-js.git
+[submodule "submodules/csharp-sdk"]
+	path = submodules/csharp-sdk
+	url = https://github.com/modelcontextprotocol/csharp-sdk
+[submodule "submodules/ts-odata-client"]
+	path = submodules/ts-odata-client
+	url = https://github.com/cbrianball/ts-odata-client
+[submodule "submodules/odata2ts-fork"]
+	path = submodules/odata2ts-fork
+	url = https://github.com/ntrtd/odata2ts
