@@ -6,6 +6,13 @@ import { z } from "zod"; // Import Zod
 import { getD365AuthToken, getD365Url } from "./core/auth"; // Import auth functions
 // Import the generated client later: import { ODataClient } from "./core/generated/odata";
 
+// Import SCM tool components
+import { getProductInputShape, getProductHandler, getProductMetadata } from "./tools/scm/getProduct";
+import { checkInventoryInputShape, checkInventoryHandler, checkInventoryMetadata } from "./tools/scm/checkInventory";
+import { createSalesOrderInputShape, createSalesOrderHandler, createSalesOrderMetadata } from "./tools/scm/createSalesOrder";
+import { generateOrderFulfilmentInputShape, generateOrderFulfilmentHandler, generateOrderFulfilmentMetadata } from "./tools/scm/generateOrderFulfilment";
+import { generateInvoiceInputShape, generateInvoiceHandler, generateInvoiceMetadata } from "./tools/scm/generateInvoice";
+
 async function startServer() {
   console.log("Starting D365 MCP Hub (TypeScript)...");
 
@@ -79,6 +86,41 @@ async function startServer() {
         };
       }
     }
+  );
+
+  // Add the 'getProduct' tool
+  server.tool(
+    getProductMetadata.name,    // Tool ID from metadata
+    getProductInputShape,       // Input schema shape
+    getProductHandler           // Handler function
+  );
+
+  // Add the 'checkInventory' tool
+  server.tool(
+    checkInventoryMetadata.name,    // Tool ID from metadata
+    checkInventoryInputShape,       // Input schema shape
+    checkInventoryHandler           // Handler function
+  );
+
+  // Add the 'createSalesOrder' tool
+  server.tool(
+    createSalesOrderMetadata.name,    // Tool ID from metadata
+    createSalesOrderInputShape,       // Input schema shape
+    createSalesOrderHandler           // Handler function
+  );
+
+  // Add the 'generateOrderFulfilment' tool
+  server.tool(
+    generateOrderFulfilmentMetadata.name,    // Tool ID from metadata
+    generateOrderFulfilmentInputShape,       // Input schema shape
+    generateOrderFulfilmentHandler           // Handler function
+  );
+
+  // Add the 'generateInvoice' tool
+  server.tool(
+    generateInvoiceMetadata.name,    // Tool ID from metadata
+    generateInvoiceInputShape,       // Input schema shape
+    generateInvoiceHandler           // Handler function
   );
 
   // Add more tools here later...

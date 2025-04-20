@@ -100,17 +100,22 @@ graph TD
         *   Manages user sessions and conversation state.
         *   Executes defined Agent Flows/DAGs (YAML) based on user intent or triggers.
         *   Interprets user requests and decides which tools/flows to invoke.
-        *   Communicates with the MCP Hub via the MCP protocol (JSON-RPC 2.0 over HTTP/SSE) to call tools, initiated by an `initialize` handshake to discover capabilities.
+        *   Communicates with the MCP Hub via the standardized Model Context Protocol (MCP), typically using the efficient **Streamable HTTP** transport (handling JSON-RPC 2.0 messages and Server-Sent Events over a single connection) to call tools and access resources. This starts with an `initialize` handshake to discover the server's capabilities.
         *   Orchestrates the execution sequence based on the selected Agent Flow/DAG, potentially using Planner-Executor or Graph-based execution patterns managed by the service.
         *   Formats LLM responses for the Presentation Layer.
     *   **Agent Flows/DAGs:** YAML definitions specifying the sequence of steps (LLM prompts, MCP tool calls via `tools/call`, MCP resource access via `resources/read`, conditional logic) for specific business processes, organized by D365 module (e.g., `AR_CheckCredit.yaml`, `SCM_CreatePO.yaml`).
 
 4.  **Business Logic & MCP Layer (MCP Hub Service):**
-    *   A stateless service hosted on **Azure Container Apps**. This is generally preferred over Azure Functions for MCP hubs due to native support for long-running requests, Server-Sent Events (SSE) for streaming progress/results, KEDA-based autoscaling, and easier management of dependencies and Managed Identity contexts.
-    *   **MCP Server Implementation:** Implements the MCP specification. Listens for JSON-RPC 2.0 requests (typically on a single `/mcp` HTTP endpoint) from the AI Agent Service. Handles the `initialize` handshake to advertise available `tools`, `resources`, and `prompts` (with JSON Schema definitions for type safety). Executes `tools/call` requests by routing them to the correct tool implementation. Streams results and progress updates back using HTTP+SSE if necessary.
+    *   A potentially stateful service hosted on **Azure Container Apps**. While often designed stateless per request, Container Apps' support for long-running requests, session management (inherent in MCP transports like Streamable HTTP), KEDA-based autoscaling, and easier dependency/identity management makes it suitable for robust MCP Hubs.
+    *   **MCP Server Implementation:** Built using the **`@modelcontextprotocol/sdk` (TypeScript SDK)** which simplifies implementing the MCP specification.
+        *   Utilizes the `McpServer` class from the SDK to handle the protocol lifecycle, message parsing, and routing.
+        *   Employs the **`StreamableHTTPServerTransport`** provided by the SDK, listening for MCP requests (typically on a single `/mcp` endpoint). This transport efficiently handles both client-to-server requests and server-to-client notifications (like progress updates) over a single HTTP connection, aligning with the latest MCP specification versions.
+        *   The SDK manages the `initialize` handshake, advertising available `tools`, `resources`, and `prompts`.
+        *   Uses libraries like **`zod`** (integrated with the SDK) for defining and validating the input/output schemas (arguments/payloads) of tools and resources, ensuring type safety.
+        *   Executes `tools/call` or `resources/read` requests by invoking the corresponding registered functions.
     *   **D365/External Client Adapters:** Contains typed clients or wrappers for interacting with D365 OData/APIs and external system APIs. Handles authentication token acquisition (using Managed Identity via Entra ID) and caching. Implements retry logic for transient API errors.
-    *   **Tool Implementations:** Code implementing the specific actions exposed as MCP tools (e.g., `get_trade_price`, `create_sales_order`). Contains the business logic that interacts with backend systems via the client adapters.
-    *   **Instance/Company Router Logic:** Selects the correct D365 instance/company endpoint and authentication context based on parameters passed in the MCP tool call (`company`, `instance_url`).
+    *   **Tool Implementations:** TypeScript functions registered with the `McpServer` instance. These functions contain the business logic that interacts with backend systems via the client adapters (e.g., `get_trade_price`, `create_sales_order`).
+    *   **Instance/Company Router Logic:** Selects the correct D365 instance/company endpoint and authentication context based on parameters passed in the MCP tool/resource call (`company`, `instance_url`), often validated via the `zod` schema.
 
 5.  **Backend Systems (Data Plane):**
     *   The actual Dynamics 365 instances (FO, AX, CE) exposing OData or custom APIs.
@@ -140,10 +145,16 @@ graph TD
 6.  All components log detailed telemetry (including MCP request/response pairs with trace IDs) to Application Insights (LOG). This data can be exported to Azure Data Lake (STORE) for long-term storage and analysis.
 7.  **(Self-Learning Loop):** A separate process (e.g., scheduled Azure ML job) can analyze the telemetry in Data Lake/Synapse, cluster failed interactions or common fallback scenarios, use an LLM (like Azure OpenAI) to suggest new MCP tools or prompt improvements, and potentially raise PRs against the MCP Hub repository for human review and integration via CI/CD.
 
+## 6. Further Reading
+
+*   **[Model Context Protocol (MCP) Documentation](https://modelcontextprotocol.io/)**: Official documentation for the core protocol.
+*   **[MCP TypeScript SDK Repository](https://github.com/modelcontextprotocol/typescript-sdk)**: Source code, examples, and README for the SDK used in the MCP Hub.
+*   **[MCP Specification](https://spec.modelcontextprotocol.io)**: Formal details of the protocol versions.
+
 ## 5. Deployment & Scalability
 
 *   Components are deployed independently. Agent Flows (YAML) are updated via `az ml capability-host update`. The MCP Hub is deployed as a container image update to Container Apps. Azure Functions and Logic Apps are deployed via standard Azure mechanisms.
 *   Scalability is handled by the underlying Azure services: Container Apps scales based on KEDA rules (e.g., HTTP traffic, queue length), Functions scale on demand (Consumption plan), Service Bus scales automatically.
-*   Stateless design of the MCP Hub allows for easy horizontal scaling.
+*   The MCP Hub can be designed stateless or stateful depending on requirements. The `StreamableHTTPServerTransport` supports session management if needed. Azure Container Apps allows for easy horizontal scaling based on traffic or other metrics.
 
-This application architecture provides a decoupled, scalable, and secure foundation for the Dynamics 365 AI Agent, leveraging Azure services and the MCP standard for robust integration.
+This application architecture provides a decoupled, scalable, and secure foundation for the Dynamics 365 AI Agent, leveraging Azure services and the MCP standard (implemented via the TypeScript SDK) for robust integration.

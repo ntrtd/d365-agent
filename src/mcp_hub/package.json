@@ -4,10 +4,9 @@
   "description": "MCP Hub Service for Dynamics 365 Integration",
   "main": "build/index.js",
   "scripts": {
-    "build": "npm run generate:odata && tsc",
-    "start": "node build/index.js",
-    "dev": "tsc -w & node --watch build/index.js",
-    "generate:odata": "node --loader ts-node/esm ./scripts/generate_odata_client.ts",
+    "build": "tsc",
+    "start": "dotenv -f ../../.env -- node build/index.js",
+    "dev": "dotenv -f ../../.env -- tsc -w & dotenv -f ../../.env -- node --watch build/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -23,6 +22,8 @@
     "@types/express": "^5.0.1",
     "@types/node": "^22.14.1",
     "@types/node-fetch": "^2.6.12",
+    "dotenv": "^16.5.0",
+    "dotenv-cli": "^8.0.0",
     "odata-ts": "^0.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"

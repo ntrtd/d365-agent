@@ -12,15 +12,16 @@ This document provides illustrative scenarios demonstrating how the AI Agent cou
     3.  **Agent (Backend):** Function uses Document Intelligence to extract PO details (customer, items, quantities, requested dates).
     4.  **Agent (Backend):** Agent Service receives parsed data, initiates the `SCM_ProcessPO` flow.
     5.  **Agent Flow:**
-        *   Calls `resolve_item` tool (via MCP Hub) for each line item, mapping customer part numbers to internal D365 item IDs. Handles potential ambiguities or requests clarification if needed.
-        *   Calls `get_trade_price` tool for validated items and customer.
-        *   Calls `get_inventory` tool to check availability.
-        *   Calls `validate_line` tool to check unit conversion rules.
-        *   Calls `check_credit` tool (Finance module interaction) to verify customer credit status.
-        *   *If all checks pass:* Calls `create_sales_order` tool to create the SO in Dynamics 365.
-        *   *If credit check fails:* Initiates an internal notification flow (e.g., to Credit Manager via Teams) or replies to the customer asking for action (depending on configuration).
-    6.  **Agent:** Sends an email confirmation back to the customer with the Sales Order number and estimated ship dates (or details on any issues encountered, like credit hold).
-*   **D365 Modules Involved:** SCM (Items, Inventory, Sales Orders), Finance (Customers, Trade Agreements, Credit).
+        *   Calls `getProduct` tool (via MCP Hub) for each line item, mapping customer product identifiers to internal D365 item IDs. Handles potential ambiguities.
+        *   Calls `checkInventory` tool to check availability for the required quantity, potentially reserving stock and returning a reservation reference.
+        *   (Optional/Future) Apply static/dynamic rules (e.g., unit conversion, max order quantity).
+        *   Calls `check_credit` tool (Finance module interaction - placeholder) to verify customer credit status.
+        *   *If all checks pass:* Calls `createSalesOrder` tool, providing customer details, line items (with pricing potentially determined pre-call or during SO creation in D365), and the inventory reservation reference.
+        *   *If credit check fails:* Initiates an internal notification flow or replies to the customer.
+        *   *After successful SO creation:* Calls `generateOrderFulfilment` tool to release the order for picking/packing.
+        *   *After shipment (logic triggered externally or by another agent):* Calls `generateInvoice` tool to create and post the customer invoice.
+    6.  **Agent:** Sends an email confirmation back to the customer with the Sales Order number, estimated ship dates, and later potentially the invoice (or details on issues encountered).
+*   **D365 Modules Involved:** SCM (Items, Inventory, Sales Orders, Warehouse Fulfilment, Invoicing), Finance (Customers, Credit).
 
 ## Scenario 2: Internal Sales Rep - Quick Credit Check via Teams
 

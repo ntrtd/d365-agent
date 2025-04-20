@@ -1,0 +1,1030 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+  <edmx:DataServices>
+    <Schema Namespace="Microsoft.Dynamics.DataEntities" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EnumType Name="NoYes">
+        <Member Name="No" Value="0">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@sys2048" />
+        </Member>
+        <Member Name="Yes" Value="1">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@sys5461" />
+        </Member>
+      </EnumType>
+      <EntityType Name="AdditionalFields">
+        <Key>
+          <PropertyRef Name="dataAreaId" />
+          <PropertyRef Name="FieldName" />
+        </Key>
+        <Property Name="dataAreaId" Type="Edm.String" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS13342" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="FieldName" Type="Edm.String" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@ElectronicMessage:EDTLabel_EMAdditionalFieldId" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.HelpTextId" String="@ElectronicMessage:EDTHelp_EMAdditionalFieldId" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.IsRequired" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="UserEdit" Type="Microsoft.Dynamics.DataEntities.NoYes">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@ElectronicMessage:EnumTitle_EMFieldUserEdit" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.HelpTextId" String="@ElectronicMessage:EnumHelp_EMFieldUserEdit" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Enum</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="Description" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS7576" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="IsHidden" Type="Microsoft.Dynamics.DataEntities.NoYes">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS54478" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.HelpTextId" String="@ElectronicMessage_WebApplication:DoNotShowThisFieldInTheUserInterface" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Enum</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="IsCounter" Type="Microsoft.Dynamics.DataEntities.NoYes">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS23730" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.HelpTextId" String="@ElectronicMessage_HUOnlineInvoicing:EDTHelpText_EMAdditionalFieldIsCounter" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Enum</EnumMember>
+          </Annotation>
+        </Property>
+        <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@ElectronicMessage:EntityTitle_EMAdditionalFieldsEntity" />
+      </EntityType>
+      <EntityType Name="ApplicationInbox">
+        <Key>
+          <PropertyRef Name="dataAreaId" />
+          <PropertyRef Name="Applicant" />
+          <PropertyRef Name="RecruitmentProject" />
+        </Key>
+        <Property Name="dataAreaId" Type="Edm.String" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS13342" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="Applicant" Type="Edm.String" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS30003" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="RecruitmentProject" Type="Edm.String" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS30764" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="Apartment" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GlobalAddressBook:Apartment" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="ExpireDate" Type="Edm.DateTimeOffset" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS34332" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.IsRequired" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Date</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="ZipCode" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS323504" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="StreetCode" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GlobalAddressBook:StreetCode" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="Building" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GlobalAddressBook:Building" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="Settlement" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GlobalAddressBook:Settlement" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="PersonId" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS103057" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="EmailExternal" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS5845" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="TownId" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GlobalAddressBook:City" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="CountryRegion" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS7437" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="GroupOfHouses" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GlobalAddressBook:GroupOfHouses" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="Name" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS80991" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.IsRequired" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="CreatedSource" Type="Microsoft.Dynamics.DataEntities.HrmApplicationBasketCreatedSource">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS331013" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Enum</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="County" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS13522" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="MobilePhone" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS27784" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="City" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS22249" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="Telephone" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS7869" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="Street" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS23438" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="State" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS323506" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS34305" />
+        <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+        <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LookupGroup">
+          <Collection>
+            <String>RecruitmentProject</String>
+            <String>Name</String>
+          </Collection>
+        </Annotation>
+      </EntityType>
+      <EnumType Name="HrmApplicationBasketCreatedSource">
+        <Member Name="EmployeeSelfService" Value="0">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@HCM:EmployeeSelfService" />
+        </Member>
+        <Member Name="CompanySite" Value="1">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@HCM:CompanySite" />
+        </Member>
+        <Member Name="Manual" Value="2">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS9232" />
+        </Member>
+        <Member Name="ExternalSource" Value="3">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@HCM:ExternalSource" />
+        </Member>
+        <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS331013" />
+      </EnumType>
+      <EntityType Name="AdvanceInvoiceItems">
+        <Key>
+          <PropertyRef Name="dataAreaId" />
+          <PropertyRef Name="ParentRecId" />
+          <PropertyRef Name="RefRecId" />
+          <PropertyRef Name="RefTableId" />
+        </Key>
+        <Property Name="dataAreaId" Type="Edm.String" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS13342" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="ParentRecId" Type="Edm.Int64" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS15217" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.HelpTextId" String="Unique ID for the record in the database" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="PL" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.IsRequired" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Int64</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="RefRecId" Type="Edm.Int64" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS15217" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.HelpTextId" String="Unique ID for the record in the database" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="PL" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.IsRequired" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Int64</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="RefTableId" Type="Edm.Int32" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS68593" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.HelpTextId" String="ID for the table" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="PL" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.IsRequired" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Int32</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="OriginalItemName" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS5398" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="PL" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="OriginalSalesPriceExclTax" Type="Edm.Decimal" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS5755" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="PL" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Real</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="OriginalItemId" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS12836" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="PL" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="OriginalLineAmountExclTax" Type="Edm.Decimal" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS6901" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="PL" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Real</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="LineNum" Type="Edm.Decimal" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS15682" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="PL" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Real</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="OriginalSalesUnit" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS190813" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="PL" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="OriginalTaxAmount" Type="Edm.Decimal" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS22646" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.HelpTextId" String="Amount in monetary standard (national currency)" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="PL" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Real</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="OriginalLineAmountInclTax" Type="Edm.Decimal" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS6901" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="PL" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Real</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="OriginalTaxCode" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS21877" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="PL" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="SalesId" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS9694" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="CZ,HU,PL" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEditOnCreate" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="OriginalQty" Type="Edm.Decimal" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS14578" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="PL" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Real</EnumMember>
+          </Annotation>
+        </Property>
+        <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYP4881131" />
+        <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="PL" />
+        <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+      </EntityType>
+      <EntityType Name="AdminCustomFields">
+        <Key>
+          <PropertyRef Name="dataAreaId" />
+          <PropertyRef Name="LegalEntityId" />
+          <PropertyRef Name="RefTableId" />
+          <PropertyRef Name="RefFieldId" />
+          <PropertyRef Name="MethodName" />
+        </Key>
+        <Property Name="dataAreaId" Type="Edm.String" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS13342" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="LegalEntityId" Type="Edm.String" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="Company" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.HelpTextId" String="ID for the company you can select" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.IsRequired" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="RefTableId" Type="Edm.Int32" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS68593" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.HelpTextId" String="ID for the table" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Int32</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="RefFieldId" Type="Edm.Int32" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS106650" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.HelpTextId" String="ID for the field" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Int32</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="MethodName" Type="Edm.String" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS330806" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.HelpTextId" String="Unique name for the ID" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="Visibility" Type="Microsoft.Dynamics.DataEntities.TrvFieldVisibility">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS118141" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Enum</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="TableName" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="ShowInForm" Type="Microsoft.Dynamics.DataEntities.NoYes">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Enum</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="LocalisedLabelName" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="LabelName" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="FieldName" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@ExpenseManagement:TrvAdminCustomFieldsEntity" />
+        <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+      </EntityType>
+      <EnumType Name="TrvFieldVisibility">
+        <Member Name="DoNotDisplay" Value="0">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS118143" />
+        </Member>
+        <Member Name="Display" Value="1">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS118144" />
+        </Member>
+        <Member Name="ReadOnly" Value="2">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS118145" />
+        </Member>
+        <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS118141" />
+      </EnumType>
+      <EntityType Name="Abbreviations">
+        <Key>
+          <PropertyRef Name="AddrTypeCode" />
+        </Key>
+        <Property Name="AddrTypeCode" Type="Edm.String" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GLS105905" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.IsRequired" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="AddrTypeLevel" Type="Edm.Int32" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GLS105901" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.IsRequired" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Int32</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="AddrTypeName" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS7576" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="AddrTypeFullName" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS7399" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GlobalAddressBook:AbridgementsOfAddresses" />
+        <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+      </EntityType>
+      <EntityType Name="AddressParameters">
+        <Key>
+          <PropertyRef Name="Key" />
+        </Key>
+        <Property Name="Key" Type="Edm.Int32" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS5468" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEditOnCreate" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Int32</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="ValidateZipCode" Type="Microsoft.Dynamics.DataEntities.NoYes">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS121851" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Enum</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="DisableCountyValidation" Type="Microsoft.Dynamics.DataEntities.NoYes">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Enum</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="ValidateDistrict" Type="Microsoft.Dynamics.DataEntities.NoYes">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS80116" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Enum</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="ValidateCity" Type="Microsoft.Dynamics.DataEntities.NoYes">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS22249" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Enum</EnumMember>
+          </Annotation>
+        </Property>
+        <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS321523" />
+      </EntityType>
+      <EntityType Name="AddressFiasGuidCodes">
+        <Key>
+          <PropertyRef Name="dataAreaId" />
+          <PropertyRef Name="FiasGuidId" />
+        </Key>
+        <Property Name="dataAreaId" Type="Edm.String" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS13342" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="FiasGuidId" Type="Edm.String" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@FIAS:GUID" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.HelpTextId" String="@SYP4889651" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="FiasParentGuidId" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@FIAS:GUID" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.HelpTextId" String="@SYP4889652" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="RefTableId" Type="Edm.Int32" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS68593" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.HelpTextId" String="ID for the table" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Int32</EnumMember>
+          </Annotation>
+        </Property>
+        <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYP4889650" />
+        <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+      </EntityType>
+      <EntityType Name="AddressBooks">
+        <Key>
+          <PropertyRef Name="Name" />
+        </Key>
+        <Property Name="Name" Type="Edm.String" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS80991" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.IsRequired" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="System" Type="Microsoft.Dynamics.DataEntities.NoYes">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS4278" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Enum</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="Description" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS7576" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS131572" />
+      </EntityType>
+      <EntityType Name="AdjustmentParameters">
+        <Key>
+          <PropertyRef Name="LedgerName" />
+        </Key>
+        <Property Name="LedgerName" Type="Edm.String" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@sys313984" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.IsRequired" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="AdvanceHolderTaxDimensionExpenseCode" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GLS103733" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="CustomerTaxDimensionExpenseCode" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GLS103733" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="AdvanceHolderAdvanceAdjustmentOffsetAccount" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@Dimension:DimensionCombinationDisplayValue" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="VendorTaxDimensionRevenueCode" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GLS103733" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="CustomerTaxDimensionRevenueCode" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GLS103733" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="CustomerRealizedLoss" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@Dimension:DimensionCombinationDisplayValue" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="CustomerVATAdjustmentRealizedLoss" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@Dimension:DimensionCombinationDisplayValue" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="AdvanceHolderTaxAccountingAdvanceAdjustmentLoss" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@Dimension:DimensionCombinationDisplayValue" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="CustomerAdvanceAdjustmentOffsetAccount" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@Dimension:DimensionCombinationDisplayValue" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="VendorRealizedGain" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@Dimension:DimensionCombinationDisplayValue" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="AdvanceHolderTaxDimensionRevenueCode" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GLS103733" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="VendorAdvanceAdjustmentOffsetAccount" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@Dimension:DimensionCombinationDisplayValue" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="AdvanceHolderRealizedGain" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@Dimension:DimensionCombinationDisplayValue" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="AdvanceHolderTaxAccountingAdvanceAdjustmentProfit" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@Dimension:DimensionCombinationDisplayValue" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="LedgerPostingMode" Type="Microsoft.Dynamics.DataEntities.CustVendAmountDiffPostingMode_RU">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS3881" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Enum</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="VendorTaxDimensionExpenseCode" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GLS103733" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="LedgerPostingCust" Type="Microsoft.Dynamics.DataEntities.CustVendAmountDiffPostingMode_RU">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS3881" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Enum</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="VATAdjustmentCust" Type="Microsoft.Dynamics.DataEntities.NoYes">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GLS113540" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Enum</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="CustomerAdvanceAdjustmentProfit" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@Dimension:DimensionCombinationDisplayValue" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="VendorTaxAccountingAdvanceAdjustmentProfit" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@Dimension:DimensionCombinationDisplayValue" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="VendPostingMode" Type="Microsoft.Dynamics.DataEntities.CustVendAmountDiffPostingMode_RU">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS3881" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Enum</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="CustomerVATAdjustmentRealizedGain" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@Dimension:DimensionCombinationDisplayValue" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="CustomerRealizedGain" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@Dimension:DimensionCombinationDisplayValue" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="VendorTaxAccountingAdvanceAdjustmentLoss" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@Dimension:DimensionCombinationDisplayValue" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="AdvanceHolderRealizedLoss" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@Dimension:DimensionCombinationDisplayValue" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="VendorRealizedLoss" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@Dimension:DimensionCombinationDisplayValue" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="CustomerAdvanceAdjustmentLoss" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@Dimension:DimensionCombinationDisplayValue" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GLS112721" />
+        <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+        <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+      </EntityType>
+      <EnumType Name="CustVendAmountDiffPostingMode_RU">
+        <Member Name="InvoicePosting" Value="0">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GLS101282" />
+        </Member>
+        <Member Name="SpecialPosting" Value="1">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GLS101284" />
+        </Member>
+        <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS3881" />
+      </EnumType>
+      <EntityType Name="AddressFormatLines">
+        <Key>
+          <PropertyRef Name="AddressFormat" />
+          <PropertyRef Name="LineNumber" />
+        </Key>
+        <Property Name="AddressFormat" Type="Edm.String" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS22504" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.IsRequired" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="LineNumber" Type="Edm.Decimal" Nullable="false">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS15682" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AllowEdit" Bool="false" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Real</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="Separator" Type="Edm.String">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/String</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="NotActive" Type="Microsoft.Dynamics.DataEntities.NoYes">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS2604" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Enum</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="AddressApplicationObject" Type="Microsoft.Dynamics.DataEntities.LogisticsAddressElement">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS23265" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Enum</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="DataEntryOnly" Type="Microsoft.Dynamics.DataEntities.NoYes">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS190395" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Enum</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="NewLine" Type="Microsoft.Dynamics.DataEntities.NoYes">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS59247" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Enum</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="Expand" Type="Microsoft.Dynamics.DataEntities.NoYes">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS22914" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.ConfigurationKeyEnabled" Bool="true" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Enum</EnumMember>
+          </Annotation>
+        </Property>
+        <Property Name="Special" Type="Microsoft.Dynamics.DataEntities.NoYes">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS24180" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.AXType">
+            <EnumMember>Microsoft.Dynamics.OData.Core.V1.AXType/Enum</EnumMember>
+          </Annotation>
+        </Property>
+        <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS27741" />
+      </EntityType>
+      <EnumType Name="LogisticsAddressElement">
+        <Member Name="None" Value="0">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GlobalAddressBook:EnumValueNone" />
+        </Member>
+        <Member Name="ZipCode" Value="1">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS12463" />
+        </Member>
+        <Member Name="City" Value="2">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS22249" />
+        </Member>
+        <Member Name="County" Value="3">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS13522" />
+        </Member>
+        <Member Name="State" Value="4">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS21816" />
+        </Member>
+        <Member Name="CountryRegion" Value="5">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS7437" />
+        </Member>
+        <Member Name="StreetName" Value="6">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS23438" />
+        </Member>
+        <Member Name="District" Value="7">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS80116" />
+        </Member>
+        <Member Name="StreetNumber" Value="8">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS190388" />
+        </Member>
+        <Member Name="BuildingCompliment" Value="9">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS190386" />
+        </Member>
+        <Member Name="PostBox" Value="10">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS190390" />
+        </Member>
+        <Member Name="StreetId_RU" Value="26">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GlobalAddressBook:StreetCode" />
+        </Member>
+        <Member Name="Building_RU" Value="24">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS4080942" />
+        </Member>
+        <Member Name="Apartment_RU" Value="25">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS4080943" />
+        </Member>
+        <Member Name="House_RU" Value="21">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GlobalAddressBook:GroupOfHouses" />
+        </Member>
+        <Member Name="Flat_RU" Value="22">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GlobalAddressBook:GroupOfFlats" />
+        </Member>
+        <Member Name="CountryOKSMCode_RU" Value="23">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GlobalAddressBook:CodeByOKSM" />
+        </Member>
+        <Member Name="AddressFormat" Value="27">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS4007198" />
+        </Member>
+        <Member Name="Stead_RU" Value="11">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@GlobalAddressBook:Steads" />
+        </Member>
+        <Member Name="Settlement_RU" Value="12">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@FIAS:Settlement" />
+        </Member>
+        <Member Name="Locality_RU" Value="13">
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.CountryRegionCodes" String="RU" />
+          <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@FIAS:Locality" />
+        </Member>
+        <Annotation Term="Microsoft.Dynamics.OData.Core.V1.LabelId" String="@SYS23265" />
+      </EnumType>
+      <Action Name="checkReImaginedUIFeatureState" IsBound="true">
+        <Parameter Name="AdminCustomFields" Type="Microsoft.Dynamics.DataEntities.AdminCustomFields" />
+        <ReturnType Type="Edm.Boolean" Nullable="false" />
+      </Action>
+      <EntityContainer Name="Resources">
+        <EntitySet Name="AdditionalFields" EntityType="Microsoft.Dynamics.DataEntities.AdditionalFields" />
+        <EntitySet Name="ApplicationInbox" EntityType="Microsoft.Dynamics.DataEntities.ApplicationInbox" />
+        <EntitySet Name="AdvanceInvoiceItems" EntityType="Microsoft.Dynamics.DataEntities.AdvanceInvoiceItems" />
+        <EntitySet Name="AdminCustomFields" EntityType="Microsoft.Dynamics.DataEntities.AdminCustomFields" />
+        <EntitySet Name="Abbreviations" EntityType="Microsoft.Dynamics.DataEntities.Abbreviations" />
+        <EntitySet Name="AddressParameters" EntityType="Microsoft.Dynamics.DataEntities.AddressParameters" />
+        <EntitySet Name="AddressFiasGuidCodes" EntityType="Microsoft.Dynamics.DataEntities.AddressFiasGuidCodes" />
+        <EntitySet Name="AddressBooks" EntityType="Microsoft.Dynamics.DataEntities.AddressBooks">
+          <NavigationPropertyBinding Path="RetailStoreAddressBook" Target="RetailStoreAddressBooks" />
+        </EntitySet>
+        <EntitySet Name="AdjustmentParameters" EntityType="Microsoft.Dynamics.DataEntities.AdjustmentParameters">
+          <NavigationPropertyBinding Path="DimensionCombination" Target="DimensionCombinations" />
+        </EntitySet>
+        <EntitySet Name="AddressFormatLines" EntityType="Microsoft.Dynamics.DataEntities.AddressFormatLines" />
+      </EntityContainer>
+    </Schema>
+    <Schema Namespace="Microsoft.Dynamics.OData.Core.V1" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EnumType Name="AXType">
+        <Member Name="Container" Value="0" />
+        <Member Name="Date" Value="1" />
+        <Member Name="Enum" Value="2" />
+        <Member Name="Guid" Value="3" />
+        <Member Name="Int32" Value="4" />
+        <Member Name="Int64" Value="5" />
+        <Member Name="Real" Value="6" />
+        <Member Name="Record" Value="7" />
+        <Member Name="String" Value="8" />
+        <Member Name="Time" Value="9" />
+        <Member Name="UtcDateTime" Value="10" />
+        <Member Name="Void" Value="11" />
+      </EnumType>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>
