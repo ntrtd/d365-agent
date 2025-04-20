@@ -1,0 +1,98 @@
+/*
+ * Copyright (c) 2025 SAP SE or an SAP affiliate company. All rights reserved.
+ *
+ * This is a generated file powered by the SAP Cloud SDK for JavaScript.
+ */
+import {
+  Entity,
+  DefaultDeSerializers,
+  DeSerializers,
+  DeserializedType
+} from '@sap-cloud-sdk/odata-v4';
+import type { LanguageCodesApi } from './LanguageCodesApi';
+import { Workers, WorkersType } from './Workers';
+import { Employees, EmployeesType } from './Employees';
+import { ContractorsV2, ContractorsV2Type } from './ContractorsV2';
+import {
+  WorkerPersonDetails,
+  WorkerPersonDetailsType
+} from './WorkerPersonDetails';
+import { Contractors, ContractorsType } from './Contractors';
+import { EmployeesV2, EmployeesV2Type } from './EmployeesV2';
+import { BaseWorkers, BaseWorkersType } from './BaseWorkers';
+
+/**
+ * This class represents the entity "LanguageCodes" of service "d365_metadata".
+ */
+export class LanguageCodes<T extends DeSerializers = DefaultDeSerializers>
+  extends Entity
+  implements LanguageCodesType<T>
+{
+  /**
+   * Technical entity name for LanguageCodes.
+   */
+  static override _entityName = 'LanguageCodes';
+  /**
+   * Default url path for the according service.
+   */
+  static override _defaultBasePath = '/';
+  /**
+   * All key fields of the LanguageCodes entity.
+   */
+  static _keys = ['LanguageCodeId'];
+  /**
+   * Language Code Id.
+   */
+  declare languageCodeId: DeserializedType<T, 'Edm.String'>;
+  /**
+   * Description.
+   * @nullable
+   */
+  declare description?: DeserializedType<T, 'Edm.String'> | null;
+  /**
+   * One-to-many navigation property to the {@link Workers} entity.
+   */
+  declare workers: Workers<T>[];
+  /**
+   * One-to-many navigation property to the {@link Employees} entity.
+   */
+  declare employees: Employees<T>[];
+  /**
+   * One-to-many navigation property to the {@link ContractorsV2} entity.
+   */
+  declare contractorsV2: ContractorsV2<T>[];
+  /**
+   * One-to-many navigation property to the {@link WorkerPersonDetails} entity.
+   */
+  declare workerPersonDetails: WorkerPersonDetails<T>[];
+  /**
+   * One-to-many navigation property to the {@link Contractors} entity.
+   */
+  declare contractors: Contractors<T>[];
+  /**
+   * One-to-many navigation property to the {@link EmployeesV2} entity.
+   */
+  declare employeesV2: EmployeesV2<T>[];
+  /**
+   * One-to-many navigation property to the {@link BaseWorkers} entity.
+   */
+  declare baseWorkers: BaseWorkers<T>[];
+
+  constructor(_entityApi: LanguageCodesApi<T>) {
+    super(_entityApi);
+  }
+}
+
+export interface LanguageCodesType<
+  T extends DeSerializers = DefaultDeSerializers
+> {
+  languageCodeId: DeserializedType<T, 'Edm.String'>;
+  description?: DeserializedType<T, 'Edm.String'> | null;
+  workers: WorkersType<T>[];
+  employees: EmployeesType<T>[];
+  contractorsV2: ContractorsV2Type<T>[];
+  workerPersonDetails: WorkerPersonDetailsType<T>[];
+  contractors: ContractorsType<T>[];
+  employeesV2: EmployeesV2Type<T>[];
+  baseWorkers: BaseWorkersType<T>[];
+}
