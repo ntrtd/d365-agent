@@ -113,7 +113,7 @@ This project uses the **SAP Cloud SDK OData Client Generator** to create a singl
 To (re)generate this client, run the following command from the project root directory:
 
 ```bash
-NODE_OPTIONS='--max-old-space-size=8192' npx @sap-cloud-sdk/generator generate-odata-client --input asset/d365_metadata.xml --outputDir src/d365-client --overwrite --skipValidation
+NODE_OPTIONS='--max-old-space-size=8192' npx @sap-cloud-sdk/generator generate-odata-client --input asset/d365_metadata.xml --outputDir src/mcp_hub/d365-client --overwrite --skipValidation
 ```
 
 *(See previous documentation section for detailed explanation of flags)*

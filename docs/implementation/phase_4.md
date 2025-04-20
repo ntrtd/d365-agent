@@ -1,6 +1,6 @@
 # Phase 4: Optimization, Self-Learning & Wider Rollout
 
-*   **Goal:** Optimize performance across **multiple specialized agents** and the shared MCP Hub. Enhance user experience for interacting with different agents. Implement self-learning capabilities based on aggregate telemetry. Prepare for wider adoption across the organization and potentially external users.
+*   **Goal:** Optimize performance across **multiple specialized agents** and the shared MCP Hub (using the **SAP Cloud SDK client**). Enhance user experience for interacting with different agents. Implement self-learning capabilities based on aggregate telemetry. Prepare for wider adoption across the organization and potentially external users.
 *   **MVP:** Demonstrable performance improvements for key scenarios across the deployed specialized agents, potentially leveraging shared caching in the MCP Hub. A functional self-learning feedback loop analyzing cross-agent telemetry to generate actionable insights or tool suggestions. **Multiple agents** are successfully used by a wider pilot group, with stable performance and established monitoring/support. Clear plan and readiness for broader enterprise deployment of the agent suite.
 
 ## Task Checklist
@@ -8,7 +8,7 @@
 -   [ ] **Performance Optimization**
     -   [ ] Implement caching strategy (Azure Cache for Redis) for MCP Hub.
     -   [ ] Identify and cache frequently accessed, semi-static data (e.g., config, certain master data).
-    -   [ ] Analyze and optimize expensive D365 queries used by MCP tools across different agents.
+    -   [ ] Analyze and optimize expensive D365 queries used by MCP tools (leveraging the **SAP Cloud SDK client**) across different agents.
 -   [ ] **Self-Learning Loop Implementation (Cross-Agent)**
     -   [ ] Configure Application Insights telemetry export to Azure Data Lake (ensure agent context is logged).
     -   [ ] Develop Azure Synapse/Databricks notebook or Azure ML job for analyzing cross-agent telemetry.

@@ -55,6 +55,7 @@ nav:
     - Vision: architecture_vision.md
     - Business Architecture (As-Is vs To-Be): business_architecture.md
     - Application Architecture: application_architecture.md
+  - SAP SDK Client Usage: sap_sdk_client_usage.md # Added new doc
   - Use Case Scenarios: use_case_scenarios.md
   - Implementation Plan:
     - Overview: implementation/index.md

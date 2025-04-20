@@ -1,21 +1,20 @@
 # Phase 3: Expansion & Multi-Instance Support
 
-*   **Goal:** Expand capabilities by adding a **second specialized agent** (e.g., Procurement Agent) to handle a distinct business process, and enable existing and new agents (via the shared MCP Hub) to support multiple Dynamics 365 instances/legal entities. Optionally add another user channel.
-*   **MVP:** The initial agent (e.g., SCM Agent) can execute its Phase 2 use case across at least two different D365 instances/legal entities. A second agent (e.g., **Procurement Agent**) is introduced and can successfully execute at least one distinct business process (e.g., Requisition-to-PO for a specific company). Demonstrates multi-instance routing in the MCP Hub, multi-agent orchestration (if needed), and expansion to new functional areas/agents.
+*   **Goal:** Expand capabilities by adding a **second specialized agent** (e.g., Procurement Agent) to handle a distinct business process, and enable existing and new agents (via the shared MCP Hub using the **SAP Cloud SDK client**) to support multiple Dynamics 365 instances/legal entities. Optionally add another user channel.
+*   **MVP:** The initial agent (e.g., SCM Agent) can execute its Phase 2 use case across at least two different D365 instances/legal entities. A second agent (e.g., **Procurement Agent**) is introduced and can successfully execute at least one distinct business process (e.g., Requisition-to-PO for a specific company). Demonstrates multi-instance handling (likely within MCP tool logic or `HttpDestination` construction), multi-agent orchestration (if needed), and expansion to new functional areas/agents using the **single SAP Cloud SDK client (`src/generated/d365-client/`)**.
 
 ## Task Checklist
 
 -   [ ] **MCP Hub Enhancements (Multi-Instance)**
-    -   [ ] Implement instance/company routing logic within the MCP Hub.
-    -   [ ] Add configuration (Key Vault) for multiple D365 instances (URLs, credentials).
-    -   [ ] Implement D365 authentication clients for additional instances (e.g., legacy AX, another FO).
-    -   [ ] Refactor existing tools (shared and agent-specific) to accept and use `company` / `instance` parameters for routing logic within the Hub.
+    -   [ ] Refactor authentication logic (`src/mcp_hub/src/core/auth.ts`) to potentially handle credentials/URLs for multiple instances (e.g., based on `company` parameter passed to tools).
+    -   [ ] Add configuration (Key Vault) for additional D365 instances.
+    -   [ ] Adapt tool implementation logic (e.g., in `src/mcp_hub/src/tools/`) to construct the correct `HttpDestination` object (using `@sap-cloud-sdk/connectivity`) with the appropriate URL and credentials based on input parameters like `company`.
 -   [ ] **MCP Hub Enhancements (New Agent Functionality - e.g., Procurement)**
-    -   [ ] Identify and design MCP tools for the second agent's primary process (e.g., Requisition-to-PO: `Get_Open_Requisitions`, `Assign_Suppliers_to_Req_Lines`, `Create_Purchase_Orders_from_Requisitions`).
-    -   [ ] Implement the new MCP tools within the appropriate agent's directory (e.g., `src/mcp_hub/src/agents/procurement/`).
-    -   [ ] Ensure OData clients are generated/updated for the new agent via `build_agent_clients.sh`.
+    -   [ ] Identify and design MCP tools for the second agent's primary process (e.g., Requisition-to-PO: `get_open_requisitions`, `create_purchase_orders_from_requisitions`).
+    -   [ ] Implement the new MCP tools within the appropriate domain directory under `src/mcp_hub/src/tools/` (e.g., `src/mcp_hub/src/tools/procurement/`).
+    -   [ ] Ensure tools utilize the **single generated SAP Cloud SDK client** (`src/generated/d365-client/`).
     -   [ ] Consider adding tools for more complex validation or external integration relevant to this new agent.
-    -   [ ] Update shared MCP Hub deployment.
+    -   [ ] Update shared MCP Hub deployment (via `deploy-mcphub.yml` workflow).
 -   [ ] **AI Agent Service Enhancements (New & Existing Agents)**
     -   [ ] Create Agent definition for the **new agent** (e.g., Procurement Agent).
     -   [ ] Develop new Agent Flow/DAG for the second business process within its agent's directory (e.g., `src/agent/flows/procurement/RequisitionToPO.yaml`).
