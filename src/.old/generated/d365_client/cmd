@@ -1,0 +1,2 @@
+npx --node-options='--max-old-space-size=10000' odata2ts --source odata-gen-full/d365_metadata.xml --output src/generated/d365_client
+node --max-old-space-size=10000 submodules/odata2ts/packages/odata2ts/lib/run-cli.js --source odata-gen-full/d365_metadata.xml --output src/generated/d365_client

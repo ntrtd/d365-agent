@@ -26,31 +26,31 @@ This document outlines the current ("As-Is") business processes related to Dynam
 
 ## 2. To-Be Business Architecture (Future State with AI Agent)
 
-**Overview:** The AI Agent acts as an intelligent, conversational interface and automation engine, streamlining interactions with Dynamics 365 and connected systems for both internal and external users. It leverages MCP for standardized access to data and functions.
+**Overview:** The future state involves a suite of specialized AI Agents (e.g., Sales Agent, Procurement Agent, Finance Agent) acting as intelligent, conversational interfaces and automation engines within their respective domains. They streamline interactions with Dynamics 365 and connected systems for both internal and external users, leveraging a shared underlying architecture and MCP for standardized access to data and functions via a common hub.
 
 **Key Characteristics:**
 
 *   **Automated Data Ingestion & Processing:**
-    *   The AI agent automatically ingests and parses information from various channels and formats (emails, PDFs, chat messages) using AI services.
-    *   Tasks like item matching (internal/external IDs), price lookups (trade agreements), validation against complex rules (credit, inventory, UoM), and creation of related D365 documents (Sales Orders, Purchase Orders) are automated via agent flows and MCP tools.
-*   **Unified Conversational Interface:**
-    *   Internal and external users interact with D365 capabilities through a consistent conversational interface (chat, voice, potentially integrated into existing portals/tools).
-    *   The agent provides a single point of contact for inquiries and task execution, reducing the need to navigate complex D365 UIs.
-*   **Seamless Cross-Module & Cross-Instance Operations:**
-    *   The agent orchestrates workflows that span multiple D365 modules (Finance, SCM, Asset Management, etc.) and instances (multiple legal entities/companies in FO/AX) seamlessly. This is achieved via the standardized MCP interface, allowing the agent to invoke tools exposed by the MCP Hub, which handles the underlying routing and interaction logic for different D365 instances or external systems.
-    *   **Composability:** Unlike bespoke APIs or platform-specific connectors, MCP allows easy integration and composition of capabilities from diverse sources (first-party D365, third-party services, custom logic) within a single agent flow without requiring modifications to the host or complex integration layers.
+    *   Specialized AI agents automatically ingest and parse information relevant to their function from various channels and formats (emails, PDFs, chat messages) using AI services.
+    *   Domain-specific tasks like item matching (Procurement/Sales), price lookups (Sales), validation against complex rules (Finance/SCM), and creation of related D365 documents (Sales Orders via Sales Agent, Purchase Orders via Procurement Agent) are automated via agent-specific flows and shared MCP tools.
+*   **Unified Conversational Interface (Per Agent):**
+    *   Internal and external users interact with specific D365 functional capabilities (Sales, Procurement, etc.) through consistent conversational interfaces, engaging the relevant specialized agent.
+    *   Each agent provides a focused point of contact for inquiries and task execution within its domain, reducing the need to navigate complex D365 UIs for those specific functions. The system might route the user to the appropriate agent based on initial queries.
+*   **Seamless Cross-Module & Cross-Instance Operations (via Hub):**
+    *   Specialized agents orchestrate workflows primarily within their domain, but can invoke tools via the shared MCP Hub that interact with data or processes in other D365 modules or instances as needed. The Hub handles the underlying routing and interaction logic. For example, a Sales Agent might call a Finance tool via the Hub to check credit limits.
+    *   **Composability:** MCP allows easy integration and composition of capabilities from diverse sources (first-party D365, third-party services, custom logic) accessible via the Hub, enabling even specialized agents to leverage cross-functional tools within their flows without complex integration layers.
 *   **Consistent & Flexible Rule Enforcement:**
-    *   Business rules are consistently applied by the agent during validation steps within predefined flows (DAGs).
-    *   Flexibility is introduced by allowing certain rules (e.g., validation thresholds, conversion factors) to be configured or potentially adjusted via prompts (within defined guardrails).
-*   **Proactive Assistance & Insights:**
-    *   The agent can potentially monitor D365 data (leveraging MCP tools retrieving specific datasets like open requisitions, overdue payments) and proactively alert users or suggest actions (e.g., "Recommend creating POs for these requisitions," "Suggest follow-up on these overdue customer accounts").
-    *   It can provide quick answers to complex queries by synthesizing information retrieved from multiple D365 entities or external sources.
+    *   Business rules relevant to each agent's domain are consistently applied during validation steps within that agent's predefined flows (DAGs). Common validation logic might reside in shared MCP tools.
+    *   Flexibility is introduced by allowing certain rules to be configured or potentially adjusted via prompts (within defined guardrails) specific to the functional area.
+*   **Proactive Assistance & Insights (Domain-Specific):**
+    *   Specialized agents can potentially monitor D365 data within their domain (leveraging MCP tools) and proactively alert users or suggest domain-specific actions (e.g., a Procurement Agent suggesting PO creation for requisitions, a Finance Agent suggesting follow-up on overdue accounts).
+    *   Agents provide quick answers to complex queries within their functional scope, synthesizing information retrieved via the MCP Hub.
 *   **Reduced Operational Overhead & Improved User Experience:**
-    *   Automation of repetitive tasks frees up internal staff for higher-value activities.
-    *   Faster response times and self-service capabilities improve the experience for both internal and external users.
-    *   Standardized integration via MCP reduces the complexity and cost of maintaining multiple point-to-point connections.
+    *   Automation of repetitive tasks within specific functional areas frees up internal staff for higher-value activities.
+    *   Faster, domain-focused response times and self-service capabilities improve the experience for users interacting with specific functions.
+    *   Standardized integration via MCP and a shared Hub reduces the overall complexity and cost compared to numerous disparate solutions.
 *   **Enhanced Governance & Observability:**
     *   Structured agent flows (DAGs) and comprehensive telemetry provide clear audit trails and insights into automated processes.
     *   Centralized business logic within the MCP Hub (for privileged operations) ensures consistency and control. The use of structured Agent Flows (DAGs) within the AI Agent Service provides predictability and transparency for complex multi-step processes, superior to less structured prompt chaining.
 
-**Transition:** Moving from "As-Is" to "To-Be" involves implementing the technical architecture (AI Agent Service, MCP Hub, integrations) and progressively rolling out agent capabilities, starting with high-impact, well-defined processes like PO processing, and expanding based on business value and user feedback.
+**Transition:** Moving from "As-Is" to "To-Be" involves implementing the common technical architecture (AI Agent Service, MCP Hub, integrations) and progressively developing and rolling out specialized agent capabilities (e.g., deploying the Procurement Agent first with PO processing, then the Sales Agent with quoting), expanding based on business value and user feedback within each functional area.

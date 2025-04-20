@@ -4,7 +4,7 @@ This site provides documentation related to the design and architecture of an AI
 
 ## Overview
 
-The goal is to create versatile AI agents that can automate and assist with a wide range of Dynamics 365 related business processes for both internal employees and external partners/customers. This leverages the standardization and composability offered by MCP to integrate seamlessly with various data sources and tools within the Microsoft ecosystem and beyond. An example implementation includes an Order Management Agent utilizing custom MCP tools for product lookup, inventory checks, sales order creation, fulfilment, and invoicing within the SCM domain.
+The goal is to create a suite of specialized AI agents, each focused on a specific functional area (e.g., Sales, Procurement, Finance, Asset Management, Field Service), that can automate and assist with a wide range of Dynamics 365 related business processes. These agents will serve both internal employees and external partners/customers. The architecture leverages the standardization and composability offered by MCP to allow these specialized agents to integrate seamlessly with various data sources and tools (often via a shared MCP Hub) within the Microsoft ecosystem and beyond. An example implementation could be a Sales Agent utilizing MCP tools for opportunity management, quoting, and order entry, or a Procurement Agent focused on requisition processing and purchase order creation.
 
 ## Documentation Sections
 

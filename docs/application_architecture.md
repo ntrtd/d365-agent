@@ -95,15 +95,15 @@ graph TD
 
 3.  **Processing & Intelligence Layer:**
     *   **Document Parsing Function:** An Azure Function containing logic to call Azure AI Document Intelligence, extract structured data from documents (PDFs, images), and place the results onto Service Bus for the agent.
-    *   **AI Agent Service:** The core orchestration engine.
-        *   Hosts the Large Language Model (LLM).
-        *   Manages user sessions and conversation state.
-        *   Executes defined Agent Flows/DAGs (YAML) based on user intent or triggers.
-        *   Interprets user requests and decides which tools/flows to invoke.
-        *   Communicates with the MCP Hub via the standardized Model Context Protocol (MCP), typically using the efficient **Streamable HTTP** transport (handling JSON-RPC 2.0 messages and Server-Sent Events over a single connection) to call tools and access resources. This starts with an `initialize` handshake to discover the server's capabilities.
-        *   Orchestrates the execution sequence based on the selected Agent Flow/DAG, potentially using Planner-Executor or Graph-based execution patterns managed by the service.
+    *   **AI Agent Service:** The core orchestration engine for the *suite of specialized agents* (e.g., Sales, Procurement, Finance).
+        *   Hosts the Large Language Models (LLMs) and agent configurations.
+        *   Manages user sessions and conversation state, potentially routing users to the appropriate specialized agent based on context or intent.
+        *   Executes defined Agent Flows/DAGs (YAML) associated with specific agent capabilities based on user intent or triggers.
+        *   Interprets user requests and decides which agent's tools/flows to invoke.
+        *   Communicates with the *shared* MCP Hub via the standardized Model Context Protocol (MCP), typically using the efficient **Streamable HTTP** transport, to call tools and access resources needed by any agent. This starts with an `initialize` handshake to discover the Hub's capabilities.
+        *   Orchestrates the execution sequence based on the selected Agent Flow/DAG for the active specialized agent, potentially using Planner-Executor or Graph-based execution patterns.
         *   Formats LLM responses for the Presentation Layer.
-    *   **Agent Flows/DAGs:** YAML definitions specifying the sequence of steps (LLM prompts, MCP tool calls via `tools/call`, MCP resource access via `resources/read`, conditional logic) for specific business processes, organized by D365 module (e.g., `AR_CheckCredit.yaml`, `SCM_CreatePO.yaml`).
+    *   **Agent Flows/DAGs:** YAML definitions specifying the sequence of steps (LLM prompts, MCP tool calls, MCP resource access, conditional logic) for specific business processes. These flows are mapped to the capabilities of *specialized agents* and organized logically by functional domain (e.g., `Sales_CreateQuote.yaml`, `Procurement_ProcessRequisition.yaml`, `Finance_CheckInvoiceStatus.yaml`).
 
 4.  **Business Logic & MCP Layer (MCP Hub Service):**
     *   A potentially stateful service hosted on **Azure Container Apps**. While often designed stateless per request, Container Apps' support for long-running requests, session management (inherent in MCP transports like Streamable HTTP), KEDA-based autoscaling, and easier dependency/identity management makes it suitable for robust MCP Hubs.
@@ -157,4 +157,4 @@ graph TD
 *   Scalability is handled by the underlying Azure services: Container Apps scales based on KEDA rules (e.g., HTTP traffic, queue length), Functions scale on demand (Consumption plan), Service Bus scales automatically.
 *   The MCP Hub can be designed stateless or stateful depending on requirements. The `StreamableHTTPServerTransport` supports session management if needed. Azure Container Apps allows for easy horizontal scaling based on traffic or other metrics.
 
-This application architecture provides a decoupled, scalable, and secure foundation for the Dynamics 365 AI Agent, leveraging Azure services and the MCP standard (implemented via the TypeScript SDK) for robust integration.
+This application architecture provides a decoupled, scalable, and secure foundation for the suite of specialized Dynamics 365 AI Agents, leveraging Azure services and the MCP standard (implemented via the TypeScript SDK in a shared Hub) for robust and reusable integration.

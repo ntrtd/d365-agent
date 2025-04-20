@@ -12,7 +12,7 @@
   },
   "include": [
     "src/**/*" // Include source files
-  ],
+, "src/.old/generated"  ],
   "exclude": [
     "node_modules",
     "**/*.spec.ts" // Exclude test files

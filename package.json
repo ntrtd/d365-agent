@@ -1,8 +1,10 @@
 {
   "dependencies": {
+    "@sap-cloud-sdk/odata-v4": "^4.0.2",
     "dotenv": "^16.5.0"
   },
   "devDependencies": {
-    "@odata2ts/odata2ts": "^0.39.1"
+    "@odata2ts/odata2ts": "^0.39.1",
+    "@sap-cloud-sdk/generator": "^4.0.2"
   }
 }
