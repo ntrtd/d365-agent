@@ -19,3 +19,9 @@
 [submodule "submodules/odata2ts-fork"]
 	path = submodules/odata2ts-fork
 	url = https://github.com/ntrtd/odata2ts
+[submodule "submodules/EDMXTrimmer"]
+	path = submodules/EDMXTrimmer
+	url = https://github.com/shashisadasivan/EDMXTrimmer
+[submodule "submodules/ODataConnectedService"]
+	path = submodules/ODataConnectedService
+	url = https://github.com/OData/ODataConnectedService
