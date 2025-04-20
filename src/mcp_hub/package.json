@@ -4,7 +4,7 @@
   "description": "MCP Hub Service for Dynamics 365 Integration",
   "main": "build/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "NODE_OPTIONS='--max-old-space-size=8192' tsc",
     "start": "dotenv -f ../../.env -- node build/index.js",
     "dev": "dotenv -f ../../.env -- tsc -w & dotenv -f ../../.env -- node --watch build/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -29,6 +29,8 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@d365mcp/agent-clients": "file:../../packages/agent-clients",
+    "@d365mcp/client": "file:../../packages/client",
     "@azure/identity": "^4.9.0",
     "@azure/keyvault-secrets": "^4.9.0",
     "@modelcontextprotocol/sdk": "^1.9.0",

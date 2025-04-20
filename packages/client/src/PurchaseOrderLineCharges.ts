@@ -1,0 +1,146 @@
+/*
+ * Copyright (c) 2025 SAP SE or an SAP affiliate company. All rights reserved.
+ *
+ * This is a generated file powered by the SAP Cloud SDK for JavaScript.
+ */
+import {
+  Entity,
+  DefaultDeSerializers,
+  DeSerializers,
+  DeserializedType
+} from '@sap-cloud-sdk/odata-v4';
+import type { PurchaseOrderLineChargesApi } from './PurchaseOrderLineChargesApi';
+import { MarkupCategory } from './MarkupCategory';
+import { NoYes } from './NoYes';
+
+/**
+ * This class represents the entity "PurchaseOrderLineCharges" of service "d365_metadata".
+ */
+export class PurchaseOrderLineCharges<
+    T extends DeSerializers = DefaultDeSerializers
+  >
+  extends Entity
+  implements PurchaseOrderLineChargesType<T>
+{
+  /**
+   * Technical entity name for PurchaseOrderLineCharges.
+   */
+  static override _entityName = 'PurchaseOrderLineCharges';
+  /**
+   * Default url path for the according service.
+   */
+  static override _defaultBasePath = '/';
+  /**
+   * All key fields of the PurchaseOrderLineCharges entity.
+   */
+  static _keys = [
+    'dataAreaId',
+    'PurchaseOrderNumber',
+    'PurchaseOrderLineNumber',
+    'ChargeLineNumber'
+  ];
+  /**
+   * Data Area Id.
+   */
+  declare dataAreaId: DeserializedType<T, 'Edm.String'>;
+  /**
+   * Purchase Order Number.
+   */
+  declare purchaseOrderNumber: DeserializedType<T, 'Edm.String'>;
+  /**
+   * Purchase Order Line Number.
+   */
+  declare purchaseOrderLineNumber: DeserializedType<T, 'Edm.Int64'>;
+  /**
+   * Charge Line Number.
+   */
+  declare chargeLineNumber: DeserializedType<T, 'Edm.Decimal'>;
+  /**
+   * Proportional Charge Amount.
+   */
+  declare proportionalChargeAmount: DeserializedType<T, 'Edm.Decimal'>;
+  /**
+   * Charge Description.
+   * @nullable
+   */
+  declare chargeDescription?: DeserializedType<T, 'Edm.String'> | null;
+  /**
+   * Sales Tax Group Code.
+   * @nullable
+   */
+  declare salesTaxGroupCode?: DeserializedType<T, 'Edm.String'> | null;
+  /**
+   * Charge Accounting Currency Code.
+   * @nullable
+   */
+  declare chargeAccountingCurrencyCode?: DeserializedType<
+    T,
+    'Edm.String'
+  > | null;
+  /**
+   * Purchase Charge Code.
+   * @nullable
+   */
+  declare purchaseChargeCode?: DeserializedType<T, 'Edm.String'> | null;
+  /**
+   * Sales Tax Item Group Code.
+   * @nullable
+   */
+  declare salesTaxItemGroupCode?: DeserializedType<T, 'Edm.String'> | null;
+  /**
+   * Charge Category.
+   * @nullable
+   */
+  declare chargeCategory?: MarkupCategory | null;
+  /**
+   * Is Intercompany Charge.
+   * @nullable
+   */
+  declare isIntercompanyCharge?: NoYes | null;
+  /**
+   * Intercompany Charge Percentage.
+   */
+  declare intercompanyChargePercentage: DeserializedType<T, 'Edm.Decimal'>;
+  /**
+   * Charge Percentage.
+   */
+  declare chargePercentage: DeserializedType<T, 'Edm.Decimal'>;
+  /**
+   * Fixed Charge Amount.
+   */
+  declare fixedChargeAmount: DeserializedType<T, 'Edm.Decimal'>;
+  /**
+   * Unit Charge Amount.
+   */
+  declare unitChargeAmount: DeserializedType<T, 'Edm.Decimal'>;
+  /**
+   * External Charge Amount.
+   */
+  declare externalChargeAmount: DeserializedType<T, 'Edm.Decimal'>;
+
+  constructor(_entityApi: PurchaseOrderLineChargesApi<T>) {
+    super(_entityApi);
+  }
+}
+
+export interface PurchaseOrderLineChargesType<
+  T extends DeSerializers = DefaultDeSerializers
+> {
+  dataAreaId: DeserializedType<T, 'Edm.String'>;
+  purchaseOrderNumber: DeserializedType<T, 'Edm.String'>;
+  purchaseOrderLineNumber: DeserializedType<T, 'Edm.Int64'>;
+  chargeLineNumber: DeserializedType<T, 'Edm.Decimal'>;
+  proportionalChargeAmount: DeserializedType<T, 'Edm.Decimal'>;
+  chargeDescription?: DeserializedType<T, 'Edm.String'> | null;
+  salesTaxGroupCode?: DeserializedType<T, 'Edm.String'> | null;
+  chargeAccountingCurrencyCode?: DeserializedType<T, 'Edm.String'> | null;
+  purchaseChargeCode?: DeserializedType<T, 'Edm.String'> | null;
+  salesTaxItemGroupCode?: DeserializedType<T, 'Edm.String'> | null;
+  chargeCategory?: MarkupCategory | null;
+  isIntercompanyCharge?: NoYes | null;
+  intercompanyChargePercentage: DeserializedType<T, 'Edm.Decimal'>;
+  chargePercentage: DeserializedType<T, 'Edm.Decimal'>;
+  fixedChargeAmount: DeserializedType<T, 'Edm.Decimal'>;
+  unitChargeAmount: DeserializedType<T, 'Edm.Decimal'>;
+  externalChargeAmount: DeserializedType<T, 'Edm.Decimal'>;
+}

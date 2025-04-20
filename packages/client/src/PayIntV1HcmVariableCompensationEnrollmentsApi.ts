@@ -1,0 +1,301 @@
+/*
+ * Copyright (c) 2025 SAP SE or an SAP affiliate company. All rights reserved.
+ *
+ * This is a generated file powered by the SAP Cloud SDK for JavaScript.
+ */
+import { PayIntV1HcmVariableCompensationEnrollments } from './PayIntV1HcmVariableCompensationEnrollments';
+import { PayIntV1HcmVariableCompensationEnrollmentsRequestBuilder } from './PayIntV1HcmVariableCompensationEnrollmentsRequestBuilder';
+import { HrmCompVarEnrollEmpllStatus } from './HrmCompVarEnrollEmpllStatus';
+import {
+  CustomField,
+  defaultDeSerializers,
+  DefaultDeSerializers,
+  DeSerializers,
+  AllFields,
+  entityBuilder,
+  EntityBuilderType,
+  EntityApi,
+  FieldBuilder,
+  OrderableEdmTypeField,
+  EnumField
+} from '@sap-cloud-sdk/odata-v4';
+export class PayIntV1HcmVariableCompensationEnrollmentsApi<
+  DeSerializersT extends DeSerializers = DefaultDeSerializers
+> implements
+    EntityApi<
+      PayIntV1HcmVariableCompensationEnrollments<DeSerializersT>,
+      DeSerializersT
+    >
+{
+  public deSerializers: DeSerializersT;
+
+  private constructor(
+    deSerializers: DeSerializersT = defaultDeSerializers as any
+  ) {
+    this.deSerializers = deSerializers;
+  }
+
+  /**
+   * Do not use this method or the constructor directly.
+   * Use the service function as described in the documentation to get an API instance.
+   */
+  public static _privateFactory<
+    DeSerializersT extends DeSerializers = DefaultDeSerializers
+  >(
+    deSerializers: DeSerializersT = defaultDeSerializers as any
+  ): PayIntV1HcmVariableCompensationEnrollmentsApi<DeSerializersT> {
+    return new PayIntV1HcmVariableCompensationEnrollmentsApi(deSerializers);
+  }
+
+  private navigationPropertyFields!: {};
+
+  _addNavigationProperties(linkedApis: []): this {
+    this.navigationPropertyFields = {};
+    return this;
+  }
+
+  entityConstructor = PayIntV1HcmVariableCompensationEnrollments;
+
+  requestBuilder(): PayIntV1HcmVariableCompensationEnrollmentsRequestBuilder<DeSerializersT> {
+    return new PayIntV1HcmVariableCompensationEnrollmentsRequestBuilder<DeSerializersT>(
+      this
+    );
+  }
+
+  entityBuilder(): EntityBuilderType<
+    PayIntV1HcmVariableCompensationEnrollments<DeSerializersT>,
+    DeSerializersT
+  > {
+    return entityBuilder<
+      PayIntV1HcmVariableCompensationEnrollments<DeSerializersT>,
+      DeSerializersT
+    >(this);
+  }
+
+  customField<NullableT extends boolean = false>(
+    fieldName: string,
+    isNullable: NullableT = false as NullableT
+  ): CustomField<
+    PayIntV1HcmVariableCompensationEnrollments<DeSerializersT>,
+    DeSerializersT,
+    NullableT
+  > {
+    return new CustomField(
+      fieldName,
+      this.entityConstructor,
+      this.deSerializers,
+      isNullable
+    ) as any;
+  }
+
+  private _fieldBuilder?: FieldBuilder<
+    typeof PayIntV1HcmVariableCompensationEnrollments,
+    DeSerializersT
+  >;
+  get fieldBuilder() {
+    if (!this._fieldBuilder) {
+      this._fieldBuilder = new FieldBuilder(
+        PayIntV1HcmVariableCompensationEnrollments,
+        this.deSerializers
+      );
+    }
+    return this._fieldBuilder;
+  }
+
+  private _schema?: {
+    DATA_AREA_ID: OrderableEdmTypeField<
+      PayIntV1HcmVariableCompensationEnrollments<DeSerializers>,
+      DeSerializersT,
+      'Edm.String',
+      false,
+      true
+    >;
+    PERSONNEL_NUMBER: OrderableEdmTypeField<
+      PayIntV1HcmVariableCompensationEnrollments<DeSerializers>,
+      DeSerializersT,
+      'Edm.String',
+      false,
+      true
+    >;
+    PLAN: OrderableEdmTypeField<
+      PayIntV1HcmVariableCompensationEnrollments<DeSerializers>,
+      DeSerializersT,
+      'Edm.String',
+      false,
+      true
+    >;
+    EFFECTIVE_DATE: OrderableEdmTypeField<
+      PayIntV1HcmVariableCompensationEnrollments<DeSerializers>,
+      DeSerializersT,
+      'Edm.DateTimeOffset',
+      false,
+      true
+    >;
+    AWARD_PERCENT: OrderableEdmTypeField<
+      PayIntV1HcmVariableCompensationEnrollments<DeSerializers>,
+      DeSerializersT,
+      'Edm.Decimal',
+      false,
+      true
+    >;
+    NUMBER_OF_UNITS_REAL: OrderableEdmTypeField<
+      PayIntV1HcmVariableCompensationEnrollments<DeSerializers>,
+      DeSerializersT,
+      'Edm.Decimal',
+      false,
+      true
+    >;
+    DIMENSION_DISPLAY_VALUE: OrderableEdmTypeField<
+      PayIntV1HcmVariableCompensationEnrollments<DeSerializers>,
+      DeSerializersT,
+      'Edm.String',
+      true,
+      true
+    >;
+    STATUS: EnumField<
+      PayIntV1HcmVariableCompensationEnrollments<DeSerializers>,
+      DeSerializersT,
+      HrmCompVarEnrollEmpllStatus,
+      true,
+      true
+    >;
+    HIRE_RULE_DATE: OrderableEdmTypeField<
+      PayIntV1HcmVariableCompensationEnrollments<DeSerializers>,
+      DeSerializersT,
+      'Edm.DateTimeOffset',
+      false,
+      true
+    >;
+    AWARD_AMOUNT: OrderableEdmTypeField<
+      PayIntV1HcmVariableCompensationEnrollments<DeSerializers>,
+      DeSerializersT,
+      'Edm.Decimal',
+      false,
+      true
+    >;
+    EXPIRATION_DATE: OrderableEdmTypeField<
+      PayIntV1HcmVariableCompensationEnrollments<DeSerializers>,
+      DeSerializersT,
+      'Edm.DateTimeOffset',
+      false,
+      true
+    >;
+    ALL_FIELDS: AllFields<
+      PayIntV1HcmVariableCompensationEnrollments<DeSerializers>
+    >;
+  };
+
+  get schema() {
+    if (!this._schema) {
+      const fieldBuilder = this.fieldBuilder;
+      this._schema = {
+        /**
+         * Static representation of the {@link dataAreaId} property for query construction.
+         * Use to reference this property in query operations such as 'select' in the fluent request API.
+         */
+        DATA_AREA_ID: fieldBuilder.buildEdmTypeField(
+          'dataAreaId',
+          'Edm.String',
+          false
+        ),
+        /**
+         * Static representation of the {@link personnelNumber} property for query construction.
+         * Use to reference this property in query operations such as 'select' in the fluent request API.
+         */
+        PERSONNEL_NUMBER: fieldBuilder.buildEdmTypeField(
+          'PersonnelNumber',
+          'Edm.String',
+          false
+        ),
+        /**
+         * Static representation of the {@link plan} property for query construction.
+         * Use to reference this property in query operations such as 'select' in the fluent request API.
+         */
+        PLAN: fieldBuilder.buildEdmTypeField('Plan', 'Edm.String', false),
+        /**
+         * Static representation of the {@link effectiveDate} property for query construction.
+         * Use to reference this property in query operations such as 'select' in the fluent request API.
+         */
+        EFFECTIVE_DATE: fieldBuilder.buildEdmTypeField(
+          'EffectiveDate',
+          'Edm.DateTimeOffset',
+          false
+        ),
+        /**
+         * Static representation of the {@link awardPercent} property for query construction.
+         * Use to reference this property in query operations such as 'select' in the fluent request API.
+         */
+        AWARD_PERCENT: fieldBuilder.buildEdmTypeField(
+          'AwardPercent',
+          'Edm.Decimal',
+          false
+        ),
+        /**
+         * Static representation of the {@link numberOfUnitsReal} property for query construction.
+         * Use to reference this property in query operations such as 'select' in the fluent request API.
+         */
+        NUMBER_OF_UNITS_REAL: fieldBuilder.buildEdmTypeField(
+          'NumberOfUnitsReal',
+          'Edm.Decimal',
+          false
+        ),
+        /**
+         * Static representation of the {@link dimensionDisplayValue} property for query construction.
+         * Use to reference this property in query operations such as 'select' in the fluent request API.
+         */
+        DIMENSION_DISPLAY_VALUE: fieldBuilder.buildEdmTypeField(
+          'DimensionDisplayValue',
+          'Edm.String',
+          true
+        ),
+        /**
+         * Static representation of the {@link status} property for query construction.
+         * Use to reference this property in query operations such as 'select' in the fluent request API.
+         */
+        STATUS: fieldBuilder.buildEnumField(
+          'Status',
+          HrmCompVarEnrollEmpllStatus,
+          true
+        ),
+        /**
+         * Static representation of the {@link hireRuleDate} property for query construction.
+         * Use to reference this property in query operations such as 'select' in the fluent request API.
+         */
+        HIRE_RULE_DATE: fieldBuilder.buildEdmTypeField(
+          'HireRuleDate',
+          'Edm.DateTimeOffset',
+          false
+        ),
+        /**
+         * Static representation of the {@link awardAmount} property for query construction.
+         * Use to reference this property in query operations such as 'select' in the fluent request API.
+         */
+        AWARD_AMOUNT: fieldBuilder.buildEdmTypeField(
+          'AwardAmount',
+          'Edm.Decimal',
+          false
+        ),
+        /**
+         * Static representation of the {@link expirationDate} property for query construction.
+         * Use to reference this property in query operations such as 'select' in the fluent request API.
+         */
+        EXPIRATION_DATE: fieldBuilder.buildEdmTypeField(
+          'ExpirationDate',
+          'Edm.DateTimeOffset',
+          false
+        ),
+        ...this.navigationPropertyFields,
+        /**
+         *
+         * All fields selector.
+         */
+        ALL_FIELDS: new AllFields(
+          '*',
+          PayIntV1HcmVariableCompensationEnrollments
+        )
+      };
+    }
+
+    return this._schema;
+  }
+}

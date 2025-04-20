@@ -1,0 +1,19 @@
+{
+  "name": "@d365mcp/agent-clients",
+  "version": "1.0.0",
+  "description": "Generated Dynamics 365 OData Clients for MCP Agents (odata2ts)",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "private": true,
+  "scripts": {
+    "build": "NODE_OPTIONS='--max-old-space-size=4096' tsc",
+    "clean": "rm -rf build"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@odata2ts/odata-service": "~0.16.0",
+    "@odata2ts/http-client-fetch": "~0.9.0"
+  }
+}

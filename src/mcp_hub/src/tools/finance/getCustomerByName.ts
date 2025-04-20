@@ -3,8 +3,12 @@ import { getD365AuthToken, getD365Url } from "../../core/auth"; // Existing auth
 
 // SAP Cloud SDK specific imports
 import { HttpDestination } from "@sap-cloud-sdk/connectivity";
-// Import the specific entity and its request builder directly
-import { CustomersV3, CustomersV3RequestBuilder } from "../../d365-client/d365_metadata"; // Corrected path
+// Import the specific entity, its request builder, and its API class
+import {
+  CustomersV3,
+  CustomersV3RequestBuilder,
+  CustomersV3Api // Import the API class
+} from "@d365mcp/client"; // Import from package entry point
 
 // Define input schema shape using Zod
 export const getCustomerByNameInputShape = z.object({
@@ -46,27 +50,30 @@ export async function getCustomerByNameHandler(args: GetCustomerByNameInput) {
         console.log(`Constructed destination with URL: ${destination.url}`);
 
         // 3. Build the request using the imported RequestBuilder directly
-        // The RequestBuilder might be associated with the entity itself
-        const requestBuilder = new CustomersV3RequestBuilder() // Instantiate the builder
+        // Instantiate the API class using its static factory to access the schema
+        const customersApi = CustomersV3Api._privateFactory(); // Use static factory
+
+        // Build the request using the RequestBuilder and schema fields
+        const requestBuilder = new CustomersV3RequestBuilder(customersApi) // Pass API instance
             .getAll()
-            // Use the static properties from the entity for schema fields
-            .filter(CustomersV3.NAME.equals(customerName)); // Filter by Name
+            // Use the schema fields for filtering and selection
+            .filter(customersApi.schema.ORGANIZATION_NAME.equals(customerName)); // Filter by ORGANIZATION_NAME (common field name)
 
         if (company) {
-            requestBuilder.filter(CustomersV3.DATA_AREA_ID.equals(company));
+            requestBuilder.filter(customersApi.schema.DATA_AREA_ID.equals(company));
         }
 
         requestBuilder.select(
-            CustomersV3.CUSTOMER_ACCOUNT,
-            CustomersV3.NAME,
-            CustomersV3.CREDIT_LIMIT,
-            CustomersV3.PARTY_TYPE,
-            CustomersV3.DATA_AREA_ID
+            customersApi.schema.CUSTOMER_ACCOUNT,
+            customersApi.schema.ORGANIZATION_NAME, // Use ORGANIZATION_NAME
+            customersApi.schema.CREDIT_LIMIT,
+            customersApi.schema.PARTY_TYPE,
+            customersApi.schema.DATA_AREA_ID
         );
         requestBuilder.top(1);
 
         if (!company) {
-            requestBuilder.withCustomQueryParameters({ 'cross-company': 'true' });
+            requestBuilder.addCustomQueryParameters({ 'cross-company': 'true' }); // Correct method name
             console.log("Adding cross-company=true request parameter");
         }
 
@@ -79,9 +86,10 @@ export async function getCustomerByNameHandler(args: GetCustomerByNameInput) {
         if (result && result.length > 0) {
             const customerData = result[0];
             console.log("Customer data found in D365:", customerData);
+            // Use the correct property names from the entity type
             const plainCustomerData = {
                 CustomerAccount: customerData.customerAccount,
-                Name: customerData.name,
+                Name: customerData.organizationName, // Use organizationName
                 CreditLimit: customerData.creditLimit,
                 PartyType: customerData.partyType,
                 dataAreaId: customerData.dataAreaId,

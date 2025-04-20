@@ -1,0 +1,31 @@
+/*
+ * Copyright (c) 2025 SAP SE or an SAP affiliate company. All rights reserved.
+ *
+ * This is a generated file powered by the SAP Cloud SDK for JavaScript.
+ */
+/**
+ * This enum represents the enum type "{@link ProjLedgerStatus}".
+ * The members represent values of EDM type Edm.Int32.
+ */
+export enum ProjLedgerStatus {
+  /**
+   * Original value: 0
+   */
+  None = 'None',
+  /**
+   * Original value: 1
+   */
+  BalanceSheet = 'BalanceSheet',
+  /**
+   * Original value: 2
+   */
+  Operations = 'Operations',
+  /**
+   * Original value: 3
+   */
+  Never = 'Never',
+  /**
+   * Original value: 4
+   */
+  Deferred = 'Deferred'
+}

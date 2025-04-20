@@ -3,16 +3,17 @@ import { getD365AuthToken, getD365Url } from "./auth";
 
 // Import generated service clients for each agent/module as needed
 // Specify the type argument for the client
-import { MicrosoftDynamicsDataEntitiesService as FinanceServiceType } from "../agents/finance_accounting/finance_accounting_client/MicrosoftDynamicsDataEntitiesService";
-import { MicrosoftDynamicsDataEntitiesService as ScmServiceType } from "../agents/scm_inventory/scm_inventory_client/MicrosoftDynamicsDataEntitiesService";
+// import { MicrosoftDynamicsDataEntitiesService as FinanceServiceType } from "@d365mcp/agent-clients/finance_accounting_client/MicrosoftDynamicsDataEntitiesService"; // Import from package - TEMP DISABLED
+// import { MicrosoftDynamicsDataEntitiesService as ScmServiceType } from "@d365mcp/agent-clients/scm_inventory_client/MicrosoftDynamicsDataEntitiesService"; // Import from package - TEMP DISABLED
 // Add other service imports here...
 
 // Define alias types with the http client type applied
-type FinanceService = FinanceServiceType<FetchClient>;
-type ScmService = ScmServiceType<FetchClient>;
+// type FinanceService = FinanceServiceType<FetchClient>; // TEMP DISABLED
+// type ScmService = ScmServiceType<FetchClient>; // TEMP DISABLED
 
 // Define supported agent types
-type SupportedAgent = "finance_accounting" | "scm_inventory"; // Add others as needed
+// type SupportedAgent = "finance_accounting" | "scm_inventory"; // Add others as needed - TEMP DISABLED
+type SupportedAgent = string; // TEMP: Use string until agent clients are enabled
 
 // Type definition for the factory options
 interface ODataClientFactoryOptions {
@@ -28,11 +29,11 @@ interface ODataClientFactoryOptions {
  * @param options Optional configuration like company context.
  * @returns An instance of the requested generated OData service client.
  */
- // Update Promise return type to use aliased types
+ // Update Promise return type to use aliased types - TEMP: Return any
 export async function createODataClient<T extends SupportedAgent>(
     agentName: T,
     options?: ODataClientFactoryOptions
-): Promise<T extends "finance_accounting" ? FinanceService : T extends "scm_inventory" ? ScmService : never>
+): Promise<any> // TEMP: Return any until agent clients are enabled
 {
     console.log(`Creating OData client for agent: ${agentName}, company: ${options?.company || 'default'}`);
 
@@ -68,16 +69,19 @@ export async function createODataClient<T extends SupportedAgent>(
     // Instantiate the correct generated service based on agentName, passing the configured client and base URL
     const serviceBasePath = d365BaseUrl + "/data"; // Base path for D365 FO
 
-    switch (agentName) {
-        case "finance_accounting":
-            console.log(`Instantiating FinanceService with configured client at ${serviceBasePath}`);
-            return new FinanceServiceType(fetchClient, serviceBasePath) as any;
-        case "scm_inventory":
-            console.log(`Instantiating ScmService with configured client at ${serviceBasePath}`);
-            return new ScmServiceType(fetchClient, serviceBasePath) as any;
-        // Add cases for other agents...
-        default:
-            const exhaustiveCheck: never = agentName;
-            throw new Error(`Unsupported agent name provided to OData client factory: ${exhaustiveCheck}`);
-    }
+    // TEMP: Throw error until agent clients are enabled
+    throw new Error(`Agent client functionality is temporarily disabled. Agent requested: ${agentName}`);
+
+    // switch (agentName) {
+    //     case "finance_accounting":
+    //         console.log(`Instantiating FinanceService with configured client at ${serviceBasePath}`);
+    //         return new FinanceServiceType(fetchClient, serviceBasePath) as any;
+    //     case "scm_inventory":
+    //         console.log(`Instantiating ScmService with configured client at ${serviceBasePath}`);
+    //         return new ScmServiceType(fetchClient, serviceBasePath) as any;
+    //     // Add cases for other agents...
+    //     default:
+    //         const exhaustiveCheck: never = agentName;
+    //         throw new Error(`Unsupported agent name provided to OData client factory: ${exhaustiveCheck}`);
+    // }
 }

@@ -8,8 +8,9 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 PROJECT_ROOT="$( cd "$SCRIPT_DIR/.." &> /dev/null && pwd )"
 CONFIG_DIR="$PROJECT_ROOT/config/agents"
 MAIN_CONFIG_FILE="$CONFIG_DIR/agents.config.json" # Main config file listing agents
-AGENT_FLOWS_BASE_DIR="$PROJECT_ROOT/src/agent/flows"
-MCP_HUB_AGENTS_BASE_DIR="$PROJECT_ROOT/src/mcp_hub/src/agents"
+AGENT_FLOWS_BASE_DIR="$PROJECT_ROOT/src/agent/flows" # Kept for flow dir creation
+MCP_HUB_AGENTS_TEMP_DIR="$PROJECT_ROOT/src/mcp_hub/src/agents" # Temp dir for metadata/list
+AGENT_CLIENT_OUTPUT_BASE_DIR="$PROJECT_ROOT/packages/agent-clients/src" # NEW: Base output for agent clients
 RAW_METADATA_FILE="$PROJECT_ROOT/asset/d365_metadata.xml" # Path relative to project root
 TRIMMER_EXE="$PROJECT_ROOT/submodules/EDMXTrimmer/EDMXTrimmer/EDMXTrimmer/bin/Release/net8.0/EDMXTrimmer"
 ODATA2TS_BIN="$PROJECT_ROOT/node_modules/.bin/odata2ts"
@@ -101,18 +102,20 @@ for i in $(seq 0 $(($agent_count - 1))); do
     fi
 
     # Define paths for the current agent
-    AGENT_FLOW_DIR="$AGENT_FLOWS_BASE_DIR/$agent_name"
-    MCP_HUB_AGENT_DIR="$MCP_HUB_AGENTS_BASE_DIR/$agent_name"
-    ENTITY_LIST_FILE="${MCP_HUB_AGENT_DIR}/${agent_name}_entity_list.txt"       # NEW NAMING
-    TRIMMED_METADATA_FILE="${MCP_HUB_AGENT_DIR}/${agent_name}_trimmed_metadata.xml" # NEW NAMING
-    CLIENT_OUTPUT_DIR="${MCP_HUB_AGENT_DIR}/${agent_name}_client"               # NEW NAMING
+    AGENT_FLOW_DIR="$AGENT_FLOWS_BASE_DIR/$agent_name" # Flow dir remains the same
+    MCP_HUB_AGENT_TEMP_SUBDIR="$MCP_HUB_AGENTS_TEMP_DIR/$agent_name" # Temp dir for intermediate files
+    ENTITY_LIST_FILE="${MCP_HUB_AGENT_TEMP_SUBDIR}/${agent_name}_entity_list.txt"
+    TRIMMED_METADATA_FILE="${MCP_HUB_AGENT_TEMP_SUBDIR}/${agent_name}_trimmed_metadata.xml"
+    CLIENT_OUTPUT_DIR="${AGENT_CLIENT_OUTPUT_BASE_DIR}/${agent_name}_client" # NEW: Output dir in packages
 
     # --- 2a: Create Directories ---
     echo "  [2a] Creating directories..."
     mkdir -p "$AGENT_FLOW_DIR"
-    mkdir -p "$MCP_HUB_AGENT_DIR"
-    echo "     Created: $AGENT_FLOW_DIR"
-    echo "     Created: $MCP_HUB_AGENT_DIR"
+    mkdir -p "$MCP_HUB_AGENT_TEMP_SUBDIR" # Create temp dir for metadata/list
+    mkdir -p "$CLIENT_OUTPUT_DIR" # Create the final client output dir
+    echo "     Created Flow Dir: $AGENT_FLOW_DIR"
+    echo "     Created Temp Dir: $MCP_HUB_AGENT_TEMP_SUBDIR"
+    echo "     Created Client Output Dir: $CLIENT_OUTPUT_DIR"
 
     # --- 2b: Generate entity list file ---
     echo "  [2b] Generating entity list file (${agent_name}_entity_list.txt)..."
@@ -153,31 +156,29 @@ for i in $(seq 0 $(($agent_count - 1))); do
     echo "     Trimmed metadata saved to $TRIMMED_METADATA_FILE"
 
     # --- 2d: Generate TypeScript Client ---
-    echo "  [2d] Generating TypeScript client (${agent_name}_client/)..."
-    echo "     Changing directory to $MCP_HUB_AGENT_DIR"
-    cd "$MCP_HUB_AGENT_DIR" # Change into agent dir for relative paths
-    echo "     Running odata-ts generator..."
+    echo "  [2d] Generating TypeScript client (${agent_name}_client/) into packages..."
+    echo "     Running odata-ts generator from project root..."
+    # Run from project root, use paths relative to root
     "$ODATA2TS_BIN" \
-        --source "${agent_name}_trimmed_metadata.xml" \
-        --output "${agent_name}_client" \
+        --source "$TRIMMED_METADATA_FILE" \
+        --output "$CLIENT_OUTPUT_DIR" \
         --mode "all" \
         --emit-mode "ts" \
         --prettier true \
         --allow-renaming true \
-        --tsconfig "$PROJECT_ROOT/tsconfig.json" # Use Absolute Path
-    if [ ! -d "${agent_name}_client" ]; then
+        --tsconfig "$PROJECT_ROOT/packages/agent-clients/tsconfig.json" # Use the new package's tsconfig
+    if [ ! -d "$CLIENT_OUTPUT_DIR" ]; then
         echo "     Warning: odata2ts might not have generated the client correctly. Output directory '$CLIENT_OUTPUT_DIR' not found."
     else
          echo "     TypeScript client generated in $CLIENT_OUTPUT_DIR"
     fi
-    echo "     Changing directory back to $PROJECT_ROOT"
-    cd "$PROJECT_ROOT" # Change back
+    # No need to change directory back, as we didn't change it
 
 done
 
 echo "============================================================"
 echo "SUCCESS: Full Agent setup and client generation complete!"
-echo "Clients generated within respective agent directories in $MCP_HUB_AGENTS_BASE_DIR."
+echo "Clients generated within $AGENT_CLIENT_OUTPUT_BASE_DIR."
 echo "============================================================"
 
 exit 0

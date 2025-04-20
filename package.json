@@ -1,4 +1,11 @@
 {
+  "name": "d365-mcp-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "src/mcp_hub"
+  ],
   "dependencies": {
     "@sap-cloud-sdk/odata-v4": "^4.0.2",
     "dotenv": "^16.5.0"

@@ -3,7 +3,8 @@
     "target": "ES2020",
     "module": "CommonJS",
     "outDir": "./build",
-    "rootDir": ".", // Project root relative to tsconfig.json (i.e., src/mcp_hub)
+    "rootDir": "./src", // Compile only files under src/mcp_hub/src
+    // baseUrl and paths are no longer needed as we import from workspace packages
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -12,11 +13,12 @@
     "moduleResolution": "node",
     "sourceMap": true
   },
-  "include": ["**/*.ts"], // Include all TS files within rootDir
+  "include": ["src/**/*.ts"], // Include all TS files within rootDir (now ./src)
   "exclude": [
     "node_modules", // Standard exclusion
     "build", // Standard exclusion for output
-    "src/core/generated" // Exclude auto-generated code from direct compilation if desired
+    "src/core/generated" // Keep this if it's relevant to the hub's own generation? Or remove if not used. Assuming keep for now.
+    // Exclusions for 'd365-client' and 'agents' are removed
    ],
   "ts-node": {
     // Configurations for ts-node when running ESM

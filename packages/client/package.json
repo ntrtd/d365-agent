@@ -1,0 +1,18 @@
+{
+  "name": "@d365mcp/client",
+  "version": "1.0.0",
+  "description": "Generated Dynamics 365 OData Client (SAP Cloud SDK)",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf build"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@sap-cloud-sdk/connectivity": "^4.0.2",
+    "@sap-cloud-sdk/odata-v4": "^4.0.2"
+  }
+}

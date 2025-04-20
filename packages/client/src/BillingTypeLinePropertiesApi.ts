@@ -1,0 +1,167 @@
+/*
+ * Copyright (c) 2025 SAP SE or an SAP affiliate company. All rights reserved.
+ *
+ * This is a generated file powered by the SAP Cloud SDK for JavaScript.
+ */
+import { BillingTypeLineProperties } from './BillingTypeLineProperties';
+import { BillingTypeLinePropertiesRequestBuilder } from './BillingTypeLinePropertiesRequestBuilder';
+import { ProjBillingType } from './ProjBillingType';
+import {
+  CustomField,
+  defaultDeSerializers,
+  DefaultDeSerializers,
+  DeSerializers,
+  AllFields,
+  entityBuilder,
+  EntityBuilderType,
+  EntityApi,
+  FieldBuilder,
+  OrderableEdmTypeField,
+  EnumField
+} from '@sap-cloud-sdk/odata-v4';
+export class BillingTypeLinePropertiesApi<
+  DeSerializersT extends DeSerializers = DefaultDeSerializers
+> implements
+    EntityApi<BillingTypeLineProperties<DeSerializersT>, DeSerializersT>
+{
+  public deSerializers: DeSerializersT;
+
+  private constructor(
+    deSerializers: DeSerializersT = defaultDeSerializers as any
+  ) {
+    this.deSerializers = deSerializers;
+  }
+
+  /**
+   * Do not use this method or the constructor directly.
+   * Use the service function as described in the documentation to get an API instance.
+   */
+  public static _privateFactory<
+    DeSerializersT extends DeSerializers = DefaultDeSerializers
+  >(
+    deSerializers: DeSerializersT = defaultDeSerializers as any
+  ): BillingTypeLinePropertiesApi<DeSerializersT> {
+    return new BillingTypeLinePropertiesApi(deSerializers);
+  }
+
+  private navigationPropertyFields!: {};
+
+  _addNavigationProperties(linkedApis: []): this {
+    this.navigationPropertyFields = {};
+    return this;
+  }
+
+  entityConstructor = BillingTypeLineProperties;
+
+  requestBuilder(): BillingTypeLinePropertiesRequestBuilder<DeSerializersT> {
+    return new BillingTypeLinePropertiesRequestBuilder<DeSerializersT>(this);
+  }
+
+  entityBuilder(): EntityBuilderType<
+    BillingTypeLineProperties<DeSerializersT>,
+    DeSerializersT
+  > {
+    return entityBuilder<
+      BillingTypeLineProperties<DeSerializersT>,
+      DeSerializersT
+    >(this);
+  }
+
+  customField<NullableT extends boolean = false>(
+    fieldName: string,
+    isNullable: NullableT = false as NullableT
+  ): CustomField<
+    BillingTypeLineProperties<DeSerializersT>,
+    DeSerializersT,
+    NullableT
+  > {
+    return new CustomField(
+      fieldName,
+      this.entityConstructor,
+      this.deSerializers,
+      isNullable
+    ) as any;
+  }
+
+  private _fieldBuilder?: FieldBuilder<
+    typeof BillingTypeLineProperties,
+    DeSerializersT
+  >;
+  get fieldBuilder() {
+    if (!this._fieldBuilder) {
+      this._fieldBuilder = new FieldBuilder(
+        BillingTypeLineProperties,
+        this.deSerializers
+      );
+    }
+    return this._fieldBuilder;
+  }
+
+  private _schema?: {
+    DATA_AREA_ID: OrderableEdmTypeField<
+      BillingTypeLineProperties<DeSerializers>,
+      DeSerializersT,
+      'Edm.String',
+      false,
+      true
+    >;
+    BILLING_TYPE: EnumField<
+      BillingTypeLineProperties<DeSerializers>,
+      DeSerializersT,
+      ProjBillingType,
+      true,
+      true
+    >;
+    PROJ_LINE_PROPERTY_LINE_PROPERTY_ID: OrderableEdmTypeField<
+      BillingTypeLineProperties<DeSerializers>,
+      DeSerializersT,
+      'Edm.String',
+      true,
+      true
+    >;
+    ALL_FIELDS: AllFields<BillingTypeLineProperties<DeSerializers>>;
+  };
+
+  get schema() {
+    if (!this._schema) {
+      const fieldBuilder = this.fieldBuilder;
+      this._schema = {
+        /**
+         * Static representation of the {@link dataAreaId} property for query construction.
+         * Use to reference this property in query operations such as 'select' in the fluent request API.
+         */
+        DATA_AREA_ID: fieldBuilder.buildEdmTypeField(
+          'dataAreaId',
+          'Edm.String',
+          false
+        ),
+        /**
+         * Static representation of the {@link billingType} property for query construction.
+         * Use to reference this property in query operations such as 'select' in the fluent request API.
+         */
+        BILLING_TYPE: fieldBuilder.buildEnumField(
+          'BillingType',
+          ProjBillingType,
+          true
+        ),
+        /**
+         * Static representation of the {@link projLinePropertyLinePropertyId} property for query construction.
+         * Use to reference this property in query operations such as 'select' in the fluent request API.
+         */
+        PROJ_LINE_PROPERTY_LINE_PROPERTY_ID: fieldBuilder.buildEdmTypeField(
+          'ProjLinePropertyLinePropertyId',
+          'Edm.String',
+          true
+        ),
+        ...this.navigationPropertyFields,
+        /**
+         *
+         * All fields selector.
+         */
+        ALL_FIELDS: new AllFields('*', BillingTypeLineProperties)
+      };
+    }
+
+    return this._schema;
+  }
+}
