@@ -1,76 +1,62 @@
 # Dynamics 365 AI Agents Documentation (Archiverse)
 
-This repository contains the documentation for the design and architecture of a suite of specialized AI-powered agents (e.g., Sales, Procurement, Finance) designed to interact with Microsoft Dynamics 365 using the Model Context Protocol (MCP).
+This repository (`d365-agent`) serves as the central documentation hub for the design and architecture of a suite of specialized AI-powered agents interacting with Microsoft Dynamics 365 via the Model Context Protocol (MCP).
 
-The documentation is built using [MkDocs](https://www.mkdocs.org/) with the [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) theme.
+**The project is structured across multiple repositories:**
 
-## Repository Structure
+*   **`d365-agent` (This Repo):** Contains the core documentation (built with MkDocs), shared assets (like OData metadata), and utility scripts.
+*   **`d365-agent-infra`:** Contains the Infrastructure as Code (IaC) files (e.g., Bicep) for deploying Azure resources.
+*   **`d365-agent-odataclient`:** Contains the generated TypeScript OData V4 client (using SAP Cloud SDK generator) for interacting with Dynamics 365. Published as a package.
+*   **`d365-agent-hub`:** Contains the source code for the shared MCP Hub service (TypeScript/Node.js), including tool implementations. Depends on the `d365-agent-odataclient` package.
+*   **`d365-agent-service`:** Contains the configurations for the specialized AI Agents (e.g., Agent Flow / Prompt Flow definitions in YAML).
+*   *(Future)* **`d365-agent-functions`:** May contain shared Azure Functions code (e.g., Document Parser).
+*   *(Future)* **`d365-agent-tests`:** May contain centralized integration or end-to-end tests.
+
+The documentation herein is built using [MkDocs](https://www.mkdocs.org/) with the [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) theme.
+
+## `d365-agent` Repository Structure
 
 ```
-d365-mcp/
-├── .github/                    # CI/CD workflows (e.g., GitHub Actions)
-│   └── workflows/              # Example: deploy-docs.yml, deploy-infra.yml, deploy-app.yml
-├── .gitignore                  # Specifies intentionally untracked files Git should ignore
+d365-agent/
+├── .github/                    # CI/CD workflows (e.g., deploy docs)
+│   └── workflows/
+├── .gitignore
+├── asset/                      # Shared assets like D365 metadata
+│   └── d365_metadata.xml
+├── config/                     # Agent configuration examples (may move to d365-agent-service)
+│   └── agents/
 ├── docs/                       # MkDocs documentation source files
-│   ├── index.md                # Documentation site landing page
+│   ├── index.md
 │   ├── business_requirements.md
 │   ├── architecture_vision.md
 │   ├── business_architecture.md
 │   ├── application_architecture.md
 │   ├── use_case_scenarios.md
-│   └── implementation/         # Implementation plan documents
+│   └── implementation/
 │       ├── index.md
 │       └── phase_1.md - phase_4.md
-├── infra/                      # Infrastructure as Code (IaC) files (e.g., Bicep)
-│   ├── main.bicep
-│   ├── modules/
-│   └── parameters/
 ├── mkdocs.yml                  # MkDocs configuration file
 ├── README.md                   # This file
-├── scripts/                    # Utility and deployment scripts
-│   ├── build_agent_clients.sh  # Full setup: Creates dirs, trims metadata, generates OData clients
-│   ├── download_d365_metadata.js # Helper to download raw OData metadata (output needs manual move)
-│   └── deploy_infra.sh         # Script to deploy Azure infrastructure
-├── src/                        # Source code for application components
-│   ├── agent/                  # Specialized Agent configurations
-│   │   └── flows/              # Agent Flow / Prompt Flow definitions (YAML), organized by agent
-│   │       ├── sales/          # Flows for the Sales Agent
-│   │       ├── procurement/    # Flows for the Procurement Agent
-│   │       ├── finance/        # Flows for the Finance Agent
-│   │       └── ...             # etc.
-│   ├── functions/              # Shared Azure Functions code (e.g., Document Parser)
-│   ├── generated/              # Contains generated code (e.g., OData client)
-
-│   └── mcp_hub/                # Shared MCP Hub Service code (TypeScript)
-│       ├── src/                # Hub source code
-│       │   ├── agents/         # Agent-specific structures
-│       │   │   ├── finance/
-│       │   │   └── scm/
-│       │   ├── core/           # Core hub logic (e.g., auth)
-│       │   ├── d365-client/    # Core hub logic (e.g., auth)
-│       │   ├── tools/          # Tool implementations (organized by domain)
-│       │   │   ├── finance/
-│       │   │   └── scm/
-│       │   └── index.ts        # Main MCP server setup
-│       ├── package.json
-│       └── tsconfig.json
-└── tests/                      # Automated tests
-    ├── unit/
-    └── integration/
+└── scripts/                    # Utility scripts (e.g., client generation trigger, metadata download)
+    ├── build_agent_clients.sh  # (May become deprecated or repurposed)
+    ├── download_d365_metadata.js
+    └── deploy_infra.sh         # (Will likely move to d365-agent-infra)
 ```
-*(Note: Updated comments slightly to reflect current plan)*
 
-**Key Directories:**
+**Key Directories in this Repo:**
 
 *   **`docs/`:** Contains all documentation source files (Markdown). See below for building locally.
-*   **`infra/`:** Infrastructure as Code (IaC) templates (e.g., Bicep) for provisioning Azure resources.
-*   **`scripts/`:** Utility and deployment scripts.
-*   **`src/`:** Application source code.
-    *   `src/agent/`: Specialized agent configurations (e.g., Prompt Flow definitions).
-    *   `src/generated/d365-client/`: Location of the primary OData TypeScript client generated using the SAP Cloud SDK generator.
-    *   `src/mcp_hub/`: Shared MCP Hub service code. Tool implementations reside under `src/mcp_hub/src/tools/`.
-*   **`tests/`:** Automated tests for the application code.
-*   **`.github/`:** CI/CD workflow definitions for automating builds, tests, and deployments.
+*   **`asset/`:** Holds shared assets like the raw Dynamics 365 OData metadata file (`d365_metadata.xml`) used as input for client generation in the `d365-agent-odataclient` repository.
+*   **`scripts/`:** Utility and deployment scripts relevant to documentation or shared tasks (e.g., metadata download). Some scripts might be moved to their relevant repositories (e.g., `deploy_infra.sh` to `d365-agent-infra`).
+*   **`config/`:** Contains example configurations, potentially moving to `d365-agent-service`.
+*   **`.github/`:** CI/CD workflows relevant to this documentation repository.
+
+## Related Repositories
+
+*   **Infrastructure:** `d365-agent-infra`
+*   **OData Client:** `d365-agent-odataclient`
+*   **MCP Hub Service:** `d365-agent-hub`
+*   **Agent Service Config:** `d365-agent-service`
 
 ## Development Setup
 
@@ -94,33 +80,25 @@ The site will automatically rebuild and reload when you save changes to the docu
 
 ### Deploying Infrastructure
 
-1.  **Prerequisites:**
-    *   Ensure you have the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) installed and configured.
-    *   Log in to Azure: `az login`
-    *   Set the desired subscription: `az account set --subscription "<YourSubscriptionId>"`
-2.  **Run the deployment script:**
-    *   Navigate to the project root directory.
-    *   Modify configuration variables (like `LOCATION`) in `scripts/deploy_infra.sh` if needed.
-    *   Make the script executable (if not already): `chmod +x scripts/deploy_infra.sh`
-    *   Execute the script: `./scripts/deploy_infra.sh`
+Infrastructure deployment is now managed within the **`d365-agent-infra`** repository. Please refer to the README in that repository for instructions. The `scripts/deploy_infra.sh` script in *this* repository may be outdated or removed.
 
 ### OData Client Generation (Using SAP Cloud SDK Generator)
 
-This project uses the **SAP Cloud SDK OData Client Generator** to create a single, comprehensive, type-safe TypeScript client for interacting with the Dynamics 365 OData API, located in `src/generated/d365-client/`. This client is used by all agent tools within the MCP Hub.
+The type-safe OData TypeScript client is generated and managed within the dedicated **`d365-agent-odataclient`** repository. It uses the `asset/d365_metadata.xml` file from *this* (`d365-agent`) repository as input. The generated client is intended to be published as an npm package for consumption by the `d365-agent-hub`.
 
-**Generation Command:**
+**Generation Command (Run from `d365-agent-odataclient` root):**
 
-To (re)generate this client, run the following command from the project root directory:
+Refer to the README in the `d365-agent-odataclient` repository for the exact command and publishing instructions. It will be similar to this:
 
 ```bash
-NODE_OPTIONS='--max-old-space-size=8192' npx @sap-cloud-sdk/generator generate-odata-client --input asset/d365_metadata.xml --outputDir packages/client/src --overwrite --skipValidation
+# Example assumes d365-agent is a sibling directory
+NODE_OPTIONS='--max-old-space-size=8192' npx @sap-cloud-sdk/generator generate-odata-client --input ../d365-agent/asset/d365_metadata.xml --outputDir src --overwrite --skipValidation --packageJson
 ```
+*(Note: `--input` path is relative to `d365-agent-odataclient`. The `--packageJson` flag helps create a package structure)*
 
-*(See previous documentation section for detailed explanation of flags)*
-
-#### Prerequisites for Generation
+#### Prerequisites for Generation (within `d365-agent-odataclient` repo)
 *   **Node.js & npm/npx:** Required to run the `npx` command and the generator ([Node.js](https://nodejs.org/)).
-*   **Raw OData Metadata:** The raw Dynamics 365 OData metadata file **must** exist at `asset/d365_metadata.xml`.
+*   **Raw OData Metadata:** The raw Dynamics 365 OData metadata file must exist at `../d365-agent/asset/d365_metadata.xml` (relative to the `d365-agent-odataclient` repository). Ensure you have cloned the `d365-agent` repository as a sibling directory.
 
 #### Note on `scripts/build_agent_clients.sh`
-The script `scripts/build_agent_clients.sh` represents an older approach using different tooling (`EDMXTrimmer`, `odata2ts`) to create separate clients per agent. While conceptually aligning with agent separation, this method faced technical difficulties (metadata trimming/parsing issues). The current primary approach uses the single SAP Cloud SDK generated client. The old script and the `src/mcp_hub/src/agents` structure might be removed or refactored in the future.
+The `scripts/build_agent_clients.sh` script in *this* repository is likely deprecated. Client generation is handled by the SAP Cloud SDK generator within the `d365-agent-odataclient` repository.

@@ -14,22 +14,22 @@ This document outlines the strategy for evaluating the Dynamics 365 AI Agent thr
 
 A multi-layered approach will be used:
 
-1.  **Unit Tests (MCP Hub Tools):**
-    *   **Focus:** Individual MCP tool implementations within the Hub service (`src/mcp_hub/`).
+1.  **Unit Tests (MCP Hub Tools - in `d365-agent-hub` repo):**
+    *   **Focus:** Individual MCP tool implementations within the Hub service (`d365-agent-hub` repo).
     *   **Method:** Mocking D365/external API calls to test the tool's logic, data transformation, and error handling in isolation.
-    *   **Tools:** Standard unit testing frameworks (e.g., `pytest` for Python).
+    *   **Tools:** Standard unit testing frameworks (e.g., Jest/Vitest for TypeScript/Node.js).
 2.  **Integration Tests (MCP Hub & D365/APIs):**
-    *   **Focus:** Interaction between MCP Hub tools and actual backend systems (D365 sandbox, mock external APIs).
+    *   **Focus:** Interaction between MCP Hub tools (in `d365-agent-hub`) and actual backend systems (D365 sandbox, mock external APIs).
     *   **Method:** Calling MCP tools via simulated MCP requests and verifying interactions with the sandbox environment (data created/queried). Requires a configured test environment.
-    *   **Tools:** Test clients sending JSON-RPC requests, potentially `pytest` orchestrating calls.
+    *   **Tools:** Test clients sending JSON-RPC requests, testing frameworks (e.g., Jest/Vitest) orchestrating calls within the `d365-agent-hub` repo.
 3.  **Agent Flow / DAG Evaluation (Azure AI Studio / SDK):**
     *   **Focus:** The logic and execution path of individual Agent Flows/DAGs defined in YAML. Testing prompt effectiveness, conditional logic, and tool chaining within the flow.
-    *   **Method:** Running flows with predefined test datasets (inputs) and evaluating outputs against expected results or quality metrics. Can mock MCP tool responses initially.
-    *   **Tools:** Azure AI Studio's Prompt Flow evaluation features, Azure AI SDK for programmatic testing, manual review of execution traces.
+    *   **Method:** Running flows (defined in `d365-agent-service`) with predefined test datasets (inputs) and evaluating outputs against expected results or quality metrics. Can mock MCP tool responses initially.
+    *   **Tools:** Azure AI Studio's Prompt Flow evaluation features, Azure AI SDK for programmatic testing, manual review of execution traces. Code-based tests might reside in `d365-agent-service` or a dedicated `d365-agent-tests` repo.
 4.  **End-to-End (E2E) Scenario Testing:**
-    *   **Focus:** Testing complete user scenarios from the presentation layer through all backend components to D365 and back.
-    *   **Method:** Simulating user interactions (chat messages, email submissions) based on the defined Use Case Scenarios and verifying the final outcome (e.g., SO created, correct response provided).
-    *   **Tools:** Test automation frameworks interacting with UI/APIs, manual testing based on detailed test cases.
+    *   **Focus:** Testing complete user scenarios from the presentation layer through all backend components (AI Agent Service, MCP Hub, Functions) to D365 and back.
+    *   **Method:** Simulating user interactions (chat messages, email submissions) based on the defined Use Case Scenarios and verifying the final outcome (e.g., SO created, correct response provided). Could involve coordinating tests across multiple repos.
+    *   **Tools:** Test automation frameworks interacting with UI/APIs (potentially in a dedicated `d365-agent-tests` repo), manual testing based on detailed test cases.
 5.  **Prompt Evaluation:**
     *   **Focus:** Assessing the quality, safety, and effectiveness of LLM prompts used within Agent Flows.
     *   **Method:** Using prompt variants, red-teaming techniques, and evaluating responses against metrics like groundedness, relevance, coherence, fluency, safety.
@@ -57,11 +57,11 @@ A multi-layered approach will be used:
 
 ## 4. Methodology & Tooling
 
-*   **Test Datasets:** Curated datasets representing diverse inputs, edge cases, and expected outputs for different scenarios and flows will be created and maintained (potentially in `tests/data/`).
-*   **Azure AI Studio:** Leveraged extensively for prompt engineering, flow development, and running evaluations (especially for metrics like groundedness, relevance, coherence, fluency using built-in or custom evaluators).
-*   **CI/CD Integration:** Unit tests and potentially integration tests will be integrated into the CI/CD pipeline (`.github/workflows/`) to ensure code quality and prevent regressions. E2E tests might run on a schedule or trigger specific deployments.
+*   **Test Datasets:** Curated datasets representing diverse inputs, edge cases, and expected outputs for different scenarios and flows will be created and maintained (potentially in `d365-agent-service` for flow tests, or a dedicated `d365-agent-tests` repo).
+*   **Azure AI Studio:** Leveraged extensively for prompt engineering, flow development (`d365-agent-service`), and running evaluations (especially for metrics like groundedness, relevance, coherence, fluency using built-in or custom evaluators).
+*   **CI/CD Integration:** Unit tests and potentially integration tests will be integrated into the CI/CD pipelines within their respective repositories (`d365-agent-hub`, `d365-agent-service`, etc.) to ensure code quality and prevent regressions. E2E tests (potentially in `d365-agent-tests`) might run on a schedule or trigger deployments.
 *   **Manual Review:** Regular manual review of agent conversations, flow traces (in AI Studio/App Insights), and evaluation results will be necessary, especially for subjective quality metrics and identifying nuanced failures.
-*   **Telemetry Analysis:** Use Application Insights and potentially the self-learning loop analysis (Phase 4) to identify common failure patterns or areas needing improvement, feeding back into test case creation and development priorities.
+*   **Telemetry Analysis:** Use Application Insights and potentially the self-learning loop analysis (Phase 4) to identify common failure patterns or areas needing improvement, feeding back into test case creation and development priorities within the relevant repositories.
 
 ## 5. Evaluation Across Phases
 

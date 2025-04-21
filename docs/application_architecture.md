@@ -107,15 +107,15 @@ graph TD
 
 4.  **Business Logic & MCP Layer (MCP Hub Service):**
     *   A potentially stateful service hosted on **Azure Container Apps**. While often designed stateless per request, Container Apps' support for long-running requests, session management (inherent in MCP transports like Streamable HTTP), KEDA-based autoscaling, and easier dependency/identity management makes it suitable for robust MCP Hubs.
-    *   **MCP Server Implementation:** Built using the **`@modelcontextprotocol/sdk` (TypeScript SDK)** which simplifies implementing the MCP specification.
+    *   **MCP Server Implementation (in `d365-agent-hub` repo):** Built using the **`@modelcontextprotocol/sdk` (TypeScript SDK)** which simplifies implementing the MCP specification.
         *   Utilizes the `McpServer` class from the SDK to handle the protocol lifecycle, message parsing, and routing.
         *   Employs the **`StreamableHTTPServerTransport`** provided by the SDK, listening for MCP requests (typically on a single `/mcp` endpoint). This transport efficiently handles both client-to-server requests and server-to-client notifications (like progress updates) over a single HTTP connection, aligning with the latest MCP specification versions.
         *   The SDK manages the `initialize` handshake, advertising available `tools`, `resources`, and `prompts`.
         *   Uses libraries like **`zod`** (integrated with the SDK) for defining and validating the input/output schemas (arguments/payloads) of tools and resources, ensuring type safety.
         *   Executes `tools/call` or `resources/read` requests by invoking the corresponding registered functions.
-    *   **D365/External Client Adapters:** Contains typed clients or wrappers for interacting with D365 OData/APIs and external system APIs. Handles authentication token acquisition (using Managed Identity via Entra ID) and caching. Implements retry logic for transient API errors.
-    *   **Tool Implementations:** TypeScript functions registered with the `McpServer` instance. These functions contain the business logic that interacts with backend systems via the client adapters (e.g., `get_trade_price`, `create_sales_order`).
-    *   **Instance/Company Router Logic:** Selects the correct D365 instance/company endpoint and authentication context based on parameters passed in the MCP tool/resource call (`company`, `instance_url`), often validated via the `zod` schema.
+    *   **D365/External Client Adapters (in `d365-agent-hub` repo):** Contains typed clients or wrappers for interacting with D365 OData/APIs and external system APIs. Handles authentication token acquisition (using Managed Identity via Entra ID) and caching. Implements retry logic for transient API errors.
+    *   **Tool Implementations (in `d365-agent-hub` repo):** TypeScript functions registered with the `McpServer` instance. These functions contain the business logic that interacts with backend systems via the client adapters (e.g., `get_trade_price`, `create_sales_order`).
+    *   **Instance/Company Router Logic (in `d365-agent-hub` repo):** Selects the correct D365 instance/company endpoint and authentication context based on parameters passed in the MCP tool/resource call (`company`, `instance_url`), often validated via the `zod` schema.
 
 5.  **Backend Systems (Data Plane):**
     *   The actual Dynamics 365 instances (FO, AX, CE) exposing OData or custom APIs.
@@ -153,8 +153,12 @@ graph TD
 
 ## 5. Deployment & Scalability
 
-*   Components are deployed independently. Agent Flows (YAML) are updated via `az ml capability-host update`. The MCP Hub is deployed as a container image update to Container Apps. Azure Functions and Logic Apps are deployed via standard Azure mechanisms.
-*   Scalability is handled by the underlying Azure services: Container Apps scales based on KEDA rules (e.g., HTTP traffic, queue length), Functions scale on demand (Consumption plan), Service Bus scales automatically.
-*   The MCP Hub can be designed stateless or stateful depending on requirements. The `StreamableHTTPServerTransport` supports session management if needed. Azure Container Apps allows for easy horizontal scaling based on traffic or other metrics.
+*   Components are deployed independently from their respective repositories:
+    *   **`d365-agent-infra`:** Infrastructure deployed via Bicep/ARM (e.g., using GitHub Actions).
+    *   **`d365-agent-hub`:** MCP Hub service deployed as a container image (e.g., built and pushed via CI/CD to Container Apps).
+    *   **`d365-agent-service`:** Agent Flows (YAML) deployed/updated via Azure AI Agent Service mechanisms (e.g., `az ml capability-host update` or UI).
+    *   **`d365-agent-functions` (if used):** Deployed via standard Azure Function deployment methods.
+*   Scalability is handled by the underlying Azure services: Container Apps (for the Hub) scales based on KEDA rules (e.g., HTTP traffic, queue length), Functions scale on demand (Consumption plan), Service Bus scales automatically.
+*   The MCP Hub (in `d365-agent-hub`) can be designed stateless or stateful depending on requirements. The `StreamableHTTPServerTransport` supports session management if needed. Azure Container Apps allows for easy horizontal scaling based on traffic or other metrics.
 
-This application architecture provides a decoupled, scalable, and secure foundation for the suite of specialized Dynamics 365 AI Agents, leveraging Azure services and the MCP standard (implemented via the TypeScript SDK in a shared Hub) for robust and reusable integration.
+This application architecture provides a decoupled, scalable, and secure foundation for the suite of specialized Dynamics 365 AI Agents, leveraging Azure services and the MCP standard (implemented via the TypeScript SDK in the shared Hub) for robust and reusable integration.

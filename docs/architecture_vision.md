@@ -23,7 +23,7 @@ The architecture prioritizes using Microsoft Azure's PaaS and AI services for a 
 *   **Security:** Employ robust security practices, including Managed Identities, Entra ID authentication, Key Vault for secrets, and network isolation (VNet injection, Private Endpoints). No credentials in prompts or agent logic. Explicit user consent, granular permissions (via RBAC on Azure resources and potentially within D365), and sandboxing (where applicable) are crucial to mitigate risks like prompt injection or data exfiltration inherent in exposing capabilities to AI models.
 *   **Scalability & Resilience:** Utilize scalable Azure services (Container Apps with KEDA, Service Bus, Functions) and incorporate patterns for handling load spikes and failures (queues, retries, DLQs).
 *   **Observability:** Implement end-to-end tracing and monitoring using Application Insights and Azure Monitor.
-*   **Maintainability:** Support CI/CD processes for automated testing and deployment of both agent logic (DAGs) and backend services (MCP Hub).
+*   **Maintainability:** Support CI/CD processes within each repository for automated testing and deployment of infrastructure (`d365-agent-infra`), MCP Hub (`d365-agent-hub`), agent logic/DAGs (`d365-agent-service`), documentation (`d365-agent`), etc.
 
 ## 3. Core Architecture Layers & Components
 
@@ -58,7 +58,7 @@ graph TD
         AO1 -- Invokes --> AO3[MCP Tools via Hub]
     end
 
-    subgraph Business Logic & Integration Hub
+    subgraph Business Logic & Integration Hub (d365-agent-hub Repo)
         direction LR
         BL1(MCP Hub on Azure Container Apps)
         BL1 -- Exposes --> AO3
@@ -95,12 +95,16 @@ graph TD
         AO1 -- Uses --> SEC1 & SEC2
     end
 
-    subgraph DevOps
+    subgraph DevOps (Multiple Repos)
         direction LR
-        DEV1(GitHub / Azure DevOps - Repos)
+        DEV1(GitHub / Azure DevOps - Repos: d365-agent, infra, hub, service)
         DEV2(CI/CD Pipelines - Actions/Pipelines)
         DEV3(Azure CLI / ML CLI / Bicep)
-        DEV1 --> DEV2 --> AO1 & BL1 & DP1
+        DEV1 --> DEV2
+        DEV2 --> AO1(Agent Service Config)
+        DEV2 --> BL1(MCP Hub Deployment)
+        DEV2 --> DP1(Function Deployment)
+        DEV2 --> |Infra Deployment| SEC3
         DEV2 -- Uses --> DEV3
     end
 
@@ -116,7 +120,7 @@ graph TD
 2.  **Ingestion & Eventing:** Logic Apps/Power Automate capture inputs, store artifacts (like PDFs) in Blob Storage. Event Grid triggers Service Bus queues for reliable, decoupled processing.
 3.  **Document Processing:** Azure Functions triggered by Service Bus use Document Intelligence to parse unstructured data/documents into JSON.
 4.  **AI Orchestration:** Azure AI Agent Service hosts the core AI models and orchestration logic for the *various specialized agents* (e.g., Sales Agent, Procurement Agent). It manages the execution of specific business processes defined as modular Agent Flows (DAGs in YAML), which are mapped to specific agent capabilities (e.g., a `Process_Sales_Quote` flow for the Sales Agent, `Create_Purchase_Order` flow for the Procurement Agent). It interacts with the shared MCP Hub to invoke underlying tools required by these flows.
-5.  **Business Logic & Integration Hub (MCP Hub):**
+5.  **Business Logic & Integration Hub (MCP Hub) - `d365-agent-hub` Repo:**
     *   Hosted on Azure Container Apps for scalability and Managed Identity support.
     *   Exposes business logic and data access capabilities as MCP tools (Resources, Tools, Prompts).
     *   Contains client logic and authentication handlers (using Managed Identity via Entra ID) for interacting with various backend systems (D365 FO/AX OData, Dataverse API, external APIs).
@@ -124,7 +128,7 @@ graph TD
 6.  **Backend Systems & Data:** The actual systems of record (multiple D365 instances, external services) and supporting data sources (catalogues, cache).
 7.  **Observability & Learning:** Application Insights captures logs and traces. Data Lake/Synapse stores telemetry for analysis. Azure ML jobs can mine this data to suggest improvements or new tools (feedback loop).
 8.  **Security & Identity:** Entra ID provides authentication via Managed Identities. Key Vault stores secrets. Network security is enforced via VNet integration and Private Endpoints.
-9.  **DevOps:** Code (agent DAGs, hub implementation, function code) is stored in Git. CI/CD pipelines automate testing and deployment to Azure using tools like Azure CLI and Bicep.
+9.  **DevOps - Multiple Repositories:** Code for different components resides in separate Git repositories (`d365-agent`, `d365-agent-infra`, `d365-agent-hub`, `d365-agent-service`, etc.). CI/CD pipelines (GitHub Actions or Azure DevOps) in each repository automate testing and deployment of their respective components to Azure using tools like Azure CLI and Bicep.
 
 ## 4. Key Architectural Patterns
 
@@ -149,10 +153,10 @@ graph TD
 
 ## 6. Deployment and Operations
 
-*   Infrastructure is provisioned using Bicep/ARM templates.
-*   Agent DAGs (YAML) and MCP Hub container images are deployed via CI/CD pipelines (GitHub Actions or Azure DevOps).
-*   Monitoring dashboards in Azure Monitor provide insights into performance and errors.
-*   Autoscaling rules (KEDA on Container Apps, Consumption plan for Functions) handle varying loads.
+*   Infrastructure is provisioned using Bicep/ARM templates from the `d365-agent-infra` repository.
+*   Agent DAGs (YAML) from `d365-agent-service` and MCP Hub container images from `d365-agent-hub` are deployed via CI/CD pipelines (GitHub Actions or Azure DevOps) specific to their repositories.
+*   Monitoring dashboards in Azure Monitor provide insights into performance and errors across the deployed components.
+*   Autoscaling rules (KEDA on Container Apps for the Hub, Consumption plan for Functions) handle varying loads.
 
 ## 7. Future Considerations
 
