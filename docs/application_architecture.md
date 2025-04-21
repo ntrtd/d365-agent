@@ -1,10 +1,10 @@
-# Application Architecture: Dynamics 365 AI Agent
+lets plan for ano# Application Architecture: Dynamics 365 AI Agent
 
 This document details the application architecture for the Dynamics 365 AI Agent, specifying the key software components, their responsibilities, and interactions. It builds upon the high-level vision outlined in `architecture_vision.md`.
 
 ## 1. Overview
 
-The application architecture is designed as a distributed system composed of microservices and managed Azure services, emphasizing loose coupling, scalability, and maintainability. Interactions between the AI orchestration layer and backend business logic are standardized via the Model Context Protocol (MCP).
+The application architecture is designed as a distributed system composed of microservices and managed Azure services, emphasizing loose coupling, scalability, and maintainability. **Application Backend services** (e.g., a web app backend, Teams bot backend) act as the primary orchestrators. They leverage the **`d365-agent-mcpclient` SDK** library, which acts as an **MCP Client** to interact with the backend business logic server (`d365-agent-mcpserver`) via the Model Context Protocol (MCP).
 
 ## 2. Key Application Components
 
@@ -24,20 +24,31 @@ graph TD
         INT4[Service Bus]
     end
 
-    subgraph Processing & Intelligence Layer
-        PROC1[Document Parsing Function (Azure Function + Doc Intelligence)]
-        PROC2[AI Agent Service (Orchestrator)]
-        PROC3[Agent Flows/DAGs (YAML Definitions)]
-        PROC2 -- Manages --> PROC3
+    subgraph Application Backend Layer
+        APP_BACKEND1[Web App Backend (Node.js, etc.)]
+        APP_BACKEND2[Teams Bot Backend]
+        APP_BACKEND3[...]
+        APP_BACKEND1 -- Uses --> SDK
+        APP_BACKEND2 -- Uses --> SDK
+        APP_BACKEND3 -- Uses --> SDK
+        SDK[d365-agent-mcpclient SDK (Library)]
+        SDK -- Contains --> ORCH[Orchestration Logic]
+        SDK -- Contains --> MCP_CLIENT[MCP Client]
+        SDK -- Contains --> STATE[State Management]
+        SDK -- Contains --> LLM_INT[LLM Interaction (Optional)]
     end
 
-    subgraph Business Logic & MCP Layer
-        MCPHUB[MCP Hub Service (Azure Container App)]
-        MCPHUB -- Hosts --> MCP1[MCP Server Implementation (Python/FastAPI)]
-        MCPHUB -- Contains --> MCP2[D365 Client Adapters (FO/AX/CE)]
-        MCPHUB -- Contains --> MCP3[External API Client Adapters]
-        MCPHUB -- Contains --> MCP4[Tool Implementations]
-        MCPHUB -- Contains --> MCP5[Instance/Company Router Logic]
+    subgraph Optional Ingestion Processing
+        PROC1[Document Parsing Function (Azure Function + Doc Intelligence)]
+    end
+
+    subgraph MCP Server Layer (`d365-agent-mcpserver` Repo)
+        MCPSERVER[MCP Server (Azure Container App)]
+        MCPSERVER -- Hosts --> MCP1[MCP Server Implementation]
+        MCPSERVER -- Contains --> MCP2[D365 Client Adapters (FO/AX/CE)]
+        MCPSERVER -- Contains --> MCP3[External API Client Adapters]
+        MCPSERVER -- Contains --> MCP4[Tool Implementations]
+        MCPSERVER -- Contains --> MCP5[Instance/Company Router Logic]
     end
 
     subgraph Backend Systems (Data Plane)
@@ -55,27 +66,37 @@ graph TD
     end
 
     %% Interactions
-    UI1 & UI2 & UI3 -->|User Input/Requests| PROC2
+    UI1 -->|User Input/Requests| APP_BACKEND1
+    UI2 -->|User Input/Requests| APP_BACKEND2
+    UI3 -->|User Input/Requests| APP_BACKEND3 %% Example connection
     UI4 -->|Email Data| INT2
     INT2 --> STORE --> INT3 --> INT4 --> PROC1
-    PROC1 -->|Parsed Data| INT4 --> PROC2
+    PROC1 -->|Parsed Data| INT4 --> APP_BACKEND1 %% Example trigger
 
-    PROC2 -->|Invoke MCP Tool| MCPHUB
-    MCPHUB -->|API Calls| BE1 & BE2 & BE3 & BE4
-    MCPHUB -->|Cache Lookup/Store| CACHE
-    MCPHUB -->|Secrets| SEC
-    MCPHUB -->|Auth via Managed ID| SEC
+    APP_BACKEND1 -- Uses --> SDK
+    APP_BACKEND2 -- Uses --> SDK
+    SDK -- Orchestrates --> SDK %% Internal SDK logic
+    ORCH -->|Identify Tool Need| MCP_CLIENT
+    MCP_CLIENT -->|Invoke MCP Tool| MCPSERVER
+    MCPSERVER -->|API Calls| BE1 & BE2 & BE3 & BE4
+    MCPSERVER -->|Cache Lookup/Store| CACHE
+    MCPSERVER -->|Secrets| SEC
+    MCPSERVER -->|Auth via Entra ID (Client Creds)| SEC %% Client Creds from Key Vault
+    APP_BACKEND1 -->|Return Response| UI1 %% Example response flow
+    APP_BACKEND2 -->|Return Response| UI2 %% Example response flow
 
-    PROC2 & MCPHUB & PROC1 & INT2 -->|Logs & Telemetry| LOG
-    MCPHUB -->|Read Config/Secrets| SEC
+    APP_BACKEND1 & APP_BACKEND2 & SDK & MCPSERVER & PROC1 & INT2 -->|Logs & Telemetry| LOG
+    MCPSERVER -->|Read Config/Secrets| SEC
 
     %% Style/Grouping (Conceptual)
     classDef azureService fill:#DCEFFA,stroke:#0078D4,stroke-width:1px;
-    class INT1,INT2,INT3,INT4,PROC1,PROC2,MCPHUB,BE1,BE2,BE3,BE4,SEC,LOG,CACHE,STORE azureService;
+    class INT1,INT2,INT3,INT4,PROC1,MCPSERVER,BE1,BE2,BE3,BE4,SEC,LOG,CACHE,STORE azureService;
+    classDef appBackendComponent fill:#E1DFEC,stroke:#502064,stroke-width:1px;
+    class APP_BACKEND1,APP_BACKEND2,APP_BACKEND3 appBackendComponent;
+    classDef sdkComponent fill:#E2F0D9,stroke:#548235,stroke-width:1px;
+    class SDK,ORCH,MCP_CLIENT,STATE,LLM_INT sdkComponent;
     classDef uiComponent fill:#FFF4CE,stroke:#FFA500,stroke-width:1px;
     class UI1,UI2,UI3,UI4 uiComponent;
-    classDef definition fill:#E2F0D9,stroke:#548235,stroke-width:1px;
-    class PROC3 definition;
 
 ```
 
@@ -85,80 +106,84 @@ graph TD
     *   Provides user interfaces for interaction (chat, voice).
     *   Adapts non-interactive channels (email) into processable inputs.
     *   Authenticates users (delegating to Entra ID).
-    *   Communicates user requests to the AI Agent Service.
-    *   Renders agent responses, confirmations, and requests for clarification.
+    *   Communicates user requests to the corresponding **Application Backend** service.
+    *   Renders responses received from the Application Backend.
 
 2.  **Integration Layer:**
     *   **(Optional) API Gateway:** Provides a single entry point, handles routing, rate limiting, and potentially some initial auth/validation for API-based interactions.
     *   **Ingestion Services (Logic Apps, Event Grid, Service Bus):** Handle asynchronous intake of data (especially from email/batch), buffer requests, decouple components, and trigger processing workflows reliably.
     *   Stores raw artifacts (like PDFs) in Blob Storage.
+    *   Can trigger Application Backends via Service Bus messages (e.g., after document parsing).
 
-3.  **Processing & Intelligence Layer:**
-    *   **Document Parsing Function:** An Azure Function containing logic to call Azure AI Document Intelligence, extract structured data from documents (PDFs, images), and place the results onto Service Bus for the agent.
-    *   **AI Agent Service:** The core orchestration engine for the *suite of specialized agents* (e.g., Sales, Procurement, Finance).
-        *   Hosts the Large Language Models (LLMs) and agent configurations.
-        *   Manages user sessions and conversation state, potentially routing users to the appropriate specialized agent based on context or intent.
-        *   Executes defined Agent Flows/DAGs (YAML) associated with specific agent capabilities based on user intent or triggers.
-        *   Interprets user requests and decides which agent's tools/flows to invoke.
-        *   Communicates with the *shared* MCP Hub via the standardized Model Context Protocol (MCP), typically using the efficient **Streamable HTTP** transport, to call tools and access resources needed by any agent. This starts with an `initialize` handshake to discover the Hub's capabilities.
-        *   Orchestrates the execution sequence based on the selected Agent Flow/DAG for the active specialized agent, potentially using Planner-Executor or Graph-based execution patterns.
-        *   Formats LLM responses for the Presentation Layer.
-    *   **Agent Flows/DAGs:** YAML definitions specifying the sequence of steps (LLM prompts, MCP tool calls, MCP resource access, conditional logic) for specific business processes. These flows are mapped to the capabilities of *specialized agents* and organized logically by functional domain (e.g., `Sales_CreateQuote.yaml`, `Procurement_ProcessRequisition.yaml`, `Finance_CheckInvoiceStatus.yaml`).
+3.  **Application Backend Layer:**
+    *   **Application Backend Services (e.g., Web App Backend, Teams Bot Backend):** Server-side components responsible for handling requests from specific Presentation Layer UIs or Integration Layer triggers.
+        *   Receives user input or event data.
+        *   Manages user session state specific to the channel.
+        *   **Crucially, uses the `d365-agent-mcpclient` SDK** to orchestrate the required business workflow.
+        *   Handles secure configuration (LLM keys, MCP Server endpoint).
+        *   Formats final responses and sends them back to the Presentation Layer.
+    *   **`d365-agent-mcpclient` SDK (Library - in `d365-agent-mcpclient` repo):**
+        *   **Orchestration Logic:** Implements business process workflows (DAGs) in code (e.g., TypeScript/Python). Determines the sequence of steps and which MCP Tools to invoke.
+        *   **State Management:** Provides mechanisms or relies on the hosting Application Backend to manage conversation/workflow state.
+        *   **MCP Client:** Uses an MCP client library (e.g., `@modelcontextprotocol/sdk/client`) to communicate with the `d365-agent-mcpserver`, calling its exposed tools.
+        *   **(Optional) LLM Interaction:** May interact with LLMs (e.g., Azure OpenAI) for intent recognition or natural language response generation, configured securely within the Application Backend.
 
-4.  **Business Logic & MCP Layer (MCP Hub Service):**
-    *   A potentially stateful service hosted on **Azure Container Apps**. While often designed stateless per request, Container Apps' support for long-running requests, session management (inherent in MCP transports like Streamable HTTP), KEDA-based autoscaling, and easier dependency/identity management makes it suitable for robust MCP Hubs.
-    *   **MCP Server Implementation (in `d365-agent-hub` repo):** Built using the **`@modelcontextprotocol/sdk` (TypeScript SDK)** which simplifies implementing the MCP specification.
-        *   Utilizes the `McpServer` class from the SDK to handle the protocol lifecycle, message parsing, and routing.
-        *   Employs the **`StreamableHTTPServerTransport`** provided by the SDK, listening for MCP requests (typically on a single `/mcp` endpoint). This transport efficiently handles both client-to-server requests and server-to-client notifications (like progress updates) over a single HTTP connection, aligning with the latest MCP specification versions.
-        *   The SDK manages the `initialize` handshake, advertising available `tools`, `resources`, and `prompts`.
-        *   Uses libraries like **`zod`** (integrated with the SDK) for defining and validating the input/output schemas (arguments/payloads) of tools and resources, ensuring type safety.
-        *   Executes `tools/call` or `resources/read` requests by invoking the corresponding registered functions.
-    *   **D365/External Client Adapters (in `d365-agent-hub` repo):** Contains typed clients or wrappers for interacting with D365 OData/APIs and external system APIs. Handles authentication token acquisition (using Managed Identity via Entra ID) and caching. Implements retry logic for transient API errors.
-    *   **Tool Implementations (in `d365-agent-hub` repo):** TypeScript functions registered with the `McpServer` instance. These functions contain the business logic that interacts with backend systems via the client adapters (e.g., `get_trade_price`, `create_sales_order`).
-    *   **Instance/Company Router Logic (in `d365-agent-hub` repo):** Selects the correct D365 instance/company endpoint and authentication context based on parameters passed in the MCP tool/resource call (`company`, `instance_url`), often validated via the `zod` schema.
+4.  **Optional Ingestion Processing:**
+    *   **Document Parsing Function:** An Azure Function containing logic to call Azure AI Document Intelligence, extract structured data from documents (PDFs, images), and place the results onto Service Bus, potentially triggering an Application Backend.
 
-5.  **Backend Systems (Data Plane):**
+5.  **MCP Server Layer (`d365-agent-mcpserver` Service):**
+    *   Hosts the MCP Server implementation on **Azure Container Apps**.
+    *   **MCP Server Implementation (in `d365-agent-mcpserver` repo):** Built using the **`@modelcontextprotocol/sdk` (TypeScript SDK)**.
+        *   Handles the MCP protocol (`initialize`, `tools/call`, etc.) via a transport like `StreamableHTTPServerTransport`.
+        *   Advertises available D365-related MCP Tools.
+        *   Uses libraries like **`zod`** for schema validation.
+    *   **Tool Implementations (in `d365-agent-mcpserver` repo):** The actual logic behind the MCP Tools. These functions interact with D365 via client adapters.
+    *   **D365/External Client Adapters (in `d365-agent-mcpserver` repo):** Contains typed clients (e.g., generated OData client from `d365-agent-odataclient`) or wrappers for interacting with D365 OData/APIs and external APIs. Handles authentication using **Entra ID Client Credentials grant flow** (retrieving secrets like client ID/secret from Azure Key Vault).
+    *   **Instance/Company Router Logic (in `d365-agent-mcpserver` repo):** Selects the correct D365 instance/company endpoint based on parameters in the MCP tool call.
+
+6.  **Backend Systems (Data Plane):** (Responsibilities unchanged)
     *   The actual Dynamics 365 instances (FO, AX, CE) exposing OData or custom APIs.
     *   Other external MCP servers providing specialized capabilities.
     *   Third-party systems accessed via standard REST/SOAP APIs.
     *   Static or semi-static data sources (e.g., CSV files served via a simple API).
 
-6.  **Cross-Cutting Concerns:**
-    *   **Security Services:** Entra ID for user and service identity (Managed Identity), Azure Key Vault for storing secrets securely. Network security via VNet/Private Endpoints.
-    *   **Monitoring & Logging:** Application Insights for distributed tracing, logging, and performance monitoring across all components. Log Analytics for querying.
-    *   **Caching Service:** Azure Cache for Redis used by the MCP Hub to cache frequently accessed, relatively static data from D365 (e.g., configurations, potentially some pricing/item data) to reduce latency and load.
+7.  **Cross-Cutting Concerns:**
+    *   **Security Services:** Entra ID for user identity and service identity (e.g., for LLM calls in Application Backends). Azure Key Vault for storing secrets (like D365 Client Credentials, LLM Keys). Network security via VNet/Private Endpoints.
+    *   **Monitoring & Logging:** Application Insights for distributed tracing, logging, and performance monitoring across all components (**Application Backends**, SDK, **MCP Server**, etc.). Log Analytics for querying.
+    *   **Caching Service:** Azure Cache for Redis used by the **MCP Server (`d365-agent-mcpserver`)** to cache frequently accessed, relatively static data from D365 (e.g., configurations, potentially some pricing/item data) to reduce latency and load.
     *   **Data Storage:** Azure Blob Storage for raw documents/attachments, Azure Data Lake for storing enriched telemetry/traces for analysis and potentially feeding the self-learning loop.
 
 ## 4. Key Interactions & Data Flow (Example: PO Processing)
 
 1.  User emails a PO PDF (UI4 -> INT2 -> STORE -> INT3 -> INT4 -> PROC1).
 2.  Document Parsing Function (PROC1) uses Document Intelligence, puts structured JSON onto Service Bus (INT4).
-3.  AI Agent Service (PROC2) is triggered, loads the relevant Agent Flow (e.g., `SCM_ProcessPO.yaml`) (PROC3).
-4.  Agent Flow executes:
-    *   Calls MCP tool `resolve_item` via MCP Hub (PROC2 -> MCPHUB).
-    *   MCP Hub (MCPHUB) uses router logic (MCP5), gets D365 client (MCP2), authenticates via Managed ID (SEC), calls D365 API (BE1), returns item details (MCPHUB -> PROC2).
-    *   Agent Flow calls `check_credit` (PROC2 -> MCPHUB).
-    *   MCP Hub calls D365 Finance API (BE1), returns credit status (MCPHUB -> PROC2).
-    *   Agent Flow calls `create_sales_order` (PROC2 -> MCPHUB).
-    *   MCP Hub calls D365 API (BE1), returns SO number (MCPHUB -> PROC2).
-5.  Agent Service (PROC2) formats confirmation message, sends to user channel (PROC2 -> UI4/Logic App).
-6.  All components log detailed telemetry (including MCP request/response pairs with trace IDs) to Application Insights (LOG). This data can be exported to Azure Data Lake (STORE) for long-term storage and analysis.
-7.  **(Self-Learning Loop):** A separate process (e.g., scheduled Azure ML job) can analyze the telemetry in Data Lake/Synapse, cluster failed interactions or common fallback scenarios, use an LLM (like Azure OpenAI) to suggest new MCP tools or prompt improvements, and potentially raise PRs against the MCP Hub repository for human review and integration via CI/CD.
-
-## 6. Further Reading
-
-*   **[Model Context Protocol (MCP) Documentation](https://modelcontextprotocol.io/)**: Official documentation for the core protocol.
-*   **[MCP TypeScript SDK Repository](https://github.com/modelcontextprotocol/typescript-sdk)**: Source code, examples, and README for the SDK used in the MCP Hub.
-*   **[MCP Specification](https://spec.modelcontextprotocol.io)**: Formal details of the protocol versions.
+3.  The **Application Backend** service (e.g., APP_BACKEND1) is triggered by the message from Service Bus. It uses the **`d365-agent-mcpclient` SDK**.
+4.  The SDK's **Orchestration Logic** executes the PO Processing workflow:
+    *   Calls MCP tool `resolve_item` via the embedded **MCP Client** (SDK -> MCPSERVER).
+    *   **MCP Server (`d365-agent-mcpserver`)** receives the call, uses router logic (MCP5), gets D365 client (MCP2), authenticates using **Client Credentials** (SEC), calls D365 API (BE1), returns item details via MCP response (MCPSERVER -> SDK).
+    *   Orchestration Logic calls `check_credit` MCP tool (SDK -> MCPSERVER).
+    *   MCP Server calls D365 Finance API (BE1), returns credit status (MCPSERVER -> SDK).
+    *   Orchestration Logic calls `create_sales_order` MCP tool (SDK -> MCPSERVER).
+    *   MCP Server calls D365 API (BE1), returns SO number (MCPSERVER -> SDK).
+5.  The **Client SDK/Application Backend** formats the confirmation message (potentially using an LLM) and sends it back to the user channel (APP_BACKEND1 -> UI4/Logic App).
+6.  All relevant components (Application Backends, SDK, MCP Server) log detailed telemetry (including MCP request/response pairs with trace IDs) to Application Insights (LOG). This data can be exported to Azure Data Lake (STORE) for long-term storage and analysis.
+7.  **(Self-Learning Loop):** A separate process (e.g., scheduled Azure ML job) can analyze the telemetry in Data Lake/Synapse, cluster failed interactions or common fallback scenarios, use an LLM (like Azure OpenAI) to suggest new MCP tools or prompt improvements, and potentially raise PRs against the **`d365-agent-mcpserver`** repository for human review and integration via CI/CD.
 
 ## 5. Deployment & Scalability
 
 *   Components are deployed independently from their respective repositories:
     *   **`d365-agent-infra`:** Infrastructure deployed via Bicep/ARM (e.g., using GitHub Actions).
-    *   **`d365-agent-hub`:** MCP Hub service deployed as a container image (e.g., built and pushed via CI/CD to Container Apps).
-    *   **`d365-agent-service`:** Agent Flows (YAML) deployed/updated via Azure AI Agent Service mechanisms (e.g., `az ml capability-host update` or UI).
-    *   **`d365-agent-functions` (if used):** Deployed via standard Azure Function deployment methods.
-*   Scalability is handled by the underlying Azure services: Container Apps (for the Hub) scales based on KEDA rules (e.g., HTTP traffic, queue length), Functions scale on demand (Consumption plan), Service Bus scales automatically.
-*   The MCP Hub (in `d365-agent-hub`) can be designed stateless or stateful depending on requirements. The `StreamableHTTPServerTransport` supports session management if needed. Azure Container Apps allows for easy horizontal scaling based on traffic or other metrics.
+    *   **`d365-agent-mcpserver`:** MCP Server service deployed as a container image (e.g., built and pushed via CI/CD to Container Apps).
+    *   **`d365-agent-mcpclient`:** Client SDK deployed as a library package or bundled within Application Backend deployments.
+    *   **Application Backends:** Deployed based on their specific technology (e.g., Web Apps, Bot Services, Functions).
+    *   **`d365-agent-functions` (if used for parsing):** Deployed via standard Azure Function deployment methods.
+*   Scalability is handled by the underlying Azure services: Container Apps (for the MCP Server) scales based on KEDA rules, Application Backend services scale based on their hosting model (e.g., App Service Plan, Consumption Plan), Service Bus scales automatically.
+*   The MCP Server (`d365-agent-mcpserver`) can be designed stateless or stateful depending on requirements. The `StreamableHTTPServerTransport` supports session management if needed. Azure Container Apps allows for easy horizontal scaling based on traffic or other metrics.
 
-This application architecture provides a decoupled, scalable, and secure foundation for the suite of specialized Dynamics 365 AI Agents, leveraging Azure services and the MCP standard (implemented via the TypeScript SDK in the shared Hub) for robust and reusable integration.
+This application architecture provides a decoupled, scalable, and secure foundation for orchestrating interactions with Dynamics 365, leveraging Azure services and the MCP standard for robust and reusable integration between the custom client SDK and the backend MCP server.
+
+## 6. Further Reading
+
+*   **[Model Context Protocol (MCP) Documentation](https://modelcontextprotocol.io/)**: Official documentation for the core protocol.
+*   **[MCP TypeScript SDK Repository](https://github.com/modelcontextprotocol/typescript-sdk)**: Source code, examples, and README for the MCP SDK potentially used in both the server (`d365-agent-mcpserver`) and client (`d365-agent-mcpclient`).
+*   **[MCP Specification](https://spec.modelcontextprotocol.io)**: Formal details of the protocol versions.
