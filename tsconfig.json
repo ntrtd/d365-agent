@@ -4,6 +4,7 @@
     "module": "CommonJS", // Or ESNext, NodeNext depending on your project setup
     "outDir": "./dist", // Example output directory for compiled JS
     "rootDir": "./src", // Example root directory for source files
+    "moduleResolution": "node", // Explicitly set module resolution
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -15,6 +16,7 @@
 , "src/.old/generated"  ],
   "exclude": [
     "node_modules",
-    "**/*.spec.ts" // Exclude test files
+    "**/*.spec.ts", // Exclude test files
+    "src/mcp_hub/**/*" // Exclude the mcp_hub workspace
   ]
 }

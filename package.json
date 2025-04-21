@@ -6,7 +6,13 @@
     "packages/*",
     "src/mcp_hub"
   ],
+  "scripts": {
+    "build": "npm run build -ws --if-present",
+    "build:agent": "tsc",
+    "start:agent": "npm run build:agent && node dist/agent/index.js"
+  },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.10.1",
     "@sap-cloud-sdk/odata-v4": "^4.0.2",
     "dotenv": "^16.5.0"
   },

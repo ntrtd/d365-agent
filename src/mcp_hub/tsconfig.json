@@ -5,7 +5,7 @@
     "outDir": "./build",
     "rootDir": "./src", // Compile only files under src/mcp_hub/src
     // baseUrl and paths are no longer needed as we import from workspace packages
-    // "strict": true, // Temporarily disable strict mode for diagnosing memory issue
+    "strict": true, // Re-enable strict mode
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,

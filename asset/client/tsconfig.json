@@ -9,8 +9,8 @@
     "skipLibCheck": true, // Important for large generated codebases
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
-    "declaration": true, // Generate necessary .d.ts files for consumption
-    "declarationMap": true, // Optional: Sourcemaps for declaration files
+    "declaration": false, // Generate necessary .d.ts files for consumption (disabled for memory)
+    "declarationMap": false, // Optional: Sourcemaps for declaration files (disabled for memory)
     "sourceMap": true // Generate source maps for debugging
   },
   "include": ["src/**/*.ts"], // Compile all TS files within the src directory
