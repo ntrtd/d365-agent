@@ -1,42 +1,39 @@
 # Phase 2: Initial End-to-End Use Case (e.g., PO Ingestion MVP)
 
-*   **Goal:** Implement and validate a single, high-value, end-to-end business process using a **specific specialized agent** (e.g., the SCM Agent). Demonstrate transactional capabilities and integration with key components like Document Intelligence via the shared MCP Hub.
-*   **MVP:** An **SCM Agent** capable of processing a simple Purchase Order (received via email/PDF or direct input) for known items and customers within credit limits, resulting in a Sales Order created in the D365 sandbox. Focuses on the "happy path" for this specific agent's scenario. Basic error handling included. Demonstrates the agent's transactional capability, Document Intelligence integration, and a complete workflow involving multiple MCP tool calls to the shared Hub.
+*   **Goal:** Implement and validate a single, high-value, end-to-end business process (e.g., PO Ingestion) within an **Application Backend / Client Library** (repo [`d365-agent-mcpclient-ts`](https://github.com/ntrtd/d365-agent-mcpclient-ts) or [`d365-agent-mcpclient-dotnet`](https://github.com/ntrtd/d365-agent-mcpclient-dotnet)). Demonstrate transactional capabilities by calling tools on the MCP Server (repo [`d365-agent-mcpserver-ts`](https://github.com/ntrtd/d365-agent-mcpserver-ts) or [`d365-agent-mcpserver-dotnet`](https://github.com/ntrtd/d365-agent-mcpserver-dotnet)) and potentially integrate external services like Document Intelligence.
+*   **Orchestration Decision:** Decide whether this initial E2E flow will use **AutoGen** or a defined **DAG** for orchestration within the chosen client-side implementation (TS or C#).
+*   **MVP:** An **Application Backend** (e.g., for SCM) capable of processing a simple Purchase Order (received via email/PDF or direct input). The orchestration logic (AutoGen/DAG in `d365-agent-mcpclient-*`) calls tools on the chosen MCP Server repo ([`d365-agent-mcpserver-ts`](https://github.com/ntrtd/d365-agent-mcpserver-ts) or [`d365-agent-mcpserver-dotnet`](https://github.com/ntrtd/d365-agent-mcpserver-dotnet)) (e.g., `resolve_item`, `create_sales_order`) to validate data and create a Sales Order in D365 for known items/customers within credit limits (the "happy path"). Demonstrates transactional MCP tool calls, orchestration logic, and potential external service integration (like Document Intelligence).
 
 ## Task Checklist
 
--   [ ] **Document Processing Setup (Potentially `d365-agent-functions` repo)**
-    -   [ ] Provision Azure AI Document Intelligence resource (via `d365-agent-infra`).
-    -   [ ] Develop Azure Function for document parsing (Triggered by Service Bus).
+-   [ ] **Document Processing Setup (Optional - if needed for E2E Use Case)**
+    -   [ ] Provision Azure AI Document Intelligence resource (via [`d365-agent-infra`](https://github.com/ntrtd/d365-agent-infra)).
+    -   [ ] Develop Azure Function (e.g., in `d365-agent-functions` repo) for document parsing (Triggered by Service Bus).
     -   [ ] Configure Function to output structured JSON to another Service Bus topic/queue.
     -   [ ] Deploy Document Parsing Function (via its own CI/CD pipeline).
--   [ ] **Ingestion Flow Setup**
-    -   [ ] Develop Logic App/Power Automate flow to monitor email inbox.
-    -   [ ] Configure flow to save attachments to Blob Storage.
-    -   [ ] Configure flow to trigger Service Bus message (input for Parsing Function).
-    -   [ ] Configure Service Bus trigger for AI Agent Service (or intermediary function).
--   [ ] **MCP Hub Enhancements (`d365-agent-hub` repo) (for SCM Agent Use Case)**
-    -   [ ] Implement MCP tools required for the PO processing scenario (e.g., `resolve_item`, `get_trade_price`, `check_credit` [basic - potentially calling a Finance tool], `create_sales_order`) within the appropriate directories (e.g., `src/tools/scm/`, `src/tools/finance/`).
-    -   [ ] Ensure tools use the D365 client imported from the `@d365-agent/odataclient` package for relevant modules.
-    -   [ ] Implement basic validation logic within tools.
-    -   [ ] Update shared MCP Hub deployment via its CI/CD pipeline.
--   [ ] **AI Agent Service Enhancements (`d365-agent-service` repo) (for SCM Agent)**
-    -   [ ] Enhance/Refine the **SCM Agent** definition (YAML/JSON).
-    -   [ ] Develop Agent Flow/DAG for the end-to-end scenario within the SCM agent's flow directory (e.g., `flows/scm_inventory/ProcessPO_MVP.yaml`).
-    -   [ ] Include steps for calling document parsing results (as input/resource).
-    -   [ ] Include steps for calling the new MCP tools (potentially across agent domains via the Hub) sequentially.
-    -   [ ] Implement basic error handling logic within the flow (e.g., branch on credit check failure).
-    -   [ ] Refine system prompts specific to the SCM Agent for the PO processing task.
-    -   [ ] Update SCM Agent configuration deployment via its mechanism/pipeline.
--   [ ] **User Interface / Channel**
-    -   [ ] Ensure the chosen channel (e.g., email, Web Chat) supports initiating the flow (e.g., receiving emails, allowing file uploads or text input representing PO).
-    -   [ ] Refine response handling for confirmations or error messages.
+-   [ ] **Ingestion Flow Setup (Optional - if needed for E2E Use Case)**
+    -   [ ] Develop Logic App/Power Automate flow or custom listener to monitor input channel (e.g., email inbox).
+    -   [ ] Configure flow to save attachments (if any) to Blob Storage.
+    -   [ ] Configure flow to trigger Service Bus message (input for Parsing Function or Application Backend).
+    -   [ ] Configure trigger for the target Application Backend (e.g., Service Bus trigger).
+-   [ ] **MCP Server Enhancements (Repo: [`d365-agent-mcpserver-ts`](https://github.com/ntrtd/d365-agent-mcpserver-ts) OR [`d365-agent-mcpserver-dotnet`](https://github.com/ntrtd/d365-agent-mcpserver-dotnet))**
+    -   [ ] Implement transactional MCP tools required for the E2E scenario (e.g., `resolve_item`, `get_trade_price`, `check_credit`, `create_sales_order`) using the chosen SDK (TS or C#) and the generated D365 client.
+    -   [ ] Implement appropriate validation and error handling logic within tools.
+    -   [ ] Update chosen MCP Server deployment via its CI/CD pipeline.
+-   [ ] **Application Backend / Client Library Enhancements (Repo: [`d365-agent-mcpclient-ts`](https://github.com/ntrtd/d365-agent-mcpclient-ts) OR [`d365-agent-mcpclient-dotnet`](https://github.com/ntrtd/d365-agent-mcpclient-dotnet) / App Backend Repo)**
+    -   [ ] Implement the E2E orchestration logic (using chosen strategy: **AutoGen** agents or **DAG** definition) within the Application Backend or chosen Client Library (`d365-agent-mcpclient-*`).
+    -   [ ] Logic should handle inputs (e.g., from Service Bus trigger, direct API call) potentially including parsed document data.
+    -   [ ] Logic calls the necessary MCP tools on the deployed MCP Server ([`d365-agent-mcpserver-ts`](https://github.com/ntrtd/d365-agent-mcpserver-ts) or [`d365-agent-mcpserver-dotnet`](https://github.com/ntrtd/d365-agent-mcpserver-dotnet)) sequentially or based on agent interaction.
+    -   [ ] Implement basic error handling within the orchestration flow (e.g., branch on credit check failure).
+    -   [ ] If using LLMs for prompts/responses, integrate here.
+    -   [ ] Deploy Application Backend / Client Library (`d365-agent-mcpclient-*`) updates.
+-   [ ] **User Interface / Channel (Initial)**
+    -   [ ] Set up or ensure the chosen channel (e.g., Web Chat via App Service, test harness) can initiate the E2E flow and receive responses/confirmations/errors from the Application Backend.
 -   [ ] **Testing & Validation (Phase 2)**
-    *   [ ] Refine Evaluation Strategy (add Flow evaluation metrics, E2E test scope, prompt eval - see `docs/evaluation_strategy.md` in `d365-agent`).
-    *   [ ] Create test datasets for the E2E scenario (diverse inputs, edge cases) (location TBD, e.g., `d365-agent-service` or `d365-agent-tests`).
-    *   [ ] Implement Unit Tests for new MCP Hub tools in `d365-agent-hub`.
-    *   [ ] Implement Integration Tests for MCP Hub tools against D365 sandbox (verify SO creation) in `d365-agent-hub`.
-    *   [ ] Configure & Run Agent Flow evaluations in AI Studio (using test datasets, check metrics like groundedness, relevance) for flows in `d365-agent-service`.
-    *   [ ] Perform E2E scenario testing (manual or automated) for the SCM Agent's PO processing "happy path" and basic error conditions (location TBD, e.g., `d365-agent-tests`).
-    *   [ ] Conduct initial prompt evaluation / red-teaming for the SCM Agent scenario (flows in `d365-agent-service`).
-    *   [ ] Analyze results and logs, iterate on fixes for the SCM agent (`d365-agent-service`) and relevant Hub tools (`d365-agent-hub`).
+    *   [ ] Refine Evaluation Strategy (add orchestration flow metrics, E2E test scope).
+    *   [ ] Create test datasets for the E2E scenario (diverse inputs, edge cases). (**Location TBD, maybe `d365-agent-tests`**)
+    *   [ ] Implement Unit Tests for new MCP Server tools in the chosen MCP server repo ([`d365-agent-mcpserver-ts`](https://github.com/ntrtd/d365-agent-mcpserver-ts) or [`d365-agent-mcpserver-dotnet`](https://github.com/ntrtd/d365-agent-mcpserver-dotnet)).
+    *   [ ] Implement Unit Tests for orchestration logic in Application Backend / Client Library ([`d365-agent-mcpclient-ts`](https://github.com/ntrtd/d365-agent-mcpclient-ts) or [`d365-agent-mcpclient-dotnet`](https://github.com/ntrtd/d365-agent-mcpclient-dotnet)).
+    *   [ ] Implement Integration Tests for MCP Server tools against D365 sandbox (verify SO creation) in the chosen MCP server repo ([`d365-agent-mcpserver-ts`](https://github.com/ntrtd/d365-agent-mcpserver-ts) or [`d365-agent-mcpserver-dotnet`](https://github.com/ntrtd/d365-agent-mcpserver-dotnet)).
+    *   [ ] Perform E2E scenario testing (manual or automated) for the "happy path" and basic error conditions, triggering the Application Backend. (**Location TBD, maybe `d365-agent-tests`**)
+    *   [ ] Analyze results and logs, iterate on fixes for the orchestration logic and relevant MCP Server tools.

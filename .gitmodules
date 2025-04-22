@@ -10,9 +10,6 @@
 [submodule "submodules/sap-cloud-sdk-js"]
 	path = submodules/sap-cloud-sdk-js
 	url = https://github.com/SAP/cloud-sdk-js.git
-[submodule "submodules/csharp-sdk"]
-	path = submodules/csharp-sdk
-	url = https://github.com/modelcontextprotocol/csharp-sdk
 [submodule "submodules/ts-odata-client"]
 	path = submodules/ts-odata-client
 	url = https://github.com/cbrianball/ts-odata-client
@@ -25,3 +22,12 @@
 [submodule "submodules/ODataConnectedService"]
 	path = submodules/ODataConnectedService
 	url = https://github.com/OData/ODataConnectedService
+[submodule "submodules/ai-agents-for-beginners"]
+	path = submodules/ai-agents-for-beginners
+	url = https://github.com/microsoft/ai-agents-for-beginners.git
+[submodule "submodules/csharp-sdk"]
+	path = submodules/csharp-sdk
+	url = https://github.com/modelcontextprotocol/csharp-sdk.git
+[submodule "submodules/autogen"]
+	path = submodules/autogen
+	url = https://github.com/microsoft/autogen.git

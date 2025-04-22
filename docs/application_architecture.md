@@ -4,7 +4,13 @@ This document details the application architecture for the Dynamics 365 AI Agent
 
 ## 1. Overview
 
-The application architecture is designed as a distributed system composed of microservices and managed Azure services, emphasizing loose coupling, scalability, and maintainability. **Application Backend services** (e.g., a web app backend, Teams bot backend) act as the primary orchestrators. They leverage the **`d365-agent-mcpclient` SDK** library, which acts as an **MCP Client** to interact with the backend business logic server (`d365-agent-mcpserver`) via the Model Context Protocol (MCP).
+The application architecture is designed as a distributed system composed of microservices and managed Azure services, emphasizing loose coupling, scalability, and maintainability. **Application Backend services** (e.g., a web app backend, Teams bot backend) act as the primary orchestrators. They leverage the **`d365-agent-mcpclient` library**, which acts as an **MCP Client**, to interact with the backend business logic server (`d365-agent-mcpserver`) via the Model Context Protocol (MCP).
+
+**Technology Flexibility:** Key components, notably the `d365-agent-mcpserver` and the `d365-agent-mcpclient` library, can be implemented using **either C#/.NET or TypeScript/Node.js**, leveraging the respective official MCP SDKs. Clients and servers implemented with different SDKs are **fully interoperable** due to adherence to the MCP standard.
+
+**Orchestration Flexibility:** The orchestration of business logic and MCP tool calls within the Application Backend / `d365-agent-mcpclient` layer can be implemented using different strategies, primarily:
+1.  **Agent-based Orchestration:** Utilizing frameworks like **Microsoft AutoGen** (`submodules/autogen`) to define collaborating AI agents that dynamically manage the workflow.
+2.  **DAG-based Orchestration:** Defining explicit Directed Acyclic Graphs (DAGs) in code or configuration (e.g., YAML) that prescribe the sequence of operations, potentially leveraging workflow engines for execution if needed.
 
 ## 2. Key Application Components
 
@@ -31,9 +37,9 @@ graph TD
         APP_BACKEND1 -- Uses --> SDK
         APP_BACKEND2 -- Uses --> SDK
         APP_BACKEND3 -- Uses --> SDK
-        SDK[d365-agent-mcpclient SDK (Library)]
-        SDK -- Contains --> ORCH[Orchestration Logic]
-        SDK -- Contains --> MCP_CLIENT[MCP Client]
+        SDK[Client Lib (d365-agent-mcpclient-*)]
+        SDK -- Contains --> ORCH[Orchestration Logic (AutoGen or DAG)]
+        SDK -- Contains --> MCP_CLIENT[MCP Client (TS or C# SDK)]
         SDK -- Contains --> STATE[State Management]
         SDK -- Contains --> LLM_INT[LLM Interaction (Optional)]
     end
@@ -42,10 +48,10 @@ graph TD
         PROC1[Document Parsing Function (Azure Function + Doc Intelligence)]
     end
 
-    subgraph MCP Server Layer (`d365-agent-mcpserver` Repo)
+    subgraph MCP Server Layer (Repos: d365-agent-mcpserver-*)
         MCPSERVER[MCP Server (Azure Container App)]
-        MCPSERVER -- Hosts --> MCP1[MCP Server Implementation]
-        MCPSERVER -- Contains --> MCP2[D365 Client Adapters (FO/AX/CE)]
+        MCPSERVER -- Hosts --> MCP1[MCP Server Impl. (TS or C#)]
+        MCPSERVER -- Contains --> MCP2[D365 Client Adapters (Generated in d365-agent-odataclient-*)]
         MCPSERVER -- Contains --> MCP3[External API Client Adapters]
         MCPSERVER -- Contains --> MCP4[Tool Implementations]
         MCPSERVER -- Contains --> MCP5[Instance/Company Router Logic]
@@ -116,30 +122,37 @@ graph TD
     *   Can trigger Application Backends via Service Bus messages (e.g., after document parsing).
 
 3.  **Application Backend Layer:**
-    *   **Application Backend Services (e.g., Web App Backend, Teams Bot Backend):** Server-side components responsible for handling requests from specific Presentation Layer UIs or Integration Layer triggers.
+    *   **Application Backend Services (e.g., Web App Backend, Teams Bot Backend):** Server-side components responsible for handling requests from specific Presentation Layer UIs or Integration Layer triggers. Implemented in languages like Node.js, C# (ASP.NET Core), etc.
         *   Receives user input or event data.
         *   Manages user session state specific to the channel.
-        *   **Crucially, uses the `d365-agent-mcpclient` SDK** to orchestrate the required business workflow.
+        *   **Crucially, uses the Client Library** ([`d365-agent-mcpclient-ts`](https://github.com/ntrtd/d365-agent-mcpclient-ts) or [`d365-agent-mcpclient-dotnet`](https://github.com/ntrtd/d365-agent-mcpclient-dotnet)) to orchestrate the required business workflow.
         *   Handles secure configuration (LLM keys, MCP Server endpoint).
         *   Formats final responses and sends them back to the Presentation Layer.
-    *   **`d365-agent-mcpclient` SDK (Library - in `d365-agent-mcpclient` repo):**
-        *   **Orchestration Logic:** Implements business process workflows (DAGs) in code (e.g., TypeScript/Python). Determines the sequence of steps and which MCP Tools to invoke.
+    *   **MCP Client Libraries (Repos: [`d365-agent-mcpclient-ts`](https://github.com/ntrtd/d365-agent-mcpclient-ts) / [`d365-agent-mcpclient-dotnet`](https://github.com/ntrtd/d365-agent-mcpclient-dotnet)):** Libraries providing reusable orchestration logic and MCP client capabilities. Choose the appropriate repository based on the consuming Application Backend's language.
+        *   **Implementation:** Use **TypeScript/JavaScript** (`d365-agent-mcpclient-ts` repo, using `@modelcontextprotocol/sdk` from `submodules/typescript-sdk`) or **C#/.NET** (`d365-agent-mcpclient-dotnet` repo, using `ModelContextProtocol` from `submodules/csharp-sdk`).
+        *   **Orchestration Logic:** Implements business process workflows. This logic can be structured using:
+            *   **AutoGen:** Defining collaborating agents (`submodules/autogen`).
+            *   **DAG Definition:** Explicitly defining workflows in code or configuration.
         *   **State Management:** Provides mechanisms or relies on the hosting Application Backend to manage conversation/workflow state.
-        *   **MCP Client:** Uses an MCP client library (e.g., `@modelcontextprotocol/sdk/client`) to communicate with the `d365-agent-mcpserver`, calling its exposed tools.
-        *   **(Optional) LLM Interaction:** May interact with LLMs (e.g., Azure OpenAI) for intent recognition or natural language response generation, configured securely within the Application Backend.
+        *   **MCP Client:** Contains the specific MCP client implementation using the chosen SDK (`@modelcontextprotocol/sdk` or `ModelContextProtocol`) to communicate with the deployed MCP Server instance ([`d365-agent-mcpserver-ts`](https://github.com/ntrtd/d365-agent-mcpserver-ts) or [`d365-agent-mcpserver-dotnet`](https://github.com/ntrtd/d365-agent-mcpserver-dotnet)).
+        *   **(Optional) LLM Interaction:** May interact directly with LLMs (e.g., Azure OpenAI) or leverage frameworks like AutoGen/Semantic Kernel for intent recognition, response generation, or within the orchestration logic itself.
 
 4.  **Optional Ingestion Processing:**
     *   **Document Parsing Function:** An Azure Function containing logic to call Azure AI Document Intelligence, extract structured data from documents (PDFs, images), and place the results onto Service Bus, potentially triggering an Application Backend.
 
-5.  **MCP Server Layer (`d365-agent-mcpserver` Service):**
-    *   Hosts the MCP Server implementation on **Azure Container Apps**.
-    *   **MCP Server Implementation (in `d365-agent-mcpserver` repo):** Built using the **`@modelcontextprotocol/sdk` (TypeScript SDK)**.
-        *   Handles the MCP protocol (`initialize`, `tools/call`, etc.) via a transport like `StreamableHTTPServerTransport`.
+5.  **MCP Server Layer (Services/Repos: [`d365-agent-mcpserver-ts`](https://github.com/ntrtd/d365-agent-mcpserver-ts) / [`d365-agent-mcpserver-dotnet`](https://github.com/ntrtd/d365-agent-mcpserver-dotnet)):**
+    *   Hosts the MCP Server implementation, typically on **Azure Container Apps** or other container hosting platforms. Only one implementation (TS or C#) needs to be deployed, but both repositories exist for flexibility.
+    *   **MCP Server Implementation:**
+        *   **Implementation Choice:** Implement using the **TypeScript SDK** (`d365-agent-mcpserver-ts` repo, using `@modelcontextprotocol/sdk` from `submodules/typescript-sdk`) or the **C#/.NET SDK** (`d365-agent-mcpserver-dotnet` repo, using `ModelContextProtocol` from `submodules/csharp-sdk`).
+        *   Handles the MCP protocol (`initialize`, `tools/call`, etc.) via a supported transport (e.g., `StreamableHTTPServerTransport`).
         *   Advertises available D365-related MCP Tools.
-        *   Uses libraries like **`zod`** for schema validation.
-    *   **Tool Implementations (in `d365-agent-mcpserver` repo):** The actual logic behind the MCP Tools. These functions interact with D365 via client adapters.
-    *   **D365/External Client Adapters (in `d365-agent-mcpserver` repo):** Contains typed clients (e.g., generated OData client from `d365-agent-odataclient`) or wrappers for interacting with D365 OData/APIs and external APIs. Handles authentication using **Entra ID Client Credentials grant flow** (retrieving secrets like client ID/secret from Azure Key Vault).
-    *   **Instance/Company Router Logic (in `d365-agent-mcpserver` repo):** Selects the correct D365 instance/company endpoint based on parameters in the MCP tool call.
+        *   Uses appropriate libraries for schema validation (e.g., **`zod`** for TypeScript, attributes/reflection for C#).
+    *   **Tool Implementations (within chosen `d365-agent-mcpserver-*` repo):** The actual logic behind the MCP Tools, written in the chosen SDK language (TypeScript or C#). These functions interact with D365 via generated client adapters.
+    *   **D365 Client Adapters (Generated):** Contains typed clients for interacting with D365 OData APIs. Generated and published from dedicated repositories:
+        *   **TypeScript:** Generated in [`d365-agent-odataclient-ts`](https://github.com/ntrtd/d365-agent-odataclient-ts) using **SAP Cloud SDK generator** / `odata2ts` (from `submodules/odata2ts`). Consumed as an npm package (e.g., `@d365-agent/odataclient`) by `d365-agent-mcpserver-ts`.
+        *   **C#/.NET:** Generated in [`d365-agent-odataclient-dotnet`](https://github.com/ntrtd/d365-agent-odataclient-dotnet) using **OData Connected Service** (`submodules/ODataConnectedService`) or `Microsoft.OData.Client.Design`. Consumed as a NuGet package by `d365-agent-mcpserver-dotnet`.
+        *   Both adapters handle authentication using **Entra ID Client Credentials grant flow** (retrieving secrets from Azure Key Vault).
+    *   **Instance/Company Router Logic (within chosen `d365-agent-mcpserver-*` repo):** Selects the correct D365 instance/company endpoint based on parameters in the MCP tool call, implemented in the chosen SDK language. This logic uses the appropriate generated D365 client adapter package.
 
 6.  **Backend Systems (Data Plane):** (Responsibilities unchanged)
     *   The actual Dynamics 365 instances (FO, AX, CE) exposing OData or custom APIs.
@@ -172,18 +185,23 @@ graph TD
 ## 5. Deployment & Scalability
 
 *   Components are deployed independently from their respective repositories:
-    *   **`d365-agent-infra`:** Infrastructure deployed via Bicep/ARM (e.g., using GitHub Actions).
-    *   **`d365-agent-mcpserver`:** MCP Server service deployed as a container image (e.g., built and pushed via CI/CD to Container Apps).
-    *   **`d365-agent-mcpclient`:** Client SDK deployed as a library package or bundled within Application Backend deployments.
-    *   **Application Backends:** Deployed based on their specific technology (e.g., Web Apps, Bot Services, Functions).
-    *   **`d365-agent-functions` (if used for parsing):** Deployed via standard Azure Function deployment methods.
-*   Scalability is handled by the underlying Azure services: Container Apps (for the MCP Server) scales based on KEDA rules, Application Backend services scale based on their hosting model (e.g., App Service Plan, Consumption Plan), Service Bus scales automatically.
-*   The MCP Server (`d365-agent-mcpserver`) can be designed stateless or stateful depending on requirements. The `StreamableHTTPServerTransport` supports session management if needed. Azure Container Apps allows for easy horizontal scaling based on traffic or other metrics.
+    *   **[`d365-agent-infra`](https://github.com/ntrtd/d365-agent-infra):** Infrastructure deployed via Bicep/ARM.
+    *   **[`d365-agent-mcpserver-ts`](https://github.com/ntrtd/d365-agent-mcpserver-ts) / [`d365-agent-mcpserver-dotnet`](https://github.com/ntrtd/d365-agent-mcpserver-dotnet):** The chosen MCP Server implementation is built via CI/CD and deployed as a container image to Azure Container Apps or another host.
+    *   **[`d365-agent-mcpclient-ts`](https://github.com/ntrtd/d365-agent-mcpclient-ts) / [`d365-agent-mcpclient-dotnet`](https://github.com/ntrtd/d365-agent-mcpclient-dotnet):** The chosen Client library is deployed via the relevant package manager (**npm** or **NuGet**) or bundled within Application Backend deployments.
+    *   **Application Backends:** Deployed based on their specific technology.
+    *   **`d365-agent-functions` (if used):** Deployed via standard Azure Function deployment methods.
+*   Scalability is handled by the underlying Azure services: Container Apps (suitable for both TS and .NET MCP Servers) scales based on KEDA rules, Application Backend services scale based on their hosting model, Service Bus scales automatically.
+*   The MCP Server (from `d365-agent-mcpserver-*` repos) can be designed stateless or stateful depending on requirements. The `StreamableHTTPServerTransport` (available in both SDKs) supports session management if needed. Azure Container Apps allows for easy horizontal scaling based on traffic or other metrics.
 
-This application architecture provides a decoupled, scalable, and secure foundation for orchestrating interactions with Dynamics 365, leveraging Azure services and the MCP standard for robust and reusable integration between the custom client SDK and the backend MCP server.
+This application architecture provides a decoupled, scalable, and secure foundation for orchestrating interactions with Dynamics 365, leveraging Azure services and the MCP standard for robust and reusable integration between the custom client SDK and the backend MCP server, with flexibility in the implementation language (TypeScript or C#/.NET) for key components.
 
 ## 6. Further Reading
 
 *   **[Model Context Protocol (MCP) Documentation](https://modelcontextprotocol.io/)**: Official documentation for the core protocol.
-*   **[MCP TypeScript SDK Repository](https://github.com/modelcontextprotocol/typescript-sdk)**: Source code, examples, and README for the MCP SDK potentially used in both the server (`d365-agent-mcpserver`) and client (`d365-agent-mcpclient`).
+*   **MCP TypeScript SDK:** Source code/examples at `submodules/typescript-sdk`. Used by [`d365-agent-mcpserver-ts`](https://github.com/ntrtd/d365-agent-mcpserver-ts) and [`d365-agent-mcpclient-ts`](https://github.com/ntrtd/d365-agent-mcpclient-ts). (GitHub: [https://github.com/modelcontextprotocol/typescript-sdk](https://github.com/modelcontextprotocol/typescript-sdk), NPM: `@modelcontextprotocol/sdk`).
+*   **MCP C# SDK:** Source code/examples at `submodules/csharp-sdk`. Used by [`d365-agent-mcpserver-dotnet`](https://github.com/ntrtd/d365-agent-mcpserver-dotnet) and [`d365-agent-mcpclient-dotnet`](https://github.com/ntrtd/d365-agent-mcpclient-dotnet). (GitHub: [https://github.com/modelcontextprotocol/csharp-sdk](https://github.com/modelcontextprotocol/csharp-sdk), NuGet: `ModelContextProtocol`).
+*   **Microsoft AutoGen:** Framework for multi-agent orchestration. Source code at `submodules/autogen`. Can be used within [`d365-agent-mcpclient-ts`](https://github.com/ntrtd/d365-agent-mcpclient-ts) (if using Python via interop) or [`d365-agent-mcpclient-dotnet`](https://github.com/ntrtd/d365-agent-mcpclient-dotnet). (GitHub: [https://github.com/microsoft/autogen](https://github.com/microsoft/autogen)).
+*   **Dynamics 365 OData Client Generation:**
+    *   **TypeScript:** Repo: [`d365-agent-odataclient-ts`](https://github.com/ntrtd/d365-agent-odataclient-ts), using tools like `submodules/odata2ts`.
+    *   **C#/.NET:** Repo: [`d365-agent-odataclient-dotnet`](https://github.com/ntrtd/d365-agent-odataclient-dotnet), using tools like `submodules/ODataConnectedService`.
 *   **[MCP Specification](https://spec.modelcontextprotocol.io)**: Formal details of the protocol versions.
