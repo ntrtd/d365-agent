@@ -1,4 +1,4 @@
-# Dynamics 365 AI Orchestration Documentation (Archiverse)
+# Dynamics 365 AI Agent Documentation
 
 This repository (`d365-agent`) serves as the central documentation hub for the design and architecture of a system orchestrating AI-driven interactions with Microsoft Dynamics 365 via the Model Context Protocol (MCP).
 

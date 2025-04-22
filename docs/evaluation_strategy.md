@@ -14,24 +14,24 @@ This document outlines the strategy for evaluating the Dynamics 365 AI Agent thr
 
 A multi-layered approach will be used:
 
-1.  **Unit Tests (MCP Hub Tools - in `d365-agent-hub` repo):**
-    *   **Focus:** Individual MCP tool implementations within the Hub service (`d365-agent-hub` repo).
+1.  **Unit Tests (MCP Server Tools - in `d365-agent-mcpserver-*` repos):**
+    *   **Focus:** Individual MCP tool implementations within the chosen MCP Server repository ([`d365-agent-mcpserver-ts`](https://github.com/ntrtd/d365-agent-mcpserver-ts) or [`d365-agent-mcpserver-dotnet`](https://github.com/ntrtd/d365-agent-mcpserver-dotnet)).
     *   **Method:** Mocking D365/external API calls to test the tool's logic, data transformation, and error handling in isolation.
-    *   **Tools:** Standard unit testing frameworks (e.g., Jest/Vitest for TypeScript/Node.js).
-2.  **Integration Tests (MCP Hub & D365/APIs):**
-    *   **Focus:** Interaction between MCP Hub tools (in `d365-agent-hub`) and actual backend systems (D365 sandbox, mock external APIs).
+    *   **Tools:** Standard unit testing frameworks (e.g., Jest/Vitest for TypeScript, xUnit/NUnit for .NET).
+2.  **Integration Tests (MCP Server & D365/APIs):**
+    *   **Focus:** Interaction between MCP Server tools (in `d365-agent-mcpserver-*`) and actual backend systems (D365 sandbox, mock external APIs).
     *   **Method:** Calling MCP tools via simulated MCP requests and verifying interactions with the sandbox environment (data created/queried). Requires a configured test environment.
-    *   **Tools:** Test clients sending JSON-RPC requests, testing frameworks (e.g., Jest/Vitest) orchestrating calls within the `d365-agent-hub` repo.
-3.  **Agent Flow / DAG Evaluation (Azure AI Studio / SDK):**
-    *   **Focus:** The logic and execution path of individual Agent Flows/DAGs defined in YAML. Testing prompt effectiveness, conditional logic, and tool chaining within the flow.
-    *   **Method:** Running flows (defined in `d365-agent-service`) with predefined test datasets (inputs) and evaluating outputs against expected results or quality metrics. Can mock MCP tool responses initially.
-    *   **Tools:** Azure AI Studio's Prompt Flow evaluation features, Azure AI SDK for programmatic testing, manual review of execution traces. Code-based tests might reside in `d365-agent-service` or a dedicated `d365-agent-tests` repo.
+    *   **Tools:** Test clients sending JSON-RPC requests, testing frameworks orchestrating calls within the relevant `d365-agent-mcpserver-*` repo.
+3.  **Orchestration Logic Evaluation (Client Library / App Backend):**
+    *   **Focus:** The logic and execution path of individual orchestration workflows (AutoGen agents or DAGs) defined within the Client Library ([`d365-agent-mcpclient-ts`](https://github.com/ntrtd/d365-agent-mcpclient-ts) / [`d365-agent-mcpclient-dotnet`](https://github.com/ntrtd/d365-agent-mcpclient-dotnet)) or Application Backend. Testing prompt effectiveness, conditional logic, and tool chaining.
+    *   **Method:** Running orchestration flows with predefined test datasets (inputs) and evaluating outputs against expected results or quality metrics. Can mock MCP tool responses initially. Unit tests for specific orchestration components.
+    *   **Tools:** Standard testing frameworks, potentially AutoGen testing features, manual review of execution traces. Code-based tests might reside in `d365-agent-mcpclient-*` repos or a dedicated `d365-agent-tests` repo.
 4.  **End-to-End (E2E) Scenario Testing:**
-    *   **Focus:** Testing complete user scenarios from the presentation layer through all backend components (AI Agent Service, MCP Hub, Functions) to D365 and back.
+    *   **Focus:** Testing complete user scenarios from the presentation layer through all backend components (Application Backend, Client Library, MCP Server, Functions) to D365 and back.
     *   **Method:** Simulating user interactions (chat messages, email submissions) based on the defined Use Case Scenarios and verifying the final outcome (e.g., SO created, correct response provided). Could involve coordinating tests across multiple repos.
     *   **Tools:** Test automation frameworks interacting with UI/APIs (potentially in a dedicated `d365-agent-tests` repo), manual testing based on detailed test cases.
 5.  **Prompt Evaluation:**
-    *   **Focus:** Assessing the quality, safety, and effectiveness of LLM prompts used within Agent Flows.
+    *   **Focus:** Assessing the quality, safety, and effectiveness of LLM prompts used within orchestration logic or potentially by MCP server tools.
     *   **Method:** Using prompt variants, red-teaming techniques, and evaluating responses against metrics like groundedness, relevance, coherence, fluency, safety.
     *   **Tools:** Azure AI Studio evaluation features, potentially custom scripts.
 6.  **Performance Testing:**
@@ -57,17 +57,16 @@ A multi-layered approach will be used:
 
 ## 4. Methodology & Tooling
 
-*   **Test Datasets:** Curated datasets representing diverse inputs, edge cases, and expected outputs for different scenarios and flows will be created and maintained (potentially in `d365-agent-service` for flow tests, or a dedicated `d365-agent-tests` repo).
-*   **Azure AI Studio:** Leveraged extensively for prompt engineering, flow development (`d365-agent-service`), and running evaluations (especially for metrics like groundedness, relevance, coherence, fluency using built-in or custom evaluators).
-*   **CI/CD Integration:** Unit tests and potentially integration tests will be integrated into the CI/CD pipelines within their respective repositories (`d365-agent-hub`, `d365-agent-service`, etc.) to ensure code quality and prevent regressions. E2E tests (potentially in `d365-agent-tests`) might run on a schedule or trigger deployments.
-*   **Manual Review:** Regular manual review of agent conversations, flow traces (in AI Studio/App Insights), and evaluation results will be necessary, especially for subjective quality metrics and identifying nuanced failures.
-*   **Telemetry Analysis:** Use Application Insights and potentially the self-learning loop analysis (Phase 4) to identify common failure patterns or areas needing improvement, feeding back into test case creation and development priorities within the relevant repositories.
+*   **Test Datasets:** Curated datasets representing diverse inputs, edge cases, and expected outputs for different scenarios and flows will be created and maintained (potentially in a dedicated `d365-agent-tests` repo or alongside the orchestration logic).
+*   **CI/CD Integration:** Unit tests and potentially integration tests will be integrated into the CI/CD pipelines within their respective repositories (`d365-agent-mcpserver-*`, `d365-agent-mcpclient-*`, etc.) to ensure code quality and prevent regressions. E2E tests (potentially in `d365-agent-tests`) might run on a schedule or trigger deployments.
+*   **Manual Review:** Regular manual review of interactions, orchestration traces (e.g., AutoGen logs, App Insights), and evaluation results will be necessary, especially for subjective quality metrics and identifying nuanced failures.
+*   **Telemetry Analysis:** Use Application Insights and potentially the self-learning loop analysis (Phase 4) to identify common failure patterns or areas needing improvement, feeding back into test case creation and development priorities within the relevant repositories (`d365-agent-mcpserver-*`, `d365-agent-mcpclient-*`).
 
 ## 5. Evaluation Across Phases
 
-*   **Phase 1:** Focus on Unit Tests for MCP tools and basic Integration Tests confirming MCP communication and D365 sandbox connectivity. Manual E2E via chat.
-*   **Phase 2:** Add Agent Flow evaluations for the MVP scenario using test datasets in AI Studio. Implement more comprehensive Integration Tests for the scenario's tools. Start formal E2E scenario testing.
-*   **Phase 3:** Expand Flow evaluations and E2E tests to cover the new business process and multi-instance scenarios. Begin basic Performance testing.
+*   **Phase 1:** Focus on Unit Tests for MCP Server tools and basic Integration Tests confirming MCP communication and D365 sandbox connectivity (in chosen `d365-agent-mcpserver-*` repo). Basic E2E tests using test client.
+*   **Phase 2:** Add Unit Tests for orchestration logic (in `d365-agent-mcpclient-*` / App Backend). Implement more comprehensive Integration Tests for the scenario's MCP tools. Start formal E2E scenario testing.
+*   **Phase 3:** Expand orchestration tests and E2E tests to cover the new business process and multi-instance scenarios. Begin basic Performance testing.
 *   **Phase 4:** Implement comprehensive Performance testing. Formalize Security testing. Establish processes for ongoing evaluation using telemetry and the self-learning loop feedback. Conduct user satisfaction surveys during pilot rollout.
 
 This strategy provides a framework for continuous evaluation, ensuring the agent is built and maintained to a high standard of quality, reliability, and effectiveness.

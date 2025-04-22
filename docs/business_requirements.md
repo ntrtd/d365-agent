@@ -30,7 +30,7 @@ These requirements outline the general capabilities for an AI agent designed to 
 
 8.  **Complex Workflow Orchestration:**
     *   The agent must be able to execute multi-step business processes that may involve querying multiple systems, applying validation logic, making decisions (potentially with human-in-the-loop for exceptions/approvals), and committing transactions across systems (e.g., creating related Sales and Purchase Orders).
-    *   Support structured execution flows (e.g., using DAGs) for predictability and auditability.
+    *   Support structured execution flows (e.g., using **AutoGen agents** or defined **DAGs**) for predictability and auditability.
 
 9.  **Contextual Awareness and Personalization:**
     *   The agent should operate within the context of the specific user (internal or external) interacting with it, applying appropriate permissions, pricing, and process variations.
@@ -43,4 +43,4 @@ These requirements outline the general capabilities for an AI agent designed to 
     *   The agent's interactions and decisions should be traceable through comprehensive logging and telemetry.
     *   Incorporate mechanisms for learning and improvement based on operational data and user feedback, potentially suggesting new capabilities or refinements.
 
-**Goal:** To create a suite of specialized AI agents (e.g., for Sales, Procurement, Finance, Asset Management, Field Service) that can automate and assist with a wide range of Dynamics 365 related business processes for both internal employees and external partners/customers. These agents will leverage the standardization and composability offered by MCP, often interacting via a shared infrastructure (like an MCP Hub), to integrate seamlessly with various data sources and tools within the Microsoft ecosystem and beyond.
+**Goal:** To create a suite of specialized AI-driven orchestration processes (e.g., for Sales, Procurement, Finance, Asset Management, Field Service) managed by Application Backends utilizing **Client Libraries** ([`d365-agent-mcpclient-ts`](https://github.com/ntrtd/d365-agent-mcpclient-ts) / [`d365-agent-mcpclient-dotnet`](https://github.com/ntrtd/d365-agent-mcpclient-dotnet)). These processes automate and assist with Dynamics 365 tasks for both internal and external users. They leverage the standardization and composability offered by MCP, interacting via a deployed **MCP Server** ([`d365-agent-mcpserver-ts`](https://github.com/ntrtd/d365-agent-mcpserver-ts) / [`d365-agent-mcpserver-dotnet`](https://github.com/ntrtd/d365-agent-mcpserver-dotnet)) to integrate seamlessly with various data sources and tools.
