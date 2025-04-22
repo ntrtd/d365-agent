@@ -21,7 +21,7 @@ The architecture leverages the standardization and composability offered by MCP,
     *   **[Phase 2: Initial End-to-End Use Case](implementation/phase_2.md)**
     *   **[Phase 3: Expansion & Multi-Instance Support](implementation/phase_3.md)**
     *   **[Phase 4: Optimization, Self-Learning & Wider Rollout](implementation/phase_4.md)**
-*   **[D365 OData Client Usage](sap_sdk_client_usage.md):** Details on using the generated D365 OData client (TS or C#) within the MCP Server implementations.
+*   **[D365 OData Client Usage](d365_odata_client_usage.md):** Details on using the generated D365 OData client (TS or C#) within the MCP Server implementations.
 *   **[Evaluation Strategy](evaluation_strategy.md):** How the system components and workflows will be tested and evaluated.
 
 
