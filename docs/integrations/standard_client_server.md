@@ -11,10 +11,32 @@ This pattern represents the most traditional approach for connecting a frontend 
     *   Handles user authentication and authorization.
     *   Manages user/session state.
     *   Receives requests from the frontend.
-    *   Uses the appropriate `d365-agent-mcpclient-*` library to orchestrate the required business logic by calling the `d365-agent-mcpserver-*` via MCP.
-    *   Formats results or streams responses back to the frontend over the chosen communication protocol.
+*   Uses the appropriate `d365-agent-mcpclient-*` library to orchestrate the required business logic by calling the `d365-agent-mcpserver-*` via MCP.
+*   Formats results or streams responses back to the frontend over the chosen communication protocol.
 
-**Use Cases:**
+## Interaction Flow Example (REST API)
+
+```mermaid
+sequenceDiagram
+    participant FE as Frontend UI
+    participant AB as Application Backend (REST API)
+    participant CL as Client Library (d365-agent-mcpclient-*)
+    participant MCPS as MCP Server (d365-agent-mcpserver-*)
+    participant D365 as Dynamics 365
+
+    FE->>+AB: POST /api/request (User Input)
+    AB->>+CL: initiateOrchestration(input)
+    CL->>+MCPS: MCP callTool(toolName, args)
+    MCPS->>+D365: OData/API Call
+    D365-->>-MCPS: D365 Response
+    MCPS-->>-CL: MCP callTool Result
+    CL-->>-AB: Orchestration Result (e.g., success, data)
+    AB-->>-FE: HTTP 200 OK (Formatted Response)
+```
+
+**(Note:** For WebSockets/SignalR, the flow would involve establishing a connection first, and the final response would be pushed from AB to FE over the persistent connection.)**
+
+## Use Cases
 *   Integrating AI chat capabilities into existing applications built with various frameworks.
 *   Mobile applications needing to interact with the D365 agent backend.
 *   Situations where frameworks like CopilotKit or Vercel AI SDK are not desired or applicable.

@@ -19,6 +19,30 @@ This pattern applies to scenarios where there is no direct user interface involv
     4.  The orchestration logic calls MCP tools on the deployed `d365-agent-mcpserver-*`.
     5.  Handles results, including potential error logging or triggering follow-up actions (e.g., sending a notification email, writing to a status log).
 
+## Interaction Flow Example (Service Bus Trigger)
+
+```mermaid
+sequenceDiagram
+    participant ExtSrc as External Source (e.g., Email->Logic App, D365 Event)
+    participant SB as Azure Service Bus
+    participant AzFunc as Azure Function (or other Headless Backend)
+    participant CL as Client Library (d365-agent-mcpclient-*)
+    participant MCPS as MCP Server (d365-agent-mcpserver-*)
+    participant D365 as Dynamics 365
+
+    ExtSrc->>+SB: Send Message (Event Data)
+    SB->>+AzFunc: Trigger Function (with Message)
+    AzFunc->>AzFunc: Parse Message Data
+    AzFunc->>+CL: initiateOrchestration(parsedData)
+    CL->>+MCPS: MCP callTool(toolName, args)
+    MCPS->>+D365: OData/API Call
+    D365-->>-MCPS: D365 Response
+    MCPS-->>-CL: MCP callTool Result
+    CL-->>-AzFunc: Orchestration Result
+    AzFunc->>AzFunc: Handle Result (Log, Notify, etc.)
+    AzFunc-->>-SB: Complete Message (If successful)
+```
+
 *   **Use Cases:**
     *   Processing emailed purchase orders automatically.
     *   Bulk-importing data from uploaded files.

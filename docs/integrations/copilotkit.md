@@ -14,8 +14,39 @@
         *   Typically hosted within a **Node.js-based Application Backend** (like Next.js, Express).
         *   Manages the communication with the CopilotKit frontend components/hooks.
         *   Handles the interaction with the chosen Large Language Model (LLM), managing prompts, function/tool calling, and streaming responses.
-        *   **Integration Point:** This backend service integrates the **`d365-agent-mcpclient-ts`** library. When the LLM determines a need to interact with Dynamics 365 (based on user request or frontend context), the CopilotKit backend code calls the appropriate MCP tool via the `d365-agent-mcpclient-ts` library, which communicates with the deployed `d365-agent-mcpserver-ts`. The results are then passed back to the LLM/CopilotKit flow.
-    *   **CoAgents / LangGraph Integration:** CopilotKit also supports building more complex, stateful agentic workflows, potentially using LangGraph. This could be an alternative way to implement the orchestration logic within the Application Backend, especially suitable for Node.js environments.
+        *   **Integration Point:** This backend service integrates the **`d365-agent-mcpclient-ts`** library (or its .NET counterpart if the backend is .NET). When the LLM determines a need to interact with Dynamics 365 (based on user request or frontend context provided via `useCopilotReadable`), the CopilotKit backend code triggers the orchestration logic in the client library. This logic then calls the appropriate MCP tool via the MCP client, communicating with the deployed `d365-agent-mcpserver-*`. The results are then passed back to the LLM/CopilotKit flow. Similarly, if the LLM decides to use a frontend action defined with `useCopilotAction`, the backend instructs the frontend to execute it.
+    *   **CoAgents / LangGraph Integration:** CopilotKit also supports building more complex, stateful agentic workflows, potentially using LangGraph. This could be an alternative way to implement the orchestration logic within the Application Backend, especially suitable for Node.js environments, and could still leverage the `d365-agent-mcpclient-*` library for MCP tool calls.
+
+## Interaction Flow Example
+
+```mermaid
+sequenceDiagram
+    participant FE as React Frontend (with CopilotKit UI/Hooks)
+    participant CPK_BE as CopilotKit Backend (in App Backend)
+    participant LLM as Large Language Model
+    participant CL as Client Library (d365-agent-mcpclient-*)
+    participant MCPS as MCP Server (d365-agent-mcpserver-*)
+    participant D365 as Dynamics 365
+
+    FE->>+CPK_BE: User Input + Frontend Context (via Hooks)
+    CPK_BE->>+LLM: Prompt + Context + Available Functions (incl. D365 Ops)
+    LLM-->>-CPK_BE: Request Function Call (e.g., get_customer_credit)
+    CPK_BE->>+CL: initiateOrchestration(tool='get_customer_credit', args)
+    CL->>+MCPS: MCP callTool('get_customer_credit', args)
+    MCPS->>+D365: OData/API Call
+    D365-->>-MCPS: D365 Response
+    MCPS-->>-CL: MCP callTool Result
+    CL-->>-CPK_BE: Orchestration Result (Credit Info)
+    CPK_BE->>+LLM: Provide Function Result
+    LLM-->>-CPK_BE: Final Response (Text or Frontend Action)
+
+    alt Text Response
+        CPK_BE-->>-FE: Stream/Send Text Response
+    else Frontend Action
+        CPK_BE->>-FE: Instruct Frontend Action (via Hooks)
+        FE->>FE: Execute Frontend Action (e.g., update UI)
+    end
+```
 
 *   **Strengths:**
     *   **Deep UI Integration:** Creates assistants that feel native to the application.
