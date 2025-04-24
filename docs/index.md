@@ -15,6 +15,7 @@ The architecture leverages the standardization and composability offered by MCP,
     *   **[Vision](architecture_vision.md):** The overall architectural vision, guiding principles, and component overview.
     *   **[Business Architecture (As-Is vs To-Be)](business_architecture.md):** Contrasting the current state with the future state enabled by the orchestrated system.
     *   **[Application Architecture](application_architecture.md):** Detailed breakdown of the software components, their responsibilities, and interactions.
+    *   **[Integration Strategies](integrations/index.md):** Exploring different patterns for frontend and channel integration.
 *   **[Use Case Scenarios](use_case_scenarios.md):** Illustrative examples of how the system can be used by different users for various tasks via different application backends.
 *   **Implementation Plan:**
     *   **[Phase 1: Foundation & Core Setup](implementation/phase_1.md)**

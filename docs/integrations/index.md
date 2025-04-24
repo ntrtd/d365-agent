@@ -1,4 +1,4 @@
-# Frontend Integration Strategies
+# Integration Strategies
 
 This section explores different strategies and frameworks for building user-facing applications (the **Presentation Layer**) that connect to the **Application Backend** layer of the Dynamics 365 AI Agent system.
 
