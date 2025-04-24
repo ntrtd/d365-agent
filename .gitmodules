@@ -46,3 +46,6 @@
 [submodule "submodules/botframework-sdk"]
 	path = submodules/botframework-sdk
 	url = https://github.com/microsoft/botframework-sdk.git
+[submodule "submodules/botbuilder-dotnet"]
+	path = submodules/botbuilder-dotnet
+	url = https://github.com/microsoft/botbuilder-dotnet.git
