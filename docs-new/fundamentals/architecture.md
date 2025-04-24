@@ -27,6 +27,10 @@ The architecture prioritizes using Microsoft Azure PaaS and AI services for scal
 *   **Scalability & Resilience:** Utilize scalable Azure services and patterns like queues/retries.
 *   **Observability:** Implement end-to-end monitoring with Application Insights.
 *   **Maintainability:** Support CI/CD for all components via separate repositories.
+*   **Partner Extensibility:** Design components to be extensible by partners, allowing them to tailor solutions to specific customer needs. This includes:
+    *   Regenerating D365 OData clients ([`d365-agent-odataclient-*`](https://github.com/ntrtd/d365-agent-odataclient-ts)) against customer-specific D365 metadata (including customizations).
+    *   Adding custom MCP tools to the MCP Server ([`d365-agent-mcpserver-*`](https://github.com/ntrtd/d365-agent-mcpserver-ts)) implementation 
+    *   Extending or building custom orchestration logic within Application Backends using the Client Libraries ([`d365-agent-mcpclient-*`](https://github.com/ntrtd/d365-agent-mcpclient-ts)).
 
 ## 3. Core Architecture Layers (Simplified View)
 
