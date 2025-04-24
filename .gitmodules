@@ -40,3 +40,6 @@
 [submodule "submodules/ai-chatbot"]
 	path = submodules/ai-chatbot
 	url = https://github.com/vercel/ai-chatbot.git
+[submodule "submodules/whatsapp-nodejs-sdk"]
+	path = submodules/whatsapp-nodejs-sdk
+	url = https://github.com/WhatsApp/WhatsApp-Nodejs-SDK.git
