@@ -43,3 +43,6 @@
 [submodule "submodules/whatsapp-nodejs-sdk"]
 	path = submodules/whatsapp-nodejs-sdk
 	url = https://github.com/WhatsApp/WhatsApp-Nodejs-SDK.git
+[submodule "submodules/botframework-sdk"]
+	path = submodules/botframework-sdk
+	url = https://github.com/microsoft/botframework-sdk.git
