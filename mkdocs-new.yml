@@ -1,0 +1,88 @@
+site_name: Dynamics 365 AI Agent SDK (Partner Docs)
+site_description: Documentation for the Dynamics 365 AI Agent SDK for Partners
+repo_url: https://github.com/francescomagalini/d365-mcp
+docs_dir: docs-new # Point to the new directory
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - toc.integrate
+    - search.highlight
+    - search.suggest
+    - content.tabs.link
+    - content.code.annotate
+    - content.code.copy
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+      primary: teal
+      accent: purple
+    - scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+      primary: teal
+      accent: lime
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - footnotes
+  - attr_list
+  - md_in_html
+
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mermaid@11.5.0/dist/mermaid.min.js
+
+nav:
+  - Overview: index.md
+  - Getting Started:
+    - Overview: getting-started/index.md
+    - Prerequisites: getting-started/prerequisites.md
+    - Installation: getting-started/installation.md
+    - First Agent Tutorial: getting-started/first-agent.md
+  - Fundamentals:
+    - Overview: fundamentals/index.md
+    - Architecture: fundamentals/architecture.md
+    - Key Components: fundamentals/key-components.md
+    - Authentication: fundamentals/authentication.md
+  - Guides:
+    - Overview: guides/index.md
+    - Connecting to D365: guides/connecting-d365.md
+    - Building UIs: guides/building-uis.md
+    - Customizing Agents: guides/customizing-agents.md
+    - Implementing Scenarios:
+      - Overview: guides/implementing-scenarios/index.md
+      # Add specific scenario files here as they are created, e.g.:
+      # - Automating Sales Tasks: guides/implementing-scenarios/automating-sales-tasks.md
+    - Debugging & Logging: guides/debugging-logging.md
+  - Integrations:
+    - Overview: integrations/index.md
+    - Power Platform: integrations/power-platform.md
+    - Bot Framework: integrations/bot-framework.md
+    - Azure Services: integrations/azure-services.md
+    - Custom Backends: integrations/custom-backends.md
+    - Copilot Ecosystem: integrations/copilot-ecosystem.md
+    - Messaging Platforms: integrations/messaging-platforms.md
+  - API Reference: api-reference/index.md
+  - Partner Center:
+    - Overview: partner-center/index.md
+    - Solution Packaging: partner-center/solution-packaging.md
+    - Licensing Considerations: partner-center/licensing-considerations.md
+    - Support Options: partner-center/support-options.md
+  - Release Notes: release-notes/index.md
