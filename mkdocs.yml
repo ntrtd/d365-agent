@@ -55,6 +55,13 @@ nav:
     - Vision: architecture_vision.md
     - Business Architecture (As-Is vs To-Be): business_architecture.md
     - Application Architecture: application_architecture.md
+    - Frontend Integrations:
+      - Overview: frontend_integrations/index.md
+      - Standard Client-Server: frontend_integrations/standard_client_server.md
+      - CopilotKit: frontend_integrations/copilotkit.md
+      - Vercel AI SDK Chatbot: frontend_integrations/vercel_ai_sdk.md
+      - Bot Framework: frontend_integrations/bot_framework.md
+      - Headless: frontend_integrations/headless.md
   - D365 OData Client Usage: d365_odata_client_usage.md
   - Use Case Scenarios: use_case_scenarios.md
   - Implementation Plan:
