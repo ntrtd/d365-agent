@@ -15,6 +15,23 @@ Key benefits of using MCP include:
 
 The architecture prioritizes using Microsoft Azure PaaS and AI services for scalability, security, and maintainability.
 
+### Business Drivers: From Manual Effort to Orchestrated Interaction
+
+Traditional interactions with complex systems like Dynamics 365 often involve:
+
+*   **Manual Processes:** Significant human effort in data entry, validation, lookups across modules/instances, and processing tasks.
+*   **Fragmented Communication:** Users interacting through various channels (UI navigation, email, phone), leading to potential inconsistencies and delays.
+*   **Siloed Information:** Difficulty accessing or combining data and processes that span different D365 modules or external systems without bespoke integrations.
+
+The vision enabled by this SDK architecture aims to transition towards a **"To-Be" state** characterized by:
+
+*   **AI-Driven Automation:** Leveraging orchestration logic (in Application Backends using Client Libraries) to automate data ingestion, validation, and task execution via MCP tools exposed by MCP Servers.
+*   **Unified Interaction (Per Channel):** Providing consistent, often conversational, interfaces for users to interact with D365 capabilities, reducing the need for complex UI navigation.
+*   **Seamless Integration:** Using MCP as a standard way to access and compose capabilities from D365 and other connected systems, breaking down information silos.
+*   **Consistent Rule Application:** Embedding business logic within automated workflows and reusable MCP tools.
+*   **Proactive Assistance:** Enabling agents to potentially monitor data and offer suggestions or alerts.
+*   **Reduced Overhead:** Freeing up human resources by automating repetitive tasks and improving self-service capabilities.
+
 ## 2. Guiding Principles
 
 *   **Microsoft Native:** Leverage Azure PaaS and AI services where appropriate.
