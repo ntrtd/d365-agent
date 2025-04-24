@@ -1,0 +1,74 @@
+site_name: Dynamics 365 AI Agent
+site_description: Presentation of the Dynamics 365 AI Agent
+repo_url: https://github.com/francescomagalini/d365-mcp
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - toc.integrate
+    - search.highlight
+    - search.suggest
+    - content.tabs.link
+    - content.code.annotate
+    - content.code.copy
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+      primary: teal
+      accent: purple
+    - scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+      primary: teal
+      accent: lime
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - footnotes
+  - attr_list
+  - md_in_html
+
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mermaid@11.5.0/dist/mermaid.min.js
+
+nav:
+  - Overview: index.md
+  - Business Requirements: business_requirements.md
+  - Architecture:
+    - Vision: architecture_vision.md
+    - Business Architecture (As-Is vs To-Be): business_architecture.md
+    - Application Architecture: application_architecture.md
+    - Integrations:
+      - Overview: integrations/index.md
+      - Standard Client-Server: integrations/standard_client_server.md
+      - CopilotKit: integrations/copilotkit.md
+      - Vercel AI SDK Chatbot: integrations/vercel_ai_sdk.md
+      - Bot Framework: integrations/bot_framework.md
+      - WhatsApp: integrations/whatsapp.md
+      - Headless: integrations/headless.md
+  - D365 OData Client Usage: d365_odata_client_usage.md
+  - Use Case Scenarios: use_case_scenarios.md
+  - Implementation Plan:
+    - Overview: implementation/index.md
+    - Phase 1 - Foundation: implementation/phase_1.md
+    - Phase 2 - Initial Use Case: implementation/phase_2.md
+    - Phase 3 - Expansion: implementation/phase_3.md
+    - Phase 4 - Optimization & Rollout: implementation/phase_4.md
+  - Evaluation Strategy: evaluation_strategy.md # Added this line

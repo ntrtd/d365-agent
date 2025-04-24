@@ -1,17 +1,10 @@
-# Integration Strategies
+# Integrations
 
-This section explores different strategies and frameworks for building user-facing applications (the **Presentation Layer**) that connect to the **Application Backend** layer of the Dynamics 365 AI Agent system.
+Learn how to connect the D365 Agent SDK with other platforms, services, and frameworks commonly used in the Microsoft ecosystem and beyond.
 
-The choice of frontend technology and integration pattern depends on the desired user experience, the target platform (web, Teams, mobile, etc.), and existing technology stacks.
-
-## Integration Patterns
-
-Select a pattern below for more details:
-
-*   **[Standard Client-Server](standard_client_server.md):** Traditional approach using standard web protocols (REST, WebSockets) between a custom frontend and the Application Backend.
-*   **[CopilotKit](copilotkit.md):** For deeply integrated, context-aware AI assistants within React applications.
-*   **[Vercel AI SDK Chatbot](vercel_ai_sdk.md):** Using the Vercel AI SDK and Next.js template for building standalone chatbot UIs.
-*   **[Microsoft Bot Framework](bot_framework.md):** For integrations with Teams, Web Chat widgets, and other Bot Framework channels.
-*   **[Headless Integrations](headless.md):** For non-UI scenarios like email or voice processing where the integration service acts as the client.
-
-In all cases, the frontend or integration point interacts with an **Application Backend**. This backend integrates the necessary AI/UI SDK and uses the **`d365-agent-mcpclient-*`** library to orchestrate tasks via the **`d365-agent-mcpserver-*`**.
+*   **[Power Platform](./power-platform.md):** Integrate with Power Apps and Power Automate.
+*   **[Bot Framework](./bot-framework.md):** Use the agent within Bot Framework bots.
+*   **[Azure Services](./azure-services.md):** Leverage Azure Functions, Logic Apps, and other Azure services.
+*   **[Custom Backends](./custom-backends.md):** Implement the SDK in headless or custom server applications.
+*   **[Copilot Ecosystem](./copilot-ecosystem.md):** Connect with Microsoft Copilot Studio, CopilotKit, or other AI SDKs.
+*   **[Messaging Platforms](./messaging-platforms.md):** Integrate with channels like Teams, WhatsApp, etc.

@@ -1,6 +1,7 @@
-site_name: Dynamics 365 AI Agent
-site_description: Presentation of the Dynamics 365 AI Agent
+site_name: Dynamics 365 AI Agent SDK (Partner Docs)
+site_description: Documentation for the Dynamics 365 AI Agent SDK for Partners
 repo_url: https://github.com/francescomagalini/d365-mcp
+docs_dir: docs # Point to the new directory
 
 theme:
   name: material
@@ -50,25 +51,38 @@ extra_javascript:
 
 nav:
   - Overview: index.md
-  - Business Requirements: business_requirements.md
-  - Architecture:
-    - Vision: architecture_vision.md
-    - Business Architecture (As-Is vs To-Be): business_architecture.md
-    - Application Architecture: application_architecture.md
-    - Integrations:
-      - Overview: integrations/index.md
-      - Standard Client-Server: integrations/standard_client_server.md
-      - CopilotKit: integrations/copilotkit.md
-      - Vercel AI SDK Chatbot: integrations/vercel_ai_sdk.md
-      - Bot Framework: integrations/bot_framework.md
-      - WhatsApp: integrations/whatsapp.md
-      - Headless: integrations/headless.md
-  - D365 OData Client Usage: d365_odata_client_usage.md
-  - Use Case Scenarios: use_case_scenarios.md
-  - Implementation Plan:
-    - Overview: implementation/index.md
-    - Phase 1 - Foundation: implementation/phase_1.md
-    - Phase 2 - Initial Use Case: implementation/phase_2.md
-    - Phase 3 - Expansion: implementation/phase_3.md
-    - Phase 4 - Optimization & Rollout: implementation/phase_4.md
-  - Evaluation Strategy: evaluation_strategy.md # Added this line
+  - Getting Started:
+    - Overview: getting-started/index.md
+    - Prerequisites: getting-started/prerequisites.md
+    - Installation: getting-started/installation.md
+    - First Agent Tutorial: getting-started/first-agent.md
+  - Fundamentals:
+    - Overview: fundamentals/index.md
+    - Architecture: fundamentals/architecture.md
+    - Key Components: fundamentals/key-components.md
+    - Authentication: fundamentals/authentication.md
+  - Guides:
+    - Overview: guides/index.md
+    - Connecting to D365: guides/connecting-d365.md
+    - Building UIs: guides/building-uis.md
+    - Customizing Agents: guides/customizing-agents.md
+    - Implementing Scenarios:
+      - Overview: guides/implementing-scenarios/index.md
+      # Add specific scenario files here as they are created, e.g.:
+      # - Automating Sales Tasks: guides/implementing-scenarios/automating-sales-tasks.md
+    - Debugging & Logging: guides/debugging-logging.md
+  - Integrations:
+    - Overview: integrations/index.md
+    - Power Platform: integrations/power-platform.md
+    - Bot Framework: integrations/bot-framework.md
+    - Azure Services: integrations/azure-services.md
+    - Custom Backends: integrations/custom-backends.md
+    - Copilot Ecosystem: integrations/copilot-ecosystem.md
+    - Messaging Platforms: integrations/messaging-platforms.md
+  - API Reference: api-reference/index.md
+  - Partner Center:
+    - Overview: partner-center/index.md
+    - Solution Packaging: partner-center/solution-packaging.md
+    - Licensing Considerations: partner-center/licensing-considerations.md
+    - Support Options: partner-center/support-options.md
+  - Release Notes: release-notes/index.md
