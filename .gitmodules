@@ -34,3 +34,6 @@
 [submodule "submodules/archiverse"]
 	path = submodules/archiverse
 	url = https://github.com/ntrtd/archiverse.git
+[submodule "submodules/CopilotKit"]
+	path = submodules/CopilotKit
+	url = https://github.com/CopilotKit/CopilotKit.git
