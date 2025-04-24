@@ -49,3 +49,6 @@
 [submodule "submodules/botbuilder-dotnet"]
 	path = submodules/botbuilder-dotnet
 	url = https://github.com/microsoft/botbuilder-dotnet.git
+[submodule "submodules/botbuilder-js"]
+	path = submodules/botbuilder-js
+	url = https://github.com/microsoft/botbuilder-js.git
