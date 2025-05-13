@@ -1,7 +1,7 @@
 # Phase 4: Optimization, Self-Learning & Wider Rollout
 
-*   **Goal:** Optimize performance across multiple orchestrated business processes (managed by **LangGraph agents** within the **Application Orchestration Layer** (repo: [`d365-agent-orchestrator`](https://github.com/ntrtd/d365-agent-orchestrator))) and the deployed D365 MCP Server (repo: [`d365-agent-mcpserver-ts`](https://github.com/ntrtd/d365-agent-mcpserver-ts) or [`d365-agent-mcpserver-dotnet`](https://github.com/ntrtd/d365-agent-mcpserver-dotnet)). Enhance user experience within the **CopilotKit UI** (repo: [`d365-agent-ui`](https://github.com/ntrtd/d365-agent-ui)). Implement self-learning capabilities based on aggregate telemetry from LangGraph executions (in `d365-agent-orchestrator`) and D365 MCP tool usage. Prepare for wider adoption of both Purchase and Sales agent functionalities.
-*   **MVP:** Demonstrable performance improvements for key scenarios (e.g., PO Ingestion, Sales Quote Creation) across both Purchase and Sales LangGraph agents (in `d365-agent-orchestrator`), potentially leveraging caching in the deployed D365 MCP Server. A functional self-learning feedback loop analyzing telemetry (from LangGraph agent executions in `d365-agent-orchestrator` and D365 MCP Server tool calls) to generate actionable insights or suggestions for D365 MCP tools or LangGraph agent logic (in `d365-agent-orchestrator`). Multiple orchestrated business processes (for both Sales and Purchase agents in `d365-agent-orchestrator`) are successfully used by a wider pilot group through the CopilotKit UI (from `d365-agent-ui`) with stable performance and established monitoring/support. Clear plan and readiness for broader enterprise deployment.
+*   **Goal:** Optimize performance of **Domain-Specific LangGraph Agents** (e.g., `PurchaseAgent`, `SalesAgent`) and the **Master Orchestrator Agent** within `d365-agent-orchestrator`, and the `d365-agent-mcpserver-dotnet`. Enhance user experience in `d365-agent-ui` by leveraging advanced CopilotKit features (e.g., more sophisticated Generative UI, Frontend Actions/RAG, `CopilotTask` for proactivity). Implement a self-learning loop using telemetry. Prepare for wider rollout. Consider deeper integration with Copilot Cloud features if applicable.
+*   **MVP:** Demonstrable performance improvements for key scenarios. Enhanced UX with at least one proactive feature or advanced Generative UI implemented. A functional self-learning feedback loop generating actionable insights. Successful use by a wider pilot group with stable performance. Readiness for broader deployment, potentially leveraging Copilot Cloud Analytics, Memory, or Guardrails if adopted.
 
 ## Task Checklist
 
@@ -20,13 +20,16 @@
     -   [ ] Set up process for reviewing suggestions and routing them to appropriate development backlogs.
     -   [ ] Schedule and monitor the analysis job.
 -   [ ] **User Experience & Proactivity (Application Orchestration Layer in [`d365-agent-orchestrator`](https://github.com/ntrtd/d365-agent-orchestrator) / CopilotKit UI in [`d365-agent-ui`](https://github.com/ntrtd/d365-agent-ui))**
-    -   [ ] Refine conversational flows within the CopilotKit UI (in `d365-agent-ui`) and corresponding LangGraph agent logic (in `d365-agent-orchestrator`) for both Purchase and Sales agents based on user feedback.
-    -   [ ] Standardize clarity and helpfulness of error messages returned by LangGraph agents (in `d365-agent-orchestrator`) and displayed in the CopilotKit UI (in `d365-agent-ui`).
-    -   [ ] Design and implement 1-2 proactive scenarios, potentially requiring coordination within LangGraph agent logic (in `d365-agent-orchestrator`) (e.g., monitoring data via one D365 MCP tool call triggers another LangGraph workflow, with notifications in CopilotKit UI (in `d365-agent-ui`)).
+    -   [ ] Refine conversational flows and error message clarity for all Domain-Specific LangGraph Agents and the Master Orchestrator Agent.
+    -   [ ] Explore advanced Generative UI patterns for displaying complex status dashboards or interactive reports.
+    -   [ ] Investigate and implement 1-2 proactive scenarios using `CopilotTask` or event-driven LangGraph flows (e.g., D365 event triggers agent, which notifies user via UI).
+    -   [ ] Evaluate opportunities for Frontend RAG/Actions in `d365-agent-ui` to improve responsiveness for common, simple queries.
+    -   [ ] (If using Copilot Cloud) Explore using Copilot Cloud Memory for enhanced personalization and cross-session context.
 -   [ ] **Security & Governance**
-    -   [ ] Conduct security review of the architecture and implementation across all relevant repositories ([`d365-agent-infra`](https://github.com/ntrtd/d365-agent-infra), `d365-agent-mcpserver-*`, `d365-agent-orchestrator`, `d365-agent-ui`).
-    -   [ ] Fine-tune permissions and access control (Azure RBAC via [`d365-agent-infra`](https://github.com/ntrtd/d365-agent-infra), potentially D365 roles).
-    -   [ ] Implement robust authentication for the CopilotKit UI (in `d365-agent-ui`) and Application Orchestration Layer (`d365-agent-orchestrator`), and secure communication between all services.
+    -   [ ] Conduct comprehensive security review of the entire architecture.
+    -   [ ] Fine-tune permissions and access controls.
+    -   [ ] Ensure robust authentication and secure communication.
+    -   [ ] (If using Copilot Cloud) Implement and configure Copilot Cloud Guardrails for enhanced safety and compliance.
     -   [ ] Finalize monitoring dashboards and set up alerts for critical issues (via [`d365-agent-infra`](https://github.com/ntrtd/d365-agent-infra) and App Insights config).
 -   [ ] **Rollout Preparation**
     -   [ ] Develop user training materials and documentation for the CopilotKit UI (in `d365-agent-ui`) and its features, covering both Purchase and Sales agent functionalities (potentially in [`d365-agent`](https://github.com/ntrtd/d365-agent) repo `docs/`).

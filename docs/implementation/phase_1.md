@@ -7,11 +7,11 @@
     *   **D365 MCP Client (for Orchestrator):** TypeScript (`d365-agent-mcpclient-ts`).
     *   **UI:** React/TypeScript with CopilotKit (`d365-agent-ui`).
 *   **MVP:**
-    *   A **D365 MCP Server (`d365-agent-mcpserver-dotnet`)** capable of handling MCP initialization and exposing 1-2 read-only D365 tools (e.g., `get_customer_by_name`) using the `d365-agent-odataclient-dotnet`.
-    *   An **Application Orchestration Layer (`d365-agent-orchestrator`)** set up with CopilotKit Runtime and a basic LangGraph agent structure.
-    *   This orchestrator uses `d365-agent-mcpclient-ts` to successfully connect to the `d365-agent-mcpserver-dotnet` and list/call the exposed D365 tools.
-    *   A basic **CopilotKit UI (`d365-agent-ui`)** that can connect to the `d365-agent-orchestrator`.
-    *   Demonstrates successful MCP communication between the TS client (in orchestrator) and .NET server, D365 authentication (in MCP server), core infrastructure setup, and D365 OData client generation for .NET. Basic logging visible in App Insights.
+    *   A **D365 MCP Server (`d365-agent-mcpserver-dotnet`)** capable of handling MCP initialization and exposing 1-2 read-only D365 tools (e.g., `GetEnvironmentName`) using the `d365-agent-odataclient-dotnet`.
+    *   An **Application Orchestration Layer (`d365-agent-orchestrator`)** with a running CopilotKit Runtime instance. It includes a basic LangGraph agent structure, featuring a placeholder Master Orchestrator Agent and a simple Domain-Specific Agent (e.g., `BasicInfoAgent`).
+    *   This `BasicInfoAgent` uses `d365-agent-mcpclient-ts` to successfully connect to the `d365-agent-mcpserver-dotnet` and call at least one D365 tool.
+    *   A basic **CopilotKit UI (`d365-agent-ui`)** that connects to the `d365-agent-orchestrator`'s CopilotKit Runtime and can successfully send a message to the `BasicInfoAgent`, displaying its state-based response.
+    *   Demonstrates successful MCP communication, D365 authentication, core infrastructure setup, and D365 OData client generation. Basic logging visible in Application Insights.
 
 ## Task Checklist
 
@@ -39,13 +39,17 @@
 -   [ ] **Application Orchestration Layer (Repo: [`d365-agent-orchestrator`](https://github.com/ntrtd/d365-agent-orchestrator))**
     -   [ ] Decide on initial host/structure for the Application Orchestration Layer (Node.js/TypeScript application using Next.js or similar, to host CopilotKit Runtime and the initial LangGraph agents for different business domains like Sales and Purchasing). This will reside in the `d365-agent-orchestrator` repository.
     -   [ ] Initialize the `d365-agent-orchestrator` project (TypeScript/Node.js).
+    -   [ ] Implement CopilotKit Runtime setup within the Node.js/TypeScript application.
     -   [ ] Integrate the `d365-agent-mcpclient-ts` library.
-    -   [ ] Implement basic logic in the `d365-agent-orchestrator` (e.g., a test LangGraph agent or a simple CopilotKit action) to connect to the deployed `d365-agent-mcpserver-dotnet` using `d365-agent-mcpclient-ts`.
-    -   [ ] Verify successful connection to the D365 MCP Server and ability to list/call its tools.
+    -   [ ] Implement a placeholder Master Orchestrator LangGraph agent and a simple Domain-Specific LangGraph agent (e.g., `BasicInfoAgent` as per 'Your First Agent' tutorial) that uses `d365-agent-mcpclient-ts` to call a D365 tool via the MCP server.
+    -   [ ] Ensure the LangGraph agent(s) are correctly exposed via the CopilotKit Runtime (e.g., defining appropriate `langgraphAgentUrl` endpoints).
+    -   [ ] Verify successful connection to the D365 MCP Server and ability to list/call its tools from the LangGraph agent.
 -   [ ] **User Interface (Repo: [`d365-agent-ui`](https://github.com/ntrtd/d365-agent-ui))**
-    *   [ ] Set up a basic React frontend application within the `d365-agent-ui` repository, designed to potentially support multiple agent interactions (e.g., Sales, Purchasing).
-    *   [ ] Integrate `CopilotKit` UI components (e.g., `@copilotkit/react-ui`, `@copilotkit/react-core`).
-    *   [ ] Configure the CopilotKit frontend in `d365-agent-ui` to connect to the Application Orchestration Layer (`d365-agent-orchestrator`, which will host the CopilotKit Runtime).
+    *   [ ] Set up a basic React frontend application within the `d365-agent-ui` repository.
+    *   [ ] Integrate `CopilotKit` UI components (`@copilotkit/react-ui`, `@copilotkit/react-core`).
+    *   [ ] Configure `CopilotKitProvider` with `chatApiEndpoint` pointing to the orchestrator's CopilotKit Runtime and a `langgraphAgentUrl` for the `BasicInfoAgent`.
+    *   [ ] Implement a basic chat interface using `<CopilotChat />` and demonstrate sending a message to the `BasicInfoAgent`.
+    *   [ ] Use `useCoAgent` hook to display the `BasicInfoAgent`'s state/response in the UI.
 -   [ ] **Testing & Validation (Phase 1)**
     *   [ ] Define initial Evaluation Strategy details (see `docs/evaluation_strategy.md`).
     *   [ ] Create initial test cases for Phase 1 MVP (simple read queries from `d365-agent-orchestrator` via `d365-agent-mcpclient-ts` to `d365-agent-mcpserver-dotnet`). (**Location TBD, maybe `d365-agent-tests`**)

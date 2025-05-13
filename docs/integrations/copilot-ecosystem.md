@@ -4,14 +4,24 @@ This section discusses how the Dynamics 365 AI Agent system, built with its own 
 
 ## Our Use of CopilotKit
 
-The primary architecture of this D365 AI Agent system leverages CopilotKit extensively:
-*   **`d365-agent-ui`:** A React frontend built using `@copilotkit/react-ui` and `@copilotkit/react-core` for the chat interface, state display, and user interaction.
-*   **`d365-agent-orchestrator`:** A Node.js/TypeScript backend hosting the `@copilotkit/runtime`. This runtime manages:
-    *   Communication with the `d365-agent-ui`.
-    *   Interaction with LLMs (e.g., Azure OpenAI).
-    *   Dispatching requests to **LangGraph agents** (for complex, stateful processes like PO processing or sales flows).
-    *   Executing simpler, direct CopilotKit actions which use `d365-agent-mcpclient-ts` to call the `d365-agent-mcpserver-dotnet`.
-    *   Managing shared state with the UI, especially for LangGraph agent interactions.
+The D365 AI Agent system is fundamentally built upon CopilotKit:
+*   **`d365-agent-ui` (Frontend):** A React application utilizing `@copilotkit/react-ui` for chat components and `@copilotkit/react-core` for core functionalities like `CopilotKitProvider`, `useCoAgent` (for shared state with LangGraph CoAgents), `useCopilotReadable`, and enabling Generative UI. It leverages the **CoAgents Socket** for real-time communication with backend LangGraph agents.
+*   **`d365-agent-orchestrator` (Backend):** A Node.js/TypeScript service hosting the `@copilotkit/runtime`. This runtime:
+    *   Manages communication with the `d365-agent-ui`.
+    *   Interacts with LLMs (e.g., Azure OpenAI), often as part of agent execution.
+    *   Serves as the entry point and host for **LangGraph CoAgents**. This includes a **Master Orchestrator Agent** for routing and **Domain-Specific LangGraph Agents** (e.g., `POProcessingAgent`) for handling complex, stateful business processes.
+    *   (Optionally) Can execute simpler, direct CopilotKit actions.
+    *   These agents use `d365-agent-mcpclient-ts` to call the `d365-agent-mcpserver-dotnet`.
+
+## Leveraging Copilot Cloud (Optional Enhancement)
+
+While our core `d365-agent-orchestrator` is self-hosted, it can be enhanced by integrating with **Copilot Cloud**, the managed service offering from CopilotKit. This can provide:
+*   **Managed Knowledge Bases:** For robust RAG capabilities over enterprise data sources (e.g., SharePoint, SQL databases) without needing to build and manage the RAG infrastructure within `d365-agent-orchestrator`.
+*   **AI Router:** Intelligent routing to different LLMs based on task complexity or cost.
+*   **Persistent Memory:** For enabling agents to remember context across user sessions.
+*   **Guardrails:** Centralized implementation of safety and compliance policies.
+*   **Analytics & ROI:** Insights into agent usage and performance.
+This integration would typically involve configuring the `@copilotkit/runtime` in `d365-agent-orchestrator` to use Copilot Cloud services where appropriate.
 
 ## Integrating with Microsoft Copilot Studio (Formerly Power Virtual Agents)
 

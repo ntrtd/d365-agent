@@ -1,25 +1,29 @@
 # API Reference
 
-This section provides reference documentation for the core components and libraries used within the Dynamics 365 AI Agent system. The primary architecture involves a TypeScript-based **Application Orchestration Layer** (`d365-agent-orchestrator`) communicating with a **.NET Core D365 MCP Server** (`d365-agent-mcpserver-dotnet`).
+This section provides a high-level overview and links to reference documentation for the core components, libraries, and SDKs that constitute the Dynamics 365 AI Agent system. The system architecture involves a CopilotKit-based UI (`d365-agent-ui`), a TypeScript-based Application Orchestration Layer (`d365-agent-orchestrator`) using LangGraph, and a .NET Core D365 MCP Server (`d365-agent-mcpserver-dotnet`).
 
-*Note: Detailed, auto-generated API documentation (e.g., from TypeDoc for TypeScript and DocFX for .NET) based on the source code in the respective SDK submodules and project repositories is the ideal goal for this section.*
+*Note: The ultimate goal is for this section to link to detailed, auto-generated API documentation (e.g., from TypeDoc for TypeScript and DocFX for .NET) for each relevant repository and submodule.*
 
-## Key SDK Components & Libraries
+## Key Components & Libraries
 
 ### 1. Application Orchestration Layer (`d365-agent-orchestrator`) Components
 
-This layer is built with Node.js/TypeScript and hosts:
+This Node.js/TypeScript layer hosts:
 
 *   **CopilotKit Runtime (`@copilotkit/runtime`):**
-    *   Manages interaction with the `d365-agent-ui` (CopilotKit frontend).
-    *   Handles LLM communication.
-    *   Dispatches requests to LangGraph agents or simpler CopilotKit actions.
-    *   Refer to official CopilotKit documentation for its API.
+    *   Manages interaction with the `d365-agent-ui`.
+    *   Handles LLM communication (or delegates to agents).
+    *   Serves as the entry point for LangGraph CoAgent interactions via defined `langgraphAgentUrl`s.
+    *   Refer to official [CopilotKit Runtime Documentation](https://docs.copilotkit.ai/) for its API.
 
-*   **LangGraph (`@langchain/langgraph`):**
-    *   Used to build stateful, multi-step agents (e.g., Purchase Agent, Sales Agent) in TypeScript.
-    *   Nodes within these LangGraph agents orchestrate business processes.
-    *   Refer to official LangChain/LangGraph documentation for its API.
+*   **LangGraph (`@langchain/langgraph` and related LangChain packages):**
+    *   Used to build stateful, multi-step **Master Orchestrator Agent** and **Domain-Specific Agents** (e.g., `POProcessingAgent`, `SalesAgent`) in TypeScript.
+    *   Refer to official [LangChain/LangGraph Documentation](https://js.langchain.com/docs/langgraph) for its API.
+
+*   **CopilotKit SDK for LangGraph Integration (e.g., `@copilotkit/sdk-js/langgraph`):**
+    *   Provides utilities to integrate LangGraph agents seamlessly with CopilotKit's shared state and Generative UI features.
+    *   Key elements include state annotations (e.g., `CopilotKitStateAnnotation`) for defining agent state shareable with `useCoAgent`, and functions like `copilotkitEmitState` for predictive state updates.
+    *   Refer to official [CopilotKit CoAgents Documentation](https://docs.copilotkit.ai/coagents) for details.
 
 *   **D365 MCP Client Library (`d365-agent-mcpclient-ts`):**
     *   **Purpose:** Used by LangGraph agents and simpler CopilotKit actions within the `d365-agent-orchestrator` to communicate with the `d365-agent-mcpserver-dotnet`.
@@ -63,11 +67,15 @@ This layer is a .NET Core application responsible for exposing D365 operations a
 This layer is a React/TypeScript application.
 
 *   **CopilotKit UI Libraries (`@copilotkit/react-ui`, `@copilotkit/react-core`):**
-    *   **`<CopilotKitProvider />`:** Wraps the application to provide context and connection to the `d365-agent-orchestrator`.
-    *   **`<CopilotChat />` (and variants):** Provides the chat interface.
-    *   **`useCoAgentState` Hook:** Used to subscribe to and display the state of LangGraph agents running in the `d365-agent-orchestrator`.
-    *   **Generative UI Components:** For rendering custom UI based on agent state or data.
-    *   Refer to official CopilotKit documentation for detailed API of these components.
+    *   **`<CopilotKitProvider />`:** Core provider for connecting to the backend and enabling CopilotKit features. Configured with `chatApiEndpoint` and `langgraphAgentUrl`(s).
+    *   **Chat Components (`<CopilotChat />`, etc.):** Pre-built UI for chat interactions.
+    *   **Core Hooks (`useCoAgent`, `useCopilotReadable`, `useCopilotAction`):**
+        *   `useCoAgent`: Primary hook for interacting with LangGraph CoAgents (getting `state`, using `setState`, `run`). Relies on the **CoAgents Socket** for real-time updates.
+        *   `useCopilotReadable`: Provides UI context to agents.
+        *   `useCopilotAction`: Can define **Frontend Actions** as part of **Copilot OS (Frontend)** capabilities.
+    *   **Generative UI Components & `useCoAgentStateRender`:** For rendering agent-driven dynamic UI within the chat.
+    *   **Frontend RAG Capabilities (Copilot OS Frontend):** Potential for client-side RAG.
+    *   Refer to official [CopilotKit React Core](https://docs.copilotkit.ai/reference/hooks) and [React UI](https://docs.copilotkit.ai/reference/components) documentation.
 
 ### Other Relevant Libraries/SDKs (Not part of the core "D365 Agent SDK" but used in the solution)
 

@@ -11,15 +11,17 @@ This section describes the primary repositories and services that constitute the
     *   **Repository:** [`https://github.com/ntrtd/d365-agent-ui`](https://github.com/ntrtd/d365-agent-ui)
 
 *   **`d365-agent-orchestrator` (Application Orchestration Layer)**
-    *   **Description:** A backend service, built with Node.js/TypeScript, that hosts the `CopilotKit Runtime` and `LangGraph` agents. It serves as the central hub for managing conversational flows and business process execution.
+    *   **Description:** A backend service, built with Node.js/TypeScript, that hosts the `CopilotKit Runtime` and orchestrates `LangGraph` agents. It serves as the central hub for managing conversational flows and business process execution.
     *   **Responsibilities:**
-        *   **CopilotKit Runtime:** Manages communication with the `d365-agent-ui` frontend, handles LLM interactions (e.g., with Azure OpenAI), and dispatches requests to appropriate LangGraph agents or simpler CopilotKit actions.
-        *   **LangGraph Agents (TypeScript):** Implements the state machines for specific business processes (e.g., Purchase Order Processing, Sales Quote Management). These agents:
-            *   Manage their own operational state, which is shareable with the UI via CopilotKit.
-            *   For document understanding (e.g., parsing PO PDFs), directly call AI services like OpenAI.
-            *   Utilize the `d365-agent-mcpclient-ts` library to call D365-specific tools exposed by the `d365-agent-mcpserver-dotnet`.
-            *   Handle other process-specific logic (e.g., XML generation).
-        *   **Simpler CopilotKit Actions:** Can define stateless actions for direct D365 operations (via `d365-agent-mcpclient-ts` to `d365-agent-mcpserver-dotnet`) if a full LangGraph flow is not needed.
+        *   **CopilotKit Runtime:** Manages communication with the `d365-agent-ui` frontend, handles LLM interactions (e.g., with Azure OpenAI), and serves as the entry point to the LangGraph orchestration.
+        *   **LangGraph Orchestration (TypeScript):**
+            *   **Master Orchestrator Agent:** Typically, a primary LangGraph agent that receives initial requests from the CopilotKit Runtime. It's responsible for understanding user intent, routing to appropriate Domain-Specific Agents, and managing overarching conversational context if needed.
+            *   **Domain-Specific LangGraph Agents (e.g., `CTSOrderAgent`, `POProcessingAgent`):** Specialized LangGraph state machines, each designed for a particular end-to-end business process. They:
+                *   Manage their own operational state, which is shareable with the UI via CopilotKit's shared state mechanisms.
+                *   For document understanding (e.g., parsing PO PDFs), directly call AI services like OpenAI.
+                *   Utilize the `d365-agent-mcpclient-ts` library to call D365-specific tools exposed by the `d365-agent-mcpserver-dotnet`.
+                *   Handle other process-specific logic (e.g., XML generation).
+        *   **Simpler CopilotKit Actions (Optional):** While the primary focus is on LangGraph for complex processes, simpler, stateless CopilotKit actions can still be defined for direct D365 operations if a full LangGraph flow is not required. These would also use `d365-agent-mcpclient-ts`.
         *   May expose additional API endpoints for external triggers (e.g., email ingestion initiating a LangGraph flow).
     *   **Repository:** [`https://github.com/ntrtd/d365-agent-orchestrator`](https://github.com/ntrtd/d365-agent-orchestrator)
 

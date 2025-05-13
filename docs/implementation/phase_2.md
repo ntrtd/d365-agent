@@ -1,17 +1,20 @@
 # Phase 2: Initial End-to-End Use Case (e.g., PO Ingestion MVP)
 
-*   **Goal:** Implement and validate initial end-to-end business processes for both **Purchase** and **Sales** agents using the **Application Orchestration Layer** (repo: [`d365-agent-orchestrator`](https://github.com/ntrtd/d365-agent-orchestrator)). This TypeScript/Node.js layer will host the CopilotKit Runtime and distinct LangGraph agents (TypeScript) for purchasing (e.g., PO Ingestion) and sales (e.g., Sales Quote Creation). These agents will use the `d365-agent-mcpclient-ts` library. Interaction will occur through the **CopilotKit UI** frontend (repo: [`d365-agent-ui`](https://github.com/ntrtd/d365-agent-ui)). Demonstrate transactional capabilities by having the LangGraph agents call tools on the **D365 MCP Server (`d365-agent-mcpserver-dotnet`)** and integrate with AI services like OpenAI for document parsing.
-*   **Orchestration Strategy:** All E2E flows will use **LangGraph (TypeScript)** for orchestration within the Application Orchestration Layer (`d365-agent-orchestrator`).
+*   **Goal:** Implement and validate initial end-to-end business processes using domain-specific LangGraph agents for **Purchase** (e.g., PO Ingestion) and **Sales** (e.g., Sales Quote Creation) within the `d365-agent-orchestrator`. This includes refining the **Master Orchestrator Agent** to route to these domain agents. Interactions occur via the `d365-agent-ui` (CopilotKit). Demonstrate transactional D365 MCP tool calls, AI document parsing, Generative UI for interaction, and predictive state updates.
+*   **Orchestration Strategy:** A **Master Orchestrator LangGraph Agent** routes to **Domain-Specific LangGraph Agents** (all TypeScript) within `d365-agent-orchestrator`.
 *   **MVP:**
-    *   A **CopilotKit UI** (from `d365-agent-ui`) connected to the **Application Orchestration Layer** (`d365-agent-orchestrator`).
-    *   **Purchase Agent (LangGraph in `d365-agent-orchestrator`):** Capable of processing a simple Purchase Order (received via UI upload or external trigger). Orchestrates the PO processing state machine (Receive -> Extract with OpenAI -> Test Post D365 -> Create XML -> Post to FTP/Blob). This involves:
-        *   Directly calling **OpenAI services** for PDF data extraction within a LangGraph node.
-        *   Using `d365-agent-mcpclient-ts` to call D365 MCP tools (e.g., `simulateInvoicePostToD365`) on the `d365-agent-mcpserver-dotnet`.
-        *   Generating XML and posting to FTP/Blob.
-    *   **Sales Agent (LangGraph in `d365-agent-orchestrator`):** Capable of handling an initial sales process, e.g., "Sales Quote Creation" or "Sales Order Inquiry". This involves:
-        *   Using `d365-agent-mcpclient-ts` to call D365 MCP tools (e.g., `createQuote`, `getCustomerDetails`, `getProductPrice`) on the `d365-agent-mcpserver-dotnet`.
-    *   The CopilotKit UI reflects the state and progress of both LangGraph agents via shared state mechanisms, potentially with distinct UI views or contexts for Sales and Purchasing.
-    *   Demonstrates LangGraph orchestration for multiple agent types, direct calls to AI services for parsing, D365 MCP tool calls (TS client to .NET server), and UI interaction via CopilotKit.
+    *   A **CopilotKit UI** (`d365-agent-ui`) connected to the `d365-agent-orchestrator`.
+    *   **Master Orchestrator Agent (LangGraph in `d365-agent-orchestrator`):** Capable of basic intent recognition to route requests to either the Purchase Agent or Sales Agent.
+    *   **Purchase Agent (Domain-Specific LangGraph in `d365-agent-orchestrator`):**
+        *   Processes a simple Purchase Order (UI upload/external trigger).
+        *   Orchestrates: Receive -> Extract (OpenAI) -> **Review Data (Generative UI)** -> Validate (D365 MCP Tools) -> Create XML -> Post to FTP/Blob.
+        *   Emits **predictive state updates** during extraction and validation.
+    *   **Sales Agent (Domain-Specific LangGraph in `d365-agent-orchestrator`):**
+        *   Handles an initial sales process (e.g., "Sales Quote Creation").
+        *   Orchestrates: Gather Requirements (interactive via chat) -> Get Customer/Product Details (D365 MCP Tools) -> Calculate Quote -> **Present Quote (Generative UI)**.
+        *   Emits **predictive state updates** during D365 calls.
+    *   The CopilotKit UI reflects the state and progress of the active Domain-Specific LangGraph agent via shared state and Generative UI components.
+    *   Demonstrates Master Orchestrator routing, Domain-Specific Agent orchestration, AI document parsing, D365 MCP tool calls, interactive Generative UI, and predictive state updates.
 
 ## Task Checklist
 
@@ -28,25 +31,28 @@
     -   [ ] Implement appropriate validation and error handling logic within these D365 MCP tools.
     -   [ ] Update `d365-agent-mcpserver-dotnet` deployment via its CI/CD pipeline.
 -   [ ] **Application Orchestration Layer Enhancements (Repo: [`d365-agent-orchestrator`](https://github.com/ntrtd/d365-agent-orchestrator))**
-    -   [ ] Set up and configure the **CopilotKit Runtime** (Node.js/TypeScript) within `d365-agent-orchestrator` to support multiple LangGraph agents and simpler direct actions.
-    -   [ ] Implement the **Purchase Order Processing LangGraph agent (TypeScript)**, defining its state machine (Receive, Extract via OpenAI, Validate D365, Create XML, Post to FTP/Blob).
-    -   [ ] Implement an initial **Sales Process LangGraph agent (TypeScript)** (e.g., for Sales Quote Creation or Sales Order Inquiry).
-    -   [ ] Nodes in both LangGraph agents should:
-        *   Handle inputs (e.g., from UI upload/commands via CopilotKit, or from external trigger API for POs).
-        *   For POs, directly call OpenAI services for document parsing.
-        *   Use the `d365-agent-mcpclient-ts` library to call the relevant D365 MCP tools on the deployed `d365-agent-mcpserver-dotnet`.
-        *   Contain logic for specific tasks (e.g., XML generation for POs).
-    -   [ ] Define simpler CopilotKit actions within the orchestrator for direct D365 queries/operations that bypass LangGraph, using `d365-agent-mcpclient-ts` to call the `d365-agent-mcpserver-dotnet`.
-    -   [ ] Implement robust error handling within each LangGraph agent and direct action.
-    -   [ ] Ensure each LangGraph agent's state is structured for CopilotKit's shared state mechanism.
+    -   [ ] Set up and configure the **CopilotKit Runtime** within `d365-agent-orchestrator` to correctly serve multiple LangGraph agents via defined `langgraphAgentUrl` routes.
+    -   [ ] Implement/Refine the **Master Orchestrator LangGraph Agent** to handle initial intent and route to the Purchase or Sales domain agents.
+    -   [ ] Implement the **Purchase Order Processing Domain Agent (LangGraph, TypeScript)**:
+        *   State machine: Receive, Extract (OpenAI), Review Data (Generative UI step), Validate D365, Create XML, Post to FTP/Blob.
+        *   Integrate direct OpenAI calls for PDF parsing.
+        *   Implement calls to D365 MCP tools via `d365-agent-mcpclient-ts`.
+        *   Implement **predictive state updates** for key steps.
+    -   [ ] Implement the **Sales Process Domain Agent (LangGraph, TypeScript)** (e.g., Sales Quote Creation):
+        *   State machine: Gather Requirements, Get Customer/Product Details (D365), Calculate Quote, Present Quote (Generative UI step).
+        *   Implement calls to D365 MCP tools.
+        *   Implement **predictive state updates**.
+    -   [ ] (Optional) Define simpler direct CopilotKit actions if any tasks don't require full LangGraph orchestration.
+    -   [ ] Implement robust error handling within each LangGraph agent.
+    -   [ ] Ensure agent states are structured for CopilotKit shared state and Generative UI.
     -   [ ] Deploy `d365-agent-orchestrator` updates.
 -   [ ] **User Interface / Channel (CopilotKit UI in Repo: [`d365-agent-ui`](https://github.com/ntrtd/d365-agent-ui))**
     *   [ ] Develop the **CopilotKit UI** frontend in `d365-agent-ui` to:
-        *   Provide distinct interaction contexts or views for the Purchase Agent and Sales Agent if necessary.
-        *   Allow users to upload PO documents (for Purchase Agent).
-        *   Initiate processes for both agent types (and simpler direct actions) via chat commands.
-        *   Display the state and progress of the active LangGraph agent (from `d365-agent-orchestrator`) using shared state (e.g., `useCoAgentState`).
-        *   Handle responses, confirmations, and errors from the LangGraph agents and direct actions.
+        *   Interact with the Master Orchestrator Agent and subsequently the routed Domain-Specific Agents (Purchase, Sales).
+        *   Support PO document upload.
+        *   Render **Generative UI** components for PO data review and Sales Quote presentation.
+        *   Display **predictive state updates** and final agent states/responses using `useCoAgent`.
+        *   Handle user interactions within Generative UI components (e.g., confirmation clicks).
 -   [ ] **Testing & Validation (Phase 2)**
     *   [ ] Refine Evaluation Strategy (add LangGraph orchestration flow metrics for both agent types, E2E test scope including UI interaction for both).
     *   [ ] Create test datasets for the E2E PO processing and initial Sales process scenarios. (**Location TBD, maybe `d365-agent-tests`**)

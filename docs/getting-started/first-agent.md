@@ -1,75 +1,195 @@
-# Your First Agent (Quick Tutorial)
+# Your First Agent: A Basic D365 Inquiry
 
-This tutorial provides a high-level overview of creating a basic agent interaction using the Dynamics 365 AI Agent architecture, which combines a CopilotKit UI, a LangGraph-based orchestrator, and an MCP Server for D365 connectivity.
+This tutorial guides you through creating a very simple agent interaction using the Dynamics 365 AI Agent architecture. We'll build a `BasicD365InfoAgent` that can fetch and display basic environment details from Dynamics 365.
 
-Refer to the [Implementation Plan](../implementation/index.md) for detailed phase-by-phase setup. This guide outlines the conceptual steps.
+This assumes you have followed the [Prerequisites](./prerequisites.md) and [Installation Guide](./installation.md) to set up your development environment and the core components.
 
-## 1. Set Up the Core Components
+## 1. Define a Simple D365 MCP Tool
 
-Ensure the foundational pieces are in place as per Phase 1 of the implementation plan:
+In your `d365-agent-mcpserver-dotnet` project:
+1.  Define a new MCP tool, for example, `GetEnvironmentName`.
+2.  Implement this tool to retrieve a basic piece of information from D365, like the environment name or version.
+    ```csharp
+    // Example Tool in d365-agent-mcpserver-dotnet
+    public class GetEnvironmentNameTool : IMcpTool
+    {
+        public string Name => "GetEnvironmentName";
+        public string Description => "Gets the name of the current D365 F&O environment.";
+        // Define parameters if any (none for this simple example)
+        // public List<McpToolParameter> Parameters => new List<McpToolParameter>();
+    
+        public async Task<McpToolResult> ExecuteAsync(McpToolExecutionContext context, Dictionary<string, object> parameters)
+        {
+            // In a real scenario, you'd use the D365 OData client here
+            // For simplicity, we'll return a hardcoded value
+            string environmentName = "D365 Production Environment (USMF)"; // Replace with actual D365 call
+            
+            return new McpToolResult
+            {
+                Content = new List<McpContent>
+                {
+                    new McpTextContent { Text = $"Environment Name: {environmentName}" }
+                }
+            };
+        }
+    }
+    ```
+3.  Ensure this tool is registered with your MCP Server.
+4.  Run your `d365-agent-mcpserver-dotnet` service.
 
-*   **D365 MCP Server (`d365-agent-mcpserver-dotnet`):**
-    *   Set up and run the .NET Core MCP Server.
-    *   Define at least one simple read-only MCP tool (e.g., `getEnvironmentDetails` that returns some basic D365 environment info), which uses the `d365-agent-odataclient-dotnet`.
-*   **Application Orchestration Layer (`d365-agent-orchestrator`):**
-    *   Set up the Node.js/TypeScript project for `d365-agent-orchestrator`.
-    *   Install `@copilotkit/runtime`, LangGraph (TypeScript), and `d365-agent-mcpclient-ts` dependencies.
-    *   Configure the CopilotKit Runtime.
-    *   Implement a very simple LangGraph agent (e.g., `BasicInfoAgent`) or a direct CopilotKit action.
-        *   This agent/action will use `d365-agent-mcpclient-ts` to call the `getEnvironmentDetails` tool on your `d365-agent-mcpserver-dotnet`.
-    *   Expose an endpoint for the CopilotKit UI to connect to (e.g., a Next.js API route).
-*   **User Interface (`d365-agent-ui`):**
-    *   Set up the React project.
-    *   Install `@copilotkit/react-ui` and `@copilotkit/react-core`.
-    *   Configure the `<CopilotKit>` provider to point to your `d365-agent-orchestrator`'s CopilotKit Runtime endpoint.
-    *   Add a basic chat component like `<CopilotChat />`.
+## 2. Create a Simple LangGraph Agent (`BasicD365InfoAgent`)
 
-## 2. Defining a Simple Interaction in the LangGraph Agent
+In your `d365-agent-orchestrator` project (TypeScript):
 
-Within your `d365-agent-orchestrator`, your `BasicInfoAgent` (LangGraph) might have a simple flow:
+1.  **Define State:**
+    ```typescript
+    // src/agents/basicInfoAgent/state.ts
+    import { CopilotKitStateAnnotation } from "@copilotkit/sdk-js/langgraph"; // Assuming this or similar exists
+    import { Annotation }  from "@langchain/langgraph"; // Placeholder, actual import might vary
 
-*   **Input:** User asks "What D365 environment is this?"
-*   **LangGraph Node 1 (Call D365 MCP Tool):**
-    *   Uses `d365-agent-mcpclient-ts`.
-    *   Calls the `getEnvironmentDetails` tool on the `d365-agent-mcpserver-ts`.
-*   **LangGraph Node 2 (Format Response):**
-    *   Takes the result from the MCP tool.
-    *   Formats a user-friendly string.
-*   **Output:** The formatted string is sent back to the CopilotKit UI.
+    export const BasicInfoAgentStateSchema = Annotation.Root({
+      userInput: Annotation<string>(),
+      environmentName: Annotation<string | null>(),
+      errorMessage: Annotation<string | null>(),
+      ...CopilotKitStateAnnotation.spec, // For CopilotKit shared state
+    });
+    export type BasicInfoAgentState = typeof BasicInfoAgentStateSchema.State;
+    ```
 
-**Conceptual Code Snippet (Illustrative - within LangGraph agent node in `d365-agent-orchestrator`):**
-```typescript
-// This is highly conceptual and depends on your LangGraph setup or CopilotKit action setup
-// and how you integrate the d365-agent-mcpclient-ts.
+2.  **Define Nodes:**
+    *   `fetchEnvironmentInfoNode`: Calls the `GetEnvironmentName` MCP tool.
+    *   `prepareResponseNode`: Formats the response for the UI.
 
-import { McpClient } from "@d365-agent/mcpclient-ts"; // Ensure this is the correct import path for your MCP client
+    ```typescript
+    // src/agents/basicInfoAgent/nodes.ts
+    import { McpClient } from "@d365-agent/mcpclient-ts"; // Adjust import path
+    import { BasicInfoAgentState } from "./state";
 
-async function getD365EnvironmentInfoLogic() { // Can be part of a LangGraph node or a CopilotKit action handler
-  // mcpClient would be initialized and configured to point to the d365-agent-mcpserver-dotnet endpoint
-  const mcpClient = new McpClient({ baseUrl: "http://localhost:YOUR_DOTNET_MCP_SERVER_PORT" }); // Example
-  
-  try {
-    const response = await mcpClient.executeTool("getEnvironmentDetails", {});
-    // Assuming the tool returns content like { type: "text", text: "Environment: XYZ" }
-    const envInfo = response.content.find(c => c.type === 'text')?.text || "Could not retrieve environment details.";
-    return envInfo; // Or update state in LangGraph
-  } catch (error) {
-    console.error("Error calling MCP tool:", error);
-    return "Error fetching environment details."; // Or update state in LangGraph
-  }
-}
-```
+    const mcpClient = new McpClient({ baseUrl: process.env.D365_MCP_SERVER_URL! });
 
-## 3. Running Your System
+    export async function fetchEnvironmentInfoNode(state: BasicInfoAgentState): Promise<Partial<BasicInfoAgentState>> {
+      try {
+        const result = await mcpClient.executeTool("GetEnvironmentName", {});
+        const envNameContent = result.content.find(c => c.type === 'text');
+        return { environmentName: envNameContent?.text || "Unknown Environment" };
+      } catch (error) {
+        console.error("Error fetching D365 env info:", error);
+        return { errorMessage: "Failed to fetch environment info." };
+      }
+    }
 
-1.  Start your D365 MCP Server (`d365-agent-mcpserver-dotnet`).
-2.  Start your Application Orchestration Layer (`d365-agent-orchestrator`).
-3.  Start your CopilotKit UI (`d365-agent-ui`).
+    export async function prepareResponseNode(state: BasicInfoAgentState): Promise<Partial<BasicInfoAgentState>> {
+      // This node could format the message or decide on the final output.
+      // For simplicity, the environmentName itself will be used.
+      // If an error occurred, it would be in errorMessage.
+      return {}; // No state change needed here if UI directly displays environmentName or errorMessage
+    }
+    ```
 
-## 4. Interacting with the Agent
+3.  **Define Graph:**
+    ```typescript
+    // src/agents/basicInfoAgent/graph.ts
+    import { StateGraph } from "@langchain/langgraph";
+    import { BasicInfoAgentState, BasicInfoAgentStateSchema } from "./state";
+    import { fetchEnvironmentInfoNode, prepareResponseNode } from "./nodes";
 
-*   Open your CopilotKit UI (`d365-agent-ui`) in the browser.
-*   In the chat interface, type a message that your LangGraph agent or CopilotKit action in `d365-agent-orchestrator` is designed to handle, for example: "Tell me about the D365 environment."
-*   The orchestrator should process this, use `d365-agent-mcpclient-ts` to call the `getEnvironmentDetails` tool on the `d365-agent-mcpserver-dotnet`, and return the information to the UI.
+    const workflow = new StateGraph<BasicInfoAgentState>({
+      channels: BasicInfoAgentStateSchema,
+    });
 
-This provides a basic end-to-end flow from the UI, through the orchestrator using LangGraph, to the D365 MCP Server, and back. More complex scenarios involving the PO processing state machine would build upon these foundational integrations.
+    workflow.addNode("fetchInfo", fetchEnvironmentInfoNode);
+    workflow.addNode("prepareResponse", prepareResponseNode);
+
+    workflow.setEntryPoint("fetchInfo");
+    workflow.addEdge("fetchInfo", "prepareResponse");
+    workflow.addEdge("prepareResponse", "__end__");
+
+    export const basicInfoAgentGraph = workflow.compile();
+    ```
+
+4.  **Expose via CopilotKit Runtime:**
+    In your `d365-agent-orchestrator` (e.g., in a Next.js API route or main server file where CopilotKit Runtime is configured):
+    ```typescript
+    // Example: pages/api/copilotkit/basicinfo.ts (Next.js route handler)
+    import { CopilotKit } from "@copilotkit/runtime";
+    import { basicInfoAgentGraph } from "../../../agents/basicInfoAgent/graph"; // Adjust path
+
+    export default function POST(req: Request) {
+      const copilotKit = new CopilotKit({
+        // langgraph: basicInfoAgentGraph, // Simplified; actual integration needs agent executor setup
+        // For CoAgents, you'd typically set up an agent executor that uses the graph
+        // and provide it to the CopilotKit provider in the UI via langgraphAgentUrl.
+        // This backend would handle requests to that langgraphAgentUrl.
+        // For this conceptual example, assume the runtime can invoke this graph.
+      });
+      // This is a simplified representation. Refer to CopilotKit CoAgents documentation
+      // for correctly setting up LangGraph with the runtime and frontend.
+      return copilotKit.response(req, basicInfoAgentGraph); // This is conceptual
+    }
+    ```
+    *Self-Note: The actual mechanism to make a LangGraph agent callable by CopilotKit UI involves setting `langgraphAgentUrl` in the UI's `CopilotKitProvider` to point to an endpoint (hosted by this orchestrator) that serves the LangGraph agent executor. The above snippet is a placeholder for that setup.*
+
+## 3. Configure UI (`d365-agent-ui`)
+
+1.  **CopilotKit Provider:** Ensure your `_app.tsx` or main layout has `CopilotKitProvider` configured to point to your `d365-agent-orchestrator`'s CopilotKit Runtime endpoint, and specifically the `langgraphAgentUrl` for your `BasicD365InfoAgent`.
+    ```tsx
+    // Example: _app.tsx
+    import { CopilotKitProvider } from "@copilotkit/react-core";
+    import "@copilotkit/react-ui/styles.css"; // Import default styles
+
+    function MyApp({ Component, pageProps }) {
+      return (
+        <CopilotKitProvider
+          publicApiKey={process.env.NEXT_PUBLIC_COPILOT_CLOUD_API_KEY} // If using Copilot Cloud
+          chatApiEndpoint={process.env.NEXT_PUBLIC_COPILOT_CHAT_API_URL} // General runtime endpoint
+          // For CoAgents like our LangGraph agent:
+          langgraphAgentUrl={`${process.env.NEXT_PUBLIC_COPILOT_CHAT_API_URL}/basicinfo`} // URL for BasicD365InfoAgent
+        >
+          <Component {...pageProps} />
+        </CopilotKitProvider>
+      );
+    }
+    export default MyApp;
+    ```
+2.  **Chat Component & State Display:**
+    ```tsx
+    // Example: pages/index.tsx
+    import { CopilotChat } from "@copilotkit/react-ui";
+    import { useCoAgent } from "@copilotkit/react-core";
+    import { BasicInfoAgentState } from "../path/to/orchestrator/agents/basicInfoAgent/state"; // Adjust path
+
+    export default function HomePage() {
+      const { state: agentState } = useCoAgent<BasicInfoAgentState>({ name: "basicinfo" }); // 'name' should match agent key
+
+      return (
+        <div>
+          <h1>D365 AI Agent</h1>
+          <CopilotChat 
+            instructions="Ask about the D365 environment."
+            defaultMessages={[{
+                id: "1",
+                role: "user",
+                content: "What is the D365 environment name?",
+            }]}
+            agentId="basicinfo" // Specify which agent to talk to
+          />
+          {agentState?.environmentName && <p>From Agent State: {agentState.environmentName}</p>}
+          {agentState?.errorMessage && <p style={{color: 'red'}}>Error: {agentState.errorMessage}</p>}
+        </div>
+      );
+    }
+    ```
+
+## 4. Running and Testing
+
+1.  Start `d365-agent-mcpserver-dotnet`.
+2.  Start `d365-agent-orchestrator`.
+3.  Start `d365-agent-ui`.
+4.  Open the UI in your browser. The chat should automatically send the default message.
+5.  The `BasicD365InfoAgent` should execute:
+    *   Call the `GetEnvironmentName` MCP tool.
+    *   Update its `environmentName` state.
+6.  The UI, using `useCoAgent`, should reactively display the `environmentName` from the agent's state.
+
+This provides a more concrete, albeit still simplified, example of an end-to-end flow. Building robust LangGraph agents involves more detailed state management, error handling, and tool definitions. Refer to official CopilotKit and LangChain/LangGraph documentation for advanced patterns.
+This tutorial illustrates how a domain-specific agent (`BasicD365InfoAgent`) can be created and integrated. A Master Orchestrator Agent would typically be responsible for routing user requests to such domain-specific agents based on intent.

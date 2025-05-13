@@ -46,11 +46,16 @@ Here are several strategies for embedding the `d365-agent-ui`:
 
 Regardless of the embedding strategy, these CopilotKit features are key:
 
-*   **`<CopilotKitProvider>`:** Configured with the URL of your `d365-agent-orchestrator`. This allows the embedded UI to connect to the central orchestration logic.
+*   **`<CopilotKitProvider />`:** Configured with the `chatApiEndpoint` (for the CopilotKit Runtime in `d365-agent-orchestrator`) and relevant `langgraphAgentUrl`(s). This allows the embedded UI to connect to the central orchestration logic.
 *   **`useCopilotReadable` (Contextual Awareness):** The embedded `d365-agent-ui` (or the LOB system itself in headless scenarios) uses this hook to provide real-time context from the LOB application (e.g., "current_customer_id", "viewing_product_page") to the LangGraph agents in `d365-agent-orchestrator`.
-*   **`useCoAgentState` (Shared State with LangGraph):** Allows the embedded UI to display the real-time state, progress, and intermediate results from the backend LangGraph agents. This is crucial for showing users what the agent is doing during multi-step processes like PO processing.
+*   **`useCoAgent` (Shared State with LangGraph):** This primary hook allows the embedded UI to:
+    *   Read the real-time `state` (including predictive updates) from backend LangGraph agents.
+    *   Use `setState` to update the agent's state from UI interactions.
+    *   Use `run` to trigger or re-run the agent.
+    This is crucial for showing users what the agent is doing and for human-in-the-loop scenarios. The real-time communication is facilitated by the underlying **CoAgents Socket**.
+    *   `useCoAgentStateRender` can be used for specific in-chat state rendering.
 *   **Generative UI:** LangGraph agents can instruct the CopilotKit UI to render custom React components. When embedded, these components can be designed to display LOB-specific data or provide interactive elements relevant to the LOB context (e.g., a mini-form for D365 data entry, a list of related D365 records).
-*   **Frontend Actions (`useCopilotAction` in frontend):** If the LangGraph agent needs to trigger an action directly within the LOB system's frontend (e.g., pre-fill a form field on the LOB page, navigate the LOB UI), this can be defined in the embedded UI and called by the agent.
+*   **Copilot OS (Frontend) - Frontend Actions (`useCopilotAction` in frontend):** If the LangGraph agent needs to trigger an action directly within the LOB system's frontend (e.g., pre-fill a form field on the LOB page, navigate the LOB UI), this can be defined as a Frontend Action in the embedded UI and called by the agent. This leverages CopilotKit's client-side capabilities.
 
 ## Use Case Example: Embedded Copilot in a CRM System
 
@@ -64,7 +69,7 @@ Imagine the `d365-agent-ui` is embedded as a sidebar in a Dynamics 365 Sales Hub
     *   Or, "Add a new task to follow up next week."
 *   **Processing:**
     1.  The `d365-agent-ui` sends the prompt and the contextual `Opportunity ID` / `Customer ID` (via `useCopilotReadable`) to the `d365-agent-orchestrator`.
-    2.  The CopilotKit Runtime in the orchestrator routes the request to a "SalesLangGraphAgent".
+    2.  The CopilotKit Runtime in the orchestrator might first pass the request to a `MasterOrchestratorAgent`, which identifies the sales context and routes it to the domain-specific "SalesLangGraphAgent".
     3.  The SalesLangGraphAgent uses the provided context:
         *   For the communication summary, it uses `d365-agent-mcpclient-ts` to call tools on `d365-agent-mcpserver-dotnet` to fetch related emails, phone calls, and appointments from D365 for that opportunity/contact. It then summarizes them.
         *   For drafting an email, it fetches relevant details and generates a draft.

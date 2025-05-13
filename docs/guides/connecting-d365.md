@@ -5,11 +5,13 @@ This guide explains how the Dynamics 365 AI Agent system, specifically the **App
 ## Architecture Overview
 
 1.  **Application Orchestration Layer (`d365-agent-orchestrator` - TypeScript/Node.js):**
-    *   Hosts the CopilotKit Runtime and LangGraph agents (TypeScript).
-    *   Uses the **`d365-agent-mcpclient-ts`** (TypeScript MCP Client library) to make requests to the D365 MCP Server.
-    *   LangGraph agents or simpler CopilotKit actions within this layer decide which D365 MCP tool to call and with what parameters.
+    *   Hosts the CopilotKit Runtime.
+    *   Runs **LangGraph agents** (TypeScript), typically a Master Orchestrator Agent routing to Domain-Specific Agents (e.g., `POProcessingAgent`, `SalesAgent`).
+    *   These Domain-Specific LangGraph agents use the **`d365-agent-mcpclient-ts`** (TypeScript MCP Client library) to make requests to the D365 MCP Server.
+    *   The agents decide which D365 MCP tool to call and with what parameters as part of their workflow.
 
 2.  **D365 MCP Server (`d365-agent-mcpserver-dotnet` - .NET Core):**
+    *   Acts as a specialized **Remote Endpoint** in the CopilotKit ecosystem, communicating via the Model Context Protocol (MCP).
     *   Receives MCP requests from the `d365-agent-mcpclient-ts`.
     *   Implements MCP tools (e.g., `getCustomerByName`, `simulateInvoicePostToD365`).
     *   Uses the **`d365-agent-odataclient-dotnet`** (a generated C# OData client) to perform the actual data operations (queries, creates, updates, deletes) against the Dynamics 365 OData API.
@@ -135,10 +137,10 @@ The LangGraph agents (TypeScript) running in the `d365-agent-orchestrator` will 
 // Conceptual code within a LangGraph node in d365-agent-orchestrator/src/agents/poAgent.ts
 import { McpClient, McpRequest, McpResponse } from "@d365-agent/mcpclient-ts"; // Adjust import path
 
-// Assume mcpClient is initialized (e.g., in the agent's constructor or passed in)
-// const mcpClient = new McpClient({ baseUrl: "http://localhost:PORT_OF_DOTNET_MCP_SERVER" });
+// Assume mcpClient is initialized within the Domain-Specific LangGraph Agent or passed to its nodes.
+// const mcpClient = new McpClient({ baseUrl: process.env.D365_MCP_SERVER_URL });
 
-async function validatePoDataWithD365(extractedPoData: any, mcpClient: McpClient): Promise<any> {
+async function validatePoDataWithD365(extractedPoData: any, mcpClient: McpClient): Promise<any> { // This function would be a part of a LangGraph node
   try {
     const request: McpRequest = {
       toolName: "simulateInvoicePostToD365", // Tool defined in d365-agent-mcpserver-dotnet
@@ -168,6 +170,7 @@ async function validatePoDataWithD365(extractedPoData: any, mcpClient: McpClient
 
 ## Error Handling
 *   **D365 MCP Server (`.NET`):** Tool implementations should catch exceptions from the OData client (e.g., `DataServiceQueryException`, `DataServiceClientException`) and return structured `McpResponse` objects with `isError: true` and informative error content.
-*   **Application Orchestration Layer (TypeScript LangGraph):** When using `d365-agent-mcpclient-ts`, check `response.isError` and handle errors appropriately within the LangGraph nodes to manage the state machine's flow (e.g., transition to an error state, retry, or request human intervention).
+*   **Application Orchestration Layer (TypeScript LangGraph):** When using `d365-agent-mcpclient-ts`, LangGraph nodes should check `response.isError` (or handle exceptions from the client). Errors should be managed within the LangGraph flow (e.g., updating the agent's state with an `errorMessage`, transitioning to an error-handling node, or requesting human intervention).
+*   **User Interface (`d365-agent-ui`):** Errors propagated to the LangGraph agent's state (e.g., in an `errorMessage` field) will be reflected in the UI via `useCoAgent`. Generative UI can be used to present these errors to the user in a clear and actionable way.
 
-This layered approach ensures that D365 interactions are robustly handled by the .NET OData client within a dedicated MCP server, while the TypeScript-based orchestration layer can interact with it in a standardized way.
+This layered approach ensures that D365 interactions are robustly handled by the .NET OData client within a dedicated MCP server, while the TypeScript-based orchestration layer can interact with it in a standardized way, and the UI can present results and errors effectively.
