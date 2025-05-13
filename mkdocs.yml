@@ -65,12 +65,18 @@ nav:
     - Overview: guides/index.md
     - Connecting to D365: guides/connecting-d365.md
     - Building UIs: guides/building-uis.md
+    - Embedding UI in LOB Systems: guides/embedding-ui-in-lob.md
     - Customizing Agents: guides/customizing-agents.md
     - Implementing Scenarios:
       - Overview: guides/implementing-scenarios/index.md
-      # Add specific scenario files here as they are created, e.g.:
-      # - Automating Sales Tasks: guides/implementing-scenarios/automating-sales-tasks.md
+      - PO Submission: guides/implementing-scenarios/scenario-1-po-submission.md
+      - Credit Check: guides/implementing-scenarios/scenario-2-credit-check.md
+      - Requisition to PO: guides/implementing-scenarios/scenario-3-requisition-to-po.md
+      - Invoice Status Inquiry: guides/implementing-scenarios/scenario-4-invoice-status.md
+      - Asset Maintenance Request: guides/implementing-scenarios/scenario-5-asset-maintenance.md
+      - Cut-to-Size Order Processing: guides/implementing-scenarios/scenario-6-cut-to-size-order.md
     - Debugging & Logging: guides/debugging-logging.md
+    - Evaluation Strategy: guides/evaluation.md
   - Integrations:
     - Overview: integrations/index.md
     - Power Platform: integrations/power-platform.md

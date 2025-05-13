@@ -14,7 +14,14 @@ This repository (`d365-agent`) serves as the central documentation hub for the d
 *   **[`d365-agent-odataclient-ts`](https://github.com/ntrtd/d365-agent-odataclient-ts):** Contains the process and code for generating a **TypeScript** OData V4 client (using SAP Cloud SDK / `odata2ts`). **Note: This TypeScript OData client is currently facing issues, making the `d365-agent-mcpserver-ts` not fully operational for D365 integration at this time.**
 *   **[`d365-agent-mcpserver-ts`](https://github.com/ntrtd/d365-agent-mcpserver-ts):** Contains the **TypeScript/Node.js** implementation of an MCP Server (using `submodules/typescript-sdk`). Depends on the package from `d365-agent-odataclient-ts`. Its use for D365 is limited by the current status of `d365-agent-odataclient-ts`.
 *   **[`d365-agent-mcpclient-dotnet`](https://github.com/ntrtd/d365-agent-mcpclient-dotnet):** Contains the **C#/.NET MCP Client Library** (using `submodules/csharp-sdk`). Could be used by other .NET services if they need to call MCP servers.
-*   *(Future)* **`d365-agent-tests`:** May contain centralized integration or end-to-end tests.
+*   **[`d365-agent-tests`](https://github.com/ntrtd/d365-agent-tests):** Contains E2E tests, integration tests, and testing utilities for the D365 AI Agent system.
+
+**Conceptual/Placeholder Repositories:**
+*   **[`d365-agent-mcpclient`](https://github.com/ntrtd/d365-agent-mcpclient):** General placeholder for MCP Client concepts. Refer to specific implementations (`-ts`, `-dotnet`).
+*   **[`d365-agent-mcpserver`](https://github.com/ntrtd/d365-agent-mcpserver):** General placeholder for MCP Server concepts. Refer to specific implementations (`-ts`, `-dotnet`).
+*   **[`d365-agent-odataclient`](https://github.com/ntrtd/d365-agent-odataclient):** General placeholder for D365 OData Client concepts. Refer to specific generator repositories (`-ts`, `-dotnet`).
+*   **[`d365-agent-service`](https://github.com/ntrtd/d365-agent-service):** General placeholder for service concepts. Specific services (`-ui`, `-orchestrator`, `-mcpserver-dotnet`) are in dedicated repos.
+*   **[`d365-agent-hub`](https://github.com/ntrtd/d365-agent-hub):** Placeholder for potential future central hub functionalities.
 
 The documentation herein is built using [MkDocs](https://www.mkdocs.org/) with the [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) theme.
 
@@ -69,6 +76,7 @@ d365-agent/
 *   **D365 OData Client Generator (TypeScript):** [`d365-agent-odataclient-ts`](https://github.com/ntrtd/d365-agent-odataclient-ts) (Note: TS OData client currently has issues)
 *   **MCP Server (TypeScript):** [`d365-agent-mcpserver-ts`](https://github.com/ntrtd/d365-agent-mcpserver-ts) (Alternative, depends on working TS OData client)
 *   **MCP Client Library (C#/.NET):** [`d365-agent-mcpclient-dotnet`](https://github.com/ntrtd/d365-agent-mcpclient-dotnet)
+*   **Test Suite:** [`d365-agent-tests`](https://github.com/ntrtd/d365-agent-tests)
 
 ## Development Setup
 
