@@ -1,70 +1,79 @@
 # API Reference
 
-This section provides reference documentation for the core components of the Dynamics 365 AI Agent SDK.
+This section provides reference documentation for the core components and libraries used within the Dynamics 365 AI Agent system. The primary architecture involves a TypeScript-based **Application Orchestration Layer** (`d365-agent-orchestrator`) communicating with a **.NET Core D365 MCP Server** (`d365-agent-mcpserver-dotnet`).
 
-*Note: Detailed, auto-generated API documentation (e.g., from TypeDoc or DocFX) based on the source code in the `submodules/typescript-sdk` and `submodules/csharp-sdk` repositories is the ideal goal for this section.*
+*Note: Detailed, auto-generated API documentation (e.g., from TypeDoc for TypeScript and DocFX for .NET) based on the source code in the respective SDK submodules and project repositories is the ideal goal for this section.*
 
-## Key SDK Components
+## Key SDK Components & Libraries
 
-The SDK is primarily composed of libraries for building the **Client (Orchestration) Layer** and the **MCP Server (Tool Implementation) Layer**.
+### 1. Application Orchestration Layer (`d365-agent-orchestrator`) Components
 
-### 1. Client Libraries (`d365-agent-mcpclient-*`)
+This layer is built with Node.js/TypeScript and hosts:
 
-These libraries are used within your **Application Backend** to orchestrate interactions with MCP Servers.
+*   **CopilotKit Runtime (`@copilotkit/runtime`):**
+    *   Manages interaction with the `d365-agent-ui` (CopilotKit frontend).
+    *   Handles LLM communication.
+    *   Dispatches requests to LangGraph agents or simpler CopilotKit actions.
+    *   Refer to official CopilotKit documentation for its API.
 
-*   **TypeScript Client (`@d365-agent/mcp-client-ts`)** (likely sourced from `submodules/typescript-sdk`)
-    *   **`McpClient` Class:** The primary class for connecting to and interacting with an MCP Server.
-        *   `constructor(options)`: Initialization options (server URL, authentication hooks, etc.).
-        *   `execute(request)`: Sends an `McpRequest` and returns an `McpResponse`.
-        *   `discover()`: Retrieves the capabilities description from the MCP Server.
-        *   *(Other methods for streaming, cancellation, etc.)*
-    *   **Core Types:**
+*   **LangGraph (`@langchain/langgraph`):**
+    *   Used to build stateful, multi-step agents (e.g., Purchase Agent, Sales Agent) in TypeScript.
+    *   Nodes within these LangGraph agents orchestrate business processes.
+    *   Refer to official LangChain/LangGraph documentation for its API.
+
+*   **D365 MCP Client Library (`d365-agent-mcpclient-ts`):**
+    *   **Purpose:** Used by LangGraph agents and simpler CopilotKit actions within the `d365-agent-orchestrator` to communicate with the `d365-agent-mcpserver-dotnet`.
+    *   **Source:** Likely from `submodules/typescript-sdk/packages/mcp-client` or a dedicated `d365-agent-mcpclient-ts` repository.
+    *   **Key Class: `McpClient`**
+        *   `constructor(options: { baseUrl: string; ... })`: Initializes the client with the URL of the `d365-agent-mcpserver-dotnet`.
+        *   `async executeTool(toolName: string, parameters: any): Promise<McpResponse>`: Sends a request to execute a specific tool on the MCP server.
+        *   `async discover(): Promise<McpServerDescription>`: Retrieves the list of available tools and their schemas from the MCP server.
+    *   **Core Types (Shared MCP Concepts):**
         *   `McpRequest`: Structure for invoking a tool.
         *   `McpResponse`: Structure for receiving results or errors.
-        *   `McpContent`: Represents different content types within requests/responses (text, JSON, images).
+        *   `McpContent`: Represents different content types (text, JSON).
         *   `McpError`: Standard error structure.
         *   `McpToolDescription`: Describes a tool's inputs, outputs, and function.
         *   `McpServerDescription`: Describes the server and its tools.
-    *   **Orchestration Helpers:** (May include utilities for common patterns, e.g., integrating with AutoGen or LangChain - *details depend on specific implementation*)
 
-*   **C# Client (`D365.Agent.McpClientDotnet`)** (likely sourced from `submodules/csharp-sdk`)
-    *   **`McpClient` Class:** Core class for MCP interactions.
-        *   `McpClient(HttpClient httpClient, McpClientOptions options)`: Constructor.
-        *   `Task<McpResponse> ExecuteAsync(McpRequest request, CancellationToken cancellationToken)`: Executes a tool request.
-        *   `Task<McpServerDescription> DiscoverAsync(CancellationToken cancellationToken)`: Gets server capabilities.
-        *   *(Other methods)*
-    *   **Core Types:**
-        *   `McpRequest`, `McpResponse`, `McpContent`, `McpError`, `McpToolDescription`, `McpServerDescription`: Equivalent .NET record/class definitions.
-    *   **Orchestration Helpers:** (Potential utilities for .NET-based orchestration - *details depend on specific implementation*)
+### 2. D365 MCP Server (`d365-agent-mcpserver-dotnet`) Components
 
-### 2. MCP Server Libraries (`d365-agent-mcpserver-*`)
+This layer is a .NET Core application responsible for exposing D365 operations as MCP tools.
 
-These libraries provide the foundation for building your **MCP Server** that exposes Dynamics 365 (or other) operations as tools.
+*   **.NET MCP Server SDK (from `submodules/csharp-sdk`):**
+    *   Provides the foundation for building the MCP server.
+    *   **Key Classes/Attributes:**
+        *   `McpServerBuilder` / `McpServer`: For configuring and running the ASP.NET Core based MCP server.
+        *   `[McpServerTool]`: Attribute to mark static methods as MCP tools.
+        *   `[McpServerToolType]`: Attribute to group related tools.
+        *   `[Description]`: Attribute for tool and parameter descriptions.
+    *   **Core Types:** `McpRequest`, `McpResponse`, etc. (compatible with the TypeScript client types).
 
-*   **TypeScript Server (`@d365-agent/mcp-server-ts`)** (likely sourced from `submodules/typescript-sdk`)
-    *   **`McpServer` Class:** The core server implementation.
-        *   `constructor(options)`: Server configuration (port, name, description).
-        *   `tool(name, schema, implementation)`: Defines an MCP tool with Zod schema validation.
-        *   `start()`: Starts the MCP server listener.
-    *   **Decorators/Utilities:** (Potential helpers for defining tools, e.g., `@McpTool` decorator - *details depend on specific implementation*)
-    *   **Core Types:** `McpRequest`, `McpResponse`, etc. (Shared or compatible with client types).
+*   **D365 OData Client Library (`d365-agent-odataclient-dotnet`):**
+    *   **Purpose:** A generated C# library providing type-safe access to Dynamics 365 OData endpoints. This is the working OData client used by the `d365-agent-mcpserver-dotnet`.
+    *   **Generation:** Created by the `d365-agent-odataclient-dotnet` project using OData Connected Service or `Microsoft.OData.Client.Design`.
+    *   **Key Components:**
+        *   `YourD365DataContext` (actual name depends on generation): The `DataServiceContext` subclass for interacting with D365.
+        *   Entity classes (e.g., `CustomerV3`, `SalesOrderHeaderV2`).
+        *   LINQ-to-OData query capabilities.
+    *   **Usage:** Instantiated and used within the MCP tool implementations in `d365-agent-mcpserver-dotnet` to perform CRUD operations against D365.
 
-*   **C# Server (`D365.Agent.McpServerDotnet`)** (likely sourced from `submodules/csharp-sdk`)
-    *   **`McpServerBuilder` / `McpServer`:** Classes for configuring and running the server (e.g., using ASP.NET Core integration).
-    *   **Attributes:**
-        *   `[McpServerTool]`: Marks a static method as an MCP tool.
-        *   `[McpServerToolType]`: Groups related tools within a static class.
-        *   `[Description]`: Provides descriptions for tools and parameters (used for discovery).
-    *   **Core Types:** `McpRequest`, `McpResponse`, etc.
-    *   **Dependency Injection:** Integration with .NET DI for injecting services (like D365 connection services) into tools.
+### 3. User Interface (`d365-agent-ui`) Components
 
-### 3. Generated OData Clients (`d365-agent-odataclient-*`)
+This layer is a React/TypeScript application.
 
-These are not part of the core SDK but are crucial dependencies for the MCP Server implementations.
+*   **CopilotKit UI Libraries (`@copilotkit/react-ui`, `@copilotkit/react-core`):**
+    *   **`<CopilotKitProvider />`:** Wraps the application to provide context and connection to the `d365-agent-orchestrator`.
+    *   **`<CopilotChat />` (and variants):** Provides the chat interface.
+    *   **`useCoAgentState` Hook:** Used to subscribe to and display the state of LangGraph agents running in the `d365-agent-orchestrator`.
+    *   **Generative UI Components:** For rendering custom UI based on agent state or data.
+    *   Refer to official CopilotKit documentation for detailed API of these components.
 
-*   **TypeScript Client (`@your-org/d365-odata-client`):** Generated using tools like `@sap-cloud-sdk/generator`. Provides entity types and fluent API builders. (See [Connecting to D365 Guide](../guides/connecting-d365.md)).
-*   **.NET Client (`Your.Generated.ODataClient.PackageName`):** Generated using OData Connected Service or `Microsoft.OData.Client.Design`. Provides entity classes and a `DataServiceContext`. (See [Connecting to D365 Guide](../guides/connecting-d365.md)).
+### Other Relevant Libraries/SDKs (Not part of the core "D365 Agent SDK" but used in the solution)
+
+*   **`d365-agent-odataclient-ts` (TypeScript OData Client Generator):**
+    *   While the generated client from this is currently not used for D365 interaction due to reported issues, the repository exists for generating TypeScript OData clients (e.g., using `odata2ts`). If it becomes functional, it could be an alternative for direct D365 access from TypeScript components if the MCP server layer was also in TypeScript.
 
 ---
 
-*To get detailed information, please refer to the source code and any generated documentation artifacts within the respective SDK submodules.*
+*To get detailed information on the specific APIs of `@copilotkit/*`, `langgraph`, and the MCP SDKs, please refer to their respective official documentation and the source code within the submodules or dedicated repositories.*
