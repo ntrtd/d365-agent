@@ -1,5 +1,5 @@
-site_name: Dynamics 365 AI Agent SDK (Partner Docs)
-site_description: Documentation for the Dynamics 365 AI Agent SDK for Partners
+site_name: Dynamics 365 AI Agent SDK
+site_description: Documentation for the Dynamics 365 AI Agent SDK
 repo_url: https://github.com/francescomagalini/d365-mcp
 docs_dir: docs # Point to the new directory
 
@@ -61,6 +61,7 @@ nav:
     - Architecture: fundamentals/architecture.md
     - Key Components: fundamentals/key-components.md
     - Authentication: fundamentals/authentication.md
+    - Evaluation Strategy: fundamentals/evaluation.md
   - Guides:
     - Overview: guides/index.md
     - Connecting to D365: guides/connecting-d365.md
