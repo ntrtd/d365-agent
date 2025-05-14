@@ -1,141 +1,124 @@
 # Architecture Fundamentals
 
-This section outlines the fundamental architectural principles and the overall vision for the Dynamics 365 AI Agent system.
+This section outlines the fundamental architectural principles and the overall vision for the Dynamics 365 AI Agent system, reflecting a refined 3-tier approach.
 
 ## 1. Vision & Core Strategy
 
-The goal is to facilitate AI-driven interactions with Microsoft Dynamics 365 (D365) and related systems, automating and assisting business processes across various domains (e.g., Sales, Procurement, Finance) for both internal and external users.
+The goal is to facilitate AI-driven interactions with Microsoft Dynamics 365 (D365) and related systems, automating and assisting business processes across various domains for both internal and external users.
 
-**The core strategy involves:**
-*   A **CopilotKit-based User Interface** (developed in the [`d365-agent-ui`](https://github.com/ntrtd/d365-agent-ui) repository) providing a rich, interactive chat experience with support for file uploads and real-time state display.
-*   An **Application Orchestration Layer** (developed in the [`d365-agent-orchestrator`](https://github.com/ntrtd/d365-agent-orchestrator) repository). This layer is a TypeScript/Node.js application that:
-    *   Hosts the **CopilotKit Runtime** to manage UI interactions and LLM communications.
-    *   Employs **LangGraph (TypeScript)** to define and execute stateful, multi-step business process agents. This includes a **Master Orchestrator Agent** responsible for initial request routing and potentially managing overarching conversations, which then invokes specialized **Domain-Specific LangGraph Agents** (e.g., for Purchase Order Processing, Sales Quote Management, CTS Orders).
-    *   Domain-Specific LangGraph Agents integrate direct calls to AI services (e.g., OpenAI) for tasks like PDF document content extraction.
-    *   Uses the **`d365-agent-mcpclient-ts`** library to enable LangGraph agents (and simpler direct CopilotKit actions) to interact with D365-specific tools.
-*   A **D365 MCP Server** (developed in the [`d365-agent-mcpserver-dotnet`](https://github.com/ntrtd/d365-agent-mcpserver-dotnet) repository). This is a .NET Core application that:
+**The refined core strategy involves:**
+*   A **CopilotKit-based User Interface** (repo: [`d365-agent-ui`](https://github.com/ntrtd/d365-agent-ui)). This React/TypeScript application provides a rich, interactive chat experience and connects to the `CopilotRuntime` hosted by the Application Orchestration Layer.
+*   An **Application Orchestration Layer** (repo: [`d365-agent-orchestrator`](https://github.com/ntrtd/d365-agent-orchestrator)). This layer is a TypeScript/Node.js application (e.g., using Express.js) that:
+    *   Hosts the central **CopilotKit Runtime** to manage UI interactions, LLM communications, and serve as the primary backend for the UI.
+    *   May define simple, stateless backend actions directly within its runtime. These actions can use the `d365-agent-mcpclient-ts` for straightforward D365 calls.
+    *   Connects to the **LangGraph Agent Layer** (`d365-agent-agents`) via `remoteEndpoints` (specifically using `langGraphPlatformEndpoint`) to integrate complex, stateful business process agents.
+*   A **LangGraph Agent Layer** (new repo: `d365-agent-agents`). This layer is a TypeScript/Node.js application that:
+    *   Defines and serves stateful, multi-step **LangGraph Agents** (e.g., a Master Orchestrator Agent for routing, and various Domain-Specific Agents for Purchase Order Processing, Sales Quote Management, etc.).
+    *   Is typically developed and run using `langgraph-cli`.
+    *   These LangGraph agents use the **`d365-agent-mcpclient-ts`** library to interact with D365 tools by calling the D365 MCP Server.
+    *   May also integrate direct calls to AI services (e.g., OpenAI) for tasks like document content extraction within the agent logic.
+*   A **D365 MCP Server** (repo: [`d365-agent-mcpserver-dotnet`](https://github.com/ntrtd/d365-agent-mcpserver-dotnet)). This is a .NET Core application that:
     *   Exposes Dynamics 365 business logic as standardized MCP (Model Context Protocol) tools.
-    *   Utilizes the working **`d365-agent-odataclient-dotnet`** (generated C# OData client) for all underlying D365 data operations.
+    *   Utilizes the **`d365-agent-odataclient-dotnet`** (generated C# OData client) for all underlying D365 data operations.
 
 Key benefits of this approach include:
-*   **Rich User Experience:** Leveraging CopilotKit for modern chat UIs with features like generative UI and shared state reflecting LangGraph agent progress.
-*   **Powerful Orchestration:** Using LangGraph for robust, stateful, and potentially multi-agent business process automation, with integrated AI capabilities for tasks like document understanding.
-*   **Standardized & Reliable D365 Tooling:** MCP provides a consistent way to expose D365 capabilities, leveraging the stable .NET OData client via the .NET MCP Server.
-*   **Modularity and Scalability:** Clear separation of UI, orchestration, and D365 access layers, each in their dedicated repositories and deployable as distinct services (likely containers).
+*   **Rich User Experience:** Leveraging CopilotKit for modern chat UIs.
+*   **Clear Separation of Concerns:**
+    *   UI (`d365-agent-ui`) for presentation.
+    *   Orchestrator (`d365-agent-orchestrator`) for runtime hosting, simple actions, and routing to complex workflows.
+    *   Agents (`d365-agent-agents`) for complex, stateful agent logic using LangGraph.
+    *   MCP Server (`d365-agent-mcpserver-dotnet`) for standardized D365 tooling.
+*   **Powerful Workflow Automation:** Using LangGraph in a dedicated service for robust business process automation.
+*   **Standardized & Reliable D365 Tooling:** MCP provides a consistent interface to D365.
+*   **Modularity and Scalability:** Each layer is in a dedicated repository and deployable as a distinct service.
 
 The architecture prioritizes using Microsoft Azure PaaS and AI services for hosting, scalability, security, and maintainability.
 
 ### Business Drivers: From Manual Effort to Orchestrated Interaction
 
-Traditional interactions with complex systems like Dynamics 365 often involve:
-*   Manual data entry, validation, and process management.
-*   Fragmented communication channels.
-*   Siloed information across different modules or systems.
-
-The vision enabled by this architecture aims to transition towards:
-*   **AI-Driven Automation:** LangGraph agents in `d365-agent-orchestrator` automate complex workflows like PO ingestion (including PDF parsing via direct OpenAI calls) and sales processes, by invoking D365 MCP tools.
-*   **Unified Interaction via CopilotKit:** The `d365-agent-ui` provides a consistent, conversational interface.
-*   **Consistent Rule Application:** Business logic is embedded within LangGraph agent workflows and D365 MCP tools.
+Traditional interactions with Dynamics 365 involve manual effort. This architecture aims for:
+*   **AI-Driven Automation:** LangGraph agents in `d365-agent-agents` automate complex processes by invoking D365 MCP tools (via `d365-agent-mcpclient-ts`). Simpler automations can be handled by actions in `d365-agent-orchestrator`.
+*   **Unified Interaction via CopilotKit:** The `d365-agent-ui` connects to `d365-agent-orchestrator`, which provides a unified view of available agents and actions.
+*   **Consistent Rule Application:** Business logic is embedded within LangGraph agent workflows, orchestrator actions, and D365 MCP tools.
 
 ## 2. Guiding Principles
 
-*   **Microsoft Native:** Leverage Azure PaaS (e.g., Azure Container Apps) and AI services (Azure OpenAI).
+*   **Microsoft Native:** Leverage Azure PaaS and AI services.
 *   **Modularity & Defined Repositories:**
-    *   **UI Layer:** `d365-agent-ui` (CopilotKit, React/TypeScript).
-    *   **Application Orchestration Layer:** `d365-agent-orchestrator` (Node.js/TypeScript, hosting CopilotKit Runtime and LangGraph agents; uses `d365-agent-mcpclient-ts`). LangGraph agents handle document parsing via direct OpenAI calls.
-    *   **D365 Tooling Layer:** `d365-agent-mcpserver-dotnet` (.NET Core, exposing D365 tools via MCP, using `d365-agent-odataclient-dotnet`).
+    *   **UI Layer:** `d365-agent-ui` (CopilotKit React Frontend).
+    *   **Application Orchestration Layer (Runtime Host):** `d365-agent-orchestrator` (Node.js/TypeScript, e.g., Express.js, hosting CopilotKit Runtime; connects to `d365-agent-agents`; can use `d365-agent-mcpclient-ts` for its own simple actions).
+    *   **LangGraph Agent Layer (Agent Server):** `d365-agent-agents` (Node.js/TypeScript, LangGraph agents; uses `d365-agent-mcpclient-ts`; served by `langgraph-cli`).
+    *   **D365 Tooling Layer (MCP Server):** `d365-agent-mcpserver-dotnet` (.NET Core, exposing D365 tools via MCP, using `d365-agent-odataclient-dotnet`).
+    *   **D365 MCP Client Generation:** `d365-agent-mcpclient-ts` (TypeScript client library).
     *   **D365 OData Client Generation:** `d365-agent-odataclient-dotnet` (C# client generator).
     *   **Infrastructure:** `d365-agent-infra`.
-*   **Standardization:** Use MCP as the interface between the `d365-agent-orchestrator` (specifically, its `d365-agent-mcpclient-ts` component) and the `d365-agent-mcpserver-dotnet`.
+*   **Standardization:**
+    *   CopilotKit protocols between `d365-agent-ui` and `d365-agent-orchestrator`.
+    *   LangGraph agent protocols (e.g., via `langGraphPlatformEndpoint`) between `d365-agent-orchestrator` and `d365-agent-agents`.
+    *   MCP between consumers (`d365-agent-agents` or `d365-agent-orchestrator`) and `d365-agent-mcpserver-dotnet`.
 *   **Technology Stack:**
     *   UI: React/TypeScript with CopilotKit.
-    *   Orchestrator: Node.js/TypeScript with CopilotKit Runtime and LangGraph (TypeScript).
+    *   Orchestrator (Runtime Host): Node.js/TypeScript (e.g., Express.js) with CopilotKit Runtime.
+    *   Agents (Agent Server): Node.js/TypeScript with LangGraph.
     *   D365 MCP Client: TypeScript (`d365-agent-mcpclient-ts`).
     *   D365 MCP Server: .NET Core (`d365-agent-mcpserver-dotnet`).
     *   D365 OData Client for MCP Server: C# (`d365-agent-odataclient-dotnet`).
-*   **Stateful Orchestration:** Utilize LangGraph for managing complex, multi-step business processes.
-*   **Rich Frontend Integration:** Employ CopilotKit for interactive chat UIs, shared state with LangGraph, and generative UI.
-*   **Security:** Entra ID for service-to-service auth, secure communication, user auth in UI/Orchestrator. Secrets in Key Vault.
-*   **Observability:** Application Insights for all services, LangSmith for LangGraph agents.
+*   **Stateful Orchestration:** Utilize LangGraph in `d365-agent-agents` for complex business processes.
+*   **Security & Observability:** As previously defined.
 
-### 3.1. Orchestrator and Domain-Specific Agents
+### 3.1. LangGraph Agents in `d365-agent-agents`
 
-Within the **Application Orchestration Layer (`d365-agent-orchestrator`)**, the LangGraph implementation typically follows a tiered approach:
+The **LangGraph Agent Layer (`d365-agent-agents`)** is where complex, stateful agent logic resides:
 
 *   **Master Orchestrator Agent (LangGraph):**
-    *   This is often the primary entry point for requests coming from the CopilotKit Runtime.
-    *   Its main responsibilities can include:
-        *   Understanding the overall user intent from the initial interaction.
-        *   Routing the request to the appropriate Domain-Specific LangGraph Agent.
-        *   Managing overarching conversation state if a task spans multiple domain agents or requires a sequence of specialized agents.
-        *   Handling initial context gathering or authentication steps before dispatching to a domain agent.
+    *   This agent, running within `d365-agent-agents`, can be invoked by the `d365-agent-orchestrator`.
+    *   Responsibilities: understanding overall user intent (passed from orchestrator), routing to appropriate Domain-Specific LangGraph Agents within `d365-agent-agents`, managing cross-domain state if needed.
+*   **Domain-Specific LangGraph Agents (e.g., `CTSOrderAgent`, `POProcessingAgent`):**
+    *   These specialized LangGraph state machines also run within `d365-agent-agents`.
+    *   They handle specific business processes, using `d365-agent-mcpclient-ts` to call tools on `d365-agent-mcpserver-dotnet`.
+    *   Their state and progress are communicated back to the `d365-agent-orchestrator`'s CopilotKit Runtime, which then updates the `d365-agent-ui`.
 
-*   **Domain-Specific LangGraph Agents (e.g., `CTSOrderAgent`, `POProcessingAgent`, `SalesQuoteAgent`):**
-    *   These are individual, specialized LangGraph state machines, each designed to handle a particular end-to-end business process or a complex task within a specific domain (e.g., the phases A-G of a CTS order as detailed in Scenario 6).
-    *   They encapsulate the detailed logic, states, tools, and transitions for their area of responsibility.
-    *   They are typically invoked by the Master Orchestrator Agent based on the nature of the user's request.
-    *   They utilize the `d365-agent-mcpclient-ts` to interact with D365 tools and may make direct calls to services like OpenAI for specific sub-tasks (e.g., document parsing, data transformation).
-    *   The state and progress of these domain-specific agents are what the CopilotKit UI primarily reflects to the user via shared state mechanisms.
+This structure centralizes complex agent logic in `d365-agent-agents`, making `d365-agent-orchestrator` a leaner runtime host and simple action provider.
 
-This separation allows for a modular and scalable design, where complex business processes are broken down into manageable, specialized agents, all coordinated by a central orchestrating agent. The exact implementation (e.g., one master agent vs. a more distributed routing graph) can vary based on complexity.
+## 3. Core Architecture Layers (Detailed View - Refined)
 
-## 3. Core Architecture Layers (Detailed View)
-
-The following diagram illustrates the key components and their interactions within the `d365-agent` ecosystem, incorporating the full capabilities of CopilotKit:
+The following diagram illustrates the key components and their interactions within the `d365-agent` ecosystem, reflecting the new 3-tier structure:
 
 ```mermaid
 graph TD
     subgraph UserInterface_d365_agent_ui ["User Interface Layer (d365-agent-ui)"]
         direction TB
-        CopilotKitUI_SDK["Frontend SDK (CopilotKit)"]
-        
-        subgraph CopilotKitUI_Components ["Copilot UI Components"]
-            direction LR
-            UI_Chat["Chat"]
-            UI_Generative["Generative UI"]
-            UI_Voice["Voice Support"]
-            UI_Suggestions["Suggestions"]
-            UI_Headless["Headless UI Options"]
-        end
-
-        subgraph CopilotOS_Frontend ["Copilot OS (Frontend)"]
-            direction LR
-            Frontend_RAG["Frontend RAG"]
-            Frontend_Actions["Frontend Actions"]
-        end
-        CoAgents_Socket["CoAgents Socket"]
-        
-        CopilotKitUI_SDK --> CopilotKitUI_Components
-        CopilotKitUI_SDK --> CopilotOS_Frontend
-        CopilotKitUI_SDK --> CoAgents_Socket
+        CopilotKitUI_SDK["Frontend SDK & UI Components<br/>(CopilotKit: Chat, Sidebar, Generative UI)"]
     end
 
-    subgraph AppOrchestration_d365_agent_orchestrator ["Application Orchestration Layer (d365-agent-orchestrator - Node.js/TS)"]
+    subgraph AppOrchestration_d365_agent_orchestrator ["Application Orchestration Layer (d365-agent-orchestrator - Node.js/TS Express App)"]
         direction TB
         CopilotRuntime["Copilot Runtime"]
-        CopilotOS_Backend["Copilot OS (Backend)"]
-
-        subgraph LangGraph_Agents_TS ["LangGraph Agents (TypeScript)"]
-            direction TB
-            MasterOrchestratorAgent["Master Orchestrator Agent"]
-            DomainSpecificAgents["Domain-Specific Agents<br/>(e.g., CTSOrderAgent, POProcessingAgent)"]
-            LangGraph_BackendActions["Backend Actions (Agent Logic)"]
-            LangGraph_BackendRAG["Backend RAG (e.g., OpenAI for Doc Parsing)"]
-            D365_MCP_Client_TS["d365-agent-mcpclient-ts"]
-        end
+        SimpleBackendActions["Simple Backend Actions<br/>(Optional, can use MCP Client)"]
+        D365_MCP_Client_TS_Orch["d365-agent-mcpclient-ts<br/>(for Simple Actions)"]
         
-        CopilotRuntime --> CopilotOS_Backend
-        CopilotRuntime -- "Invokes/Manages" --> MasterOrchestratorAgent
-        MasterOrchestratorAgent -- "Routes to/Invokes" --> DomainSpecificAgents
-        DomainSpecificAgents -- "Uses" --> D365_MCP_Client_TS
-        DomainSpecificAgents -- "Uses" --> LangGraph_BackendActions
-        DomainSpecificAgents -- "Uses" --> LangGraph_BackendRAG
+        CopilotRuntime --> SimpleBackendActions
+        SimpleBackendActions -- "Uses" --> D365_MCP_Client_TS_Orch
+    end
+
+    subgraph LangGraphAgents_d365_agent_agents ["LangGraph Agent Layer (d365-agent-agents - Node.js/TS LangGraph Server)"]
+        direction TB
+        LangGraphServer["LangGraph Agent Server<br/>(run via langgraph-cli)"]
+        MasterOrchestratorAgent_LG["Master Orchestrator Agent (LangGraph)"]
+        DomainSpecificAgents_LG["Domain-Specific Agents (LangGraph)<br/>(e.g., CTSOrderAgent, POProcessingAgent)"]
+        D365_MCP_Client_TS_LG["d365-agent-mcpclient-ts<br/>(for LangGraph Agents)"]
+
+        LangGraphServer -- "Serves" --> MasterOrchestratorAgent_LG
+        LangGraphServer -- "Serves" --> DomainSpecificAgents_LG
+        MasterOrchestratorAgent_LG -- "Invokes" --> DomainSpecificAgents_LG
+        DomainSpecificAgents_LG -- "Uses" --> D365_MCP_Client_TS_LG
+        MasterOrchestratorAgent_LG -- "Uses" --> D365_MCP_Client_TS_LG
     end
 
     subgraph D365Tooling_d365_agent_mcpserver_dotnet [".NET D365 MCP Server Layer (d365-agent-mcpserver-dotnet)"]
         direction TB
-        D365_MCP_Server["D365 MCP Server (.NET Core)<br/>(Model Context Protocol Endpoint)"]
-        D365_OData_Client_DotNet["d365-agent-odataclient-dotnet<br/>(C# OData Client Library)"]
+        D365_MCP_Server["D365 MCP Server (.NET Core)<br/>(MCP Tool Endpoint)"]
+        D365_OData_Client_DotNet["d365-agent-odataclient-dotnet<br/>(C# OData Client)"]
         
         D365_MCP_Server -- "Uses" --> D365_OData_Client_DotNet
     end
@@ -145,88 +128,65 @@ graph TD
         D365_Instance["Dynamics 365"]
         OpenAI_Service["OpenAI / Azure OpenAI"]
         LangSmith_Service["LangSmith (Observability)"]
-        FTP_Blob_Storage["(Optional) FTP/Blob Storage"]
-        Email_Ingestion_Service["(Optional) Email Ingestion Service"]
-    end
-
-    subgraph Optional_CopilotCloud ["Optional: Copilot Cloud Integration"]
-        direction TB
-        CopilotCloud_KnowledgeBase["Knowledge Base<br/>(SharePoint, SQL, Google Drive, etc.)"]
-        CopilotCloud_AIRouter["AI Router"]
-        CopilotCloud_Memory["Memory"]
-        CopilotCloud_Guardrails["Guardrails"]
-        CopilotCloud_Analytics["Analytics & ROI"]
     end
 
     %% Connections
-    UserInterface_d365_agent_ui -- "Connects (GraphQL/HTTP, WebSocket for CoAgents Socket)" --> CopilotRuntime;
+    UserInterface_d365_agent_ui -- "Connects (HTTP/WebSocket)" --> CopilotRuntime;
     
-    D365_MCP_Client_TS -- "MCP Protocol" --> D365_MCP_Server;
+    CopilotRuntime -- "Invokes Remote Agents (langGraphPlatformEndpoint)" --> LangGraphServer;
+
+    D365_MCP_Client_TS_Orch -- "MCP Protocol" --> D365_MCP_Server;
+    D365_MCP_Client_TS_LG -- "MCP Protocol" --> D365_MCP_Server;
     D365_OData_Client_DotNet -- "OData/API" --> D365_Instance;
 
-    LangGraph_BackendRAG -- "API Call" --> OpenAI_Service;
-    DomainSpecificAgents -- "Sends Traces" --> LangSmith_Service;
-    DomainSpecificAgents -- "File I/O" --> FTP_Blob_Storage
-    Email_Ingestion_Service -- "Triggers" --> CopilotRuntime % or MasterOrchestratorAgent
-
-    CopilotRuntime -- "Integrates with (Optional)" --> Optional_CopilotCloud;
+    MasterOrchestratorAgent_LG -- "Uses LLM" --> OpenAI_Service;
+    DomainSpecificAgents_LG -- "Uses LLM" --> OpenAI_Service;
+    CopilotRuntime -- "Uses LLM (for general chat, routing)" --> OpenAI_Service;
+    
+    MasterOrchestratorAgent_LG -- "Sends Traces" --> LangSmith_Service;
+    DomainSpecificAgents_LG -- "Sends Traces" --> LangSmith_Service;
 
     %% Styling
     classDef ui fill:#D1E8FF,stroke:#333,color:#000;
     classDef orchestrator fill:#E8DAFF,stroke:#333,color:#000;
+    classDef agents fill:#DFFFE0,stroke:#333,color:#000; # Changed from workflows to agents
     classDef d365mcp fill:#FFE0B2,stroke:#333,color:#000;
     classDef externals fill:#D4F8D4,stroke:#333,color:#000;
-    classDef copilotcloud fill:#FFF0F5,stroke:#333,color:#000;
 
     class UserInterface_d365_agent_ui ui;
     class AppOrchestration_d365_agent_orchestrator orchestrator;
+    class LangGraphAgents_d365_agent_agents agents; # Changed from workflows to agents
     class D365Tooling_d365_agent_mcpserver_dotnet d365mcp;
     class ExternalSystems externals;
-    class Optional_CopilotCloud copilotcloud;
 ```
 
-**Explanation of Layers and Components (Inspired by Full CopilotKit Capabilities):**
+**Explanation of Refined Layers and Components:**
 
 *   **User Interface Layer (`d365-agent-ui`):**
-    *   Leverages the **CopilotKit Frontend SDK** to deliver a rich, interactive user experience.
-    *   **Copilot UI Components:** Provides standard elements like `Chat`, `Suggestions`, and `Voice Support`. A key feature is **Generative UI**, allowing LangGraph agents to render dynamic React components directly within the chat, offering more than just text-based interactions. `Headless UI` options allow for complete customization.
-    *   **Copilot OS (Frontend):** This conceptual part of the SDK enables powerful client-side capabilities:
-        *   **Frontend RAG:** Could be used for instant responses from client-side cached data or small, local knowledge sources (e.g., product FAQs, UI guides) without needing a backend roundtrip.
-        *   **Frontend Actions:** Simple UI-specific actions (e.g., changing themes, client-side form validation, navigating the UI) can be defined and executed locally, making the UI more responsive.
-    *   **CoAgents Socket:** Crucial for real-time, bidirectional communication with the backend LangGraph agents. This facilitates the seamless streaming of shared state updates and enables the dynamic rendering of Generative UI components as the agent progresses.
-    *   Communicates with the `d365-agent-orchestrator` via GraphQL/HTTP for standard requests and the CoAgents Socket (WebSocket) for real-time agent interactions.
+    *   Purely a frontend application using CopilotKit React components.
+    *   Connects to the `CopilotRuntime` hosted by `d365-agent-orchestrator`.
+    *   Can be put into "agent lock mode" to target specific agents advertised by the orchestrator.
 
 *   **Application Orchestration Layer (`d365-agent-orchestrator`):**
-    *   Hosts the central **Copilot Runtime**, which acts as the main entry point from the UI and manages the overall agentic execution flow.
-    *   **Copilot OS (Backend):** Conceptually, this is the core intelligence within the Runtime. It handles LLM interactions, context management, tool invocation, and the lifecycle of LangGraph agents.
-    *   **LangGraph Agents (TypeScript):**
-        *   **Master Orchestrator Agent:** As described in section 3.1, this agent typically handles initial user intent, routes to appropriate domain agents, and may manage cross-domain conversational state.
-        *   **Domain-Specific Agents (e.g., `CTSOrderAgent`, `POProcessingAgent`):** These are the workhorses, each a LangGraph state machine for a specific business process.
-            *   **Backend Actions (Agent Logic):** Encapsulate the steps, transitions, and tool calls for their domain.
-            *   **Backend RAG:** Domain agents frequently use RAG by calling OpenAI (or other LLMs) to parse uploaded documents (PDFs, emails), query unstructured data sources, or extract information relevant to their current task. This is more powerful than Frontend RAG as it can access larger, secure data.
-            *   Interaction with D365 is performed via the `d365-agent-mcpclient-ts`, which calls the D365 MCP Server.
-            *   Can also integrate with other third-party APIs or services as needed, beyond D365.
+    *   Hosts the central **CopilotKit Runtime**. This is the primary backend the UI interacts with.
+    *   Manages LLM interactions for general chat when no specific agent is targeted, or for routing.
+    *   Can define **Simple Backend Actions**: For stateless operations or simple D365 queries using `d365-agent-mcpclient-ts` directly.
+    *   Connects to `d365-agent-agents` via `remoteEndpoints` (using `langGraphPlatformEndpoint`) to make complex LangGraph agents available to the UI. It lists available remote agents and proxies requests to them.
+
+*   **LangGraph Agent Layer (`d365-agent-agents`):**
+    *   A dedicated Node.js/TypeScript service for defining and serving **LangGraph Agents**.
+    *   Contains the `MasterOrchestratorAgent` (LangGraph) and various `DomainSpecificAgents` (LangGraphs).
+    *   These agents encapsulate complex, stateful business logic.
+    *   They use `d365-agent-mcpclient-ts` to call tools on the `d365-agent-mcpserver-dotnet`.
+    *   Served by `langgraph-cli`, providing an HTTP endpoint for each registered LangGraph agent.
 
 *   **D365 Tooling Layer (`d365-agent-mcpserver-dotnet`):**
-    *   Functions as a specialized **Remote Endpoint** in the CopilotKit architecture, communicating via the **Model Context Protocol (MCP)**.
-    *   The **D365 MCP Server (.NET Core)** provides a secure and standardized set of tools for D365 operations.
-    *   It uses the generated C# **`d365-agent-odataclient-dotnet`** for reliable and type-safe interaction with the Dynamics 365 OData API.
+    *   Functions as the MCP Server, exposing D365 operations as tools.
+    *   Uses `d365-agent-odataclient-dotnet` for D365 interaction.
 
 *   **External Systems & Services:**
-    *   **Dynamics 365:** The primary target ERP system.
-    *   **OpenAI / Azure OpenAI:** Crucial for LLM-driven understanding, generation, RAG, and decision-making within LangGraph agents.
-    *   **LangSmith:** Essential for tracing, debugging, and monitoring LangGraph agent executions.
-    *   **FTP/Blob Storage, Email Ingestion:** Examples of auxiliary services that can trigger or support agent workflows.
+    *   Includes Dynamics 365, OpenAI/Azure OpenAI (used by CopilotRuntime and LangGraph agents), and LangSmith.
 
-*   **Optional Copilot Cloud Integration:**
-    *   The `d365-agent-orchestrator` (specifically its Copilot Runtime) is designed to be compatible with **Copilot Cloud**. This offers a path to leverage powerful managed services:
-        *   **Managed Knowledge Bases:** Instead of (or in addition to) custom Backend RAG, connect to SharePoint, SQL DBs, Google Drive, etc., through Copilot Cloud for robust, scalable RAG over enterprise data.
-        *   **AI Router:** Intelligently route different tasks or sub-tasks to the most appropriate (or cost-effective) LLM, managed by Copilot Cloud.
-        *   **Persistent Memory:** Enable agents to remember context across sessions or users, enhancing personalization and long-term task management.
-        *   **Guardrails:** Implement advanced safety, compliance, and ethical AI policies centrally.
-        *   **Analytics & ROI:** Gain insights into agent usage, performance, and business impact.
-    *   This integration provides a significant boost in operational maturity, scalability, and feature richness without requiring extensive custom development for these platform-level capabilities.
+This refined architecture clearly separates the CopilotKit Runtime hosting from the complex LangGraph agent definitions, aligning with the `coagents-starter` pattern where the UI's runtime connects to a remote agent server. It also clarifies how MCP tools are consumed by both direct actions in the orchestrator and LangGraph agents in the agent server.
 
-This architecture emphasizes modularity, leveraging CopilotKit for the frontend and core runtime, LangGraph for sophisticated agentic orchestration, and a dedicated .NET server for robust D365 interactions. The optional integration with Copilot Cloud offers further scalability and advanced features.
-
-Refer to the detailed **[Key Components](./key-components.md)** document for a breakdown of component responsibilities.
+Refer to the detailed **[Key Components](./key-components.md)** document for a breakdown of component responsibilities (this document may also need updates to reflect this refined architecture).
